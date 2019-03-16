@@ -28,17 +28,7 @@ Properties
 - Trezor/Ledger support
 - no MFA
 
-Encrypter: identity
-
-KeyStore: local device storage
-
-- initialized with null authToken
-- setKey/getKey just store and read from JS memory
-- only one key supported
-
-KeyHandlers: plaintext, Trezor / Ledger
-
-## StellarX: kk
+Auth strategy: none
 
 Encrypter: identity
 
@@ -49,3 +39,26 @@ KeyStore: local device storage
 - only one key supported
 
 KeyHandlers: plaintext, Trezor / Ledger
+
+## StellarX
+
+Auth strategy: none
+
+Encrypter: identity
+
+KeyStore: local device storage
+
+- initialized with null authToken
+- setKey/getKey just store and read from JS memory
+- only one key supported
+
+KeyHandlers: plaintext, Trezor / Ledger
+
+## Stellar Wallet JS SDK
+
+See
+[stellar-wallet-js-sdk](https://github.com/stellar/stellar-wallet-js-sdk).
+It's a system that combines auth functionality with storing your stellar
+keys.
+
+The integration strategy: any auth-related functionality is outside the scope of the keystore API. So the keystore plugin for stellar-wallet-js-sdk only implements the keystore-related calls, and a client can directly call stellar-wallet-js-sdk for auth-related tasks.

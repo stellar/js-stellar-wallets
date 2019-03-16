@@ -32,4 +32,18 @@ ways.
 
 ## Pluggable components
 
-* Key stores:
+Below are various pluggable components that we should be able to handle.
+
+- Key stores:
+  - in browser memory (like StellarTerm)
+  - local storage in browser
+  - on device in a mobile app
+  - in a database or blob store on a server
+  - A system that combines auth & key storage, like [stellar-wallet-js-sdk](https://github.com/stellar/stellar-wallet-js-sdk)
+- encryption algorithms:
+  - identity (does nothing)
+  - Keybase / StellarX-style using nacl box/unbox
+- Types of keys:
+  - Ledger / Trezor
+  - plain text (S...)
+  - standard file format(s) [Protocol Issue](https://github.com/stellar/stellar-protocol/issues/198), [Stellarport's format](https://github.com/stellarport/stellar-keystore/blob/master/audit.pdf)
