@@ -25,7 +25,7 @@ The key handlers are shared across all the different scenarios, so just define t
   - Use Ledger / Trezor JS libraries to transmit transaction and receive signed transaction
   - returns signed transaction
 
-  ## Encrypters
+## Encrypters
 
   A few standard encrypters:
 

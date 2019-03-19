@@ -2,7 +2,7 @@
 
 ## Summary
 
-The key store system is a client-side library that is designed to be modular
+The key management system is a client-side library that is designed to be modular
 and extensible beyond all else. It makes it easy for a wallet app to store
 different kinds of Stellar keys and their metadata in a variety of different
 ways.
@@ -28,7 +28,9 @@ ways.
 ## Non-goals
 
 - User management (this is handled externally)
-- Recovery of key if password is forgotten: user should also store key in separate paper wallet
+- Recovery of key if password is forgotten:
+  - user should also store key in separate paper wallet
+  -  or just use a Ledger / Trezor
 
 ## Pluggable components
 
