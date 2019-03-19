@@ -19,11 +19,12 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,ts,md}": [
+    "**/*.{js,md}": [
       "prettier --config prettier.config.js --write",
       "git add"
     ],
-    "**/*.{ts}": [
+    "**/*.ts": [
+      "prettier --config prettier.config.js --write",
       "tslint --fix",
       "git add"
     ]

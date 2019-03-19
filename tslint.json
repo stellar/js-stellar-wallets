@@ -1,4 +1,5 @@
 {
+  "extends": ["tslint:recommended"],
   "rules": {
     "ban": false,
     "class-name": true,
@@ -32,13 +33,7 @@
     "no-trailing-whitespace": false,
     "no-unused-expression": true,
     "no-use-before-declare": true,
-    "one-line": [
-      true,
-      "check-catch",
-      "check-else",
-      "check-open-brace",
-      "check-whitespace"
-    ],
+    "one-line": [true, "check-catch", "check-else", "check-open-brace", "check-whitespace"],
     "radix": true,
     "semicolon": [true, "always"],
     "switch-default": true,
