@@ -2,15 +2,12 @@ interface IAddKeyArgs {
   key: IKey;
   encrypter: string;
   password?: string;
-  shouldCache: boolean;
 }
 
 interface ISignTransactionArgs {
   txnEnvelope: any;
   publicKey: string;
   password?: string;
-  shouldReadCache: boolean;
-  shouldWriteCache: boolean;
 }
 
 interface IChangePasswordArgs {
@@ -66,7 +63,7 @@ class KeyManager {
     // happy path-only code to demonstrate idea
     const encrypterObj = this.encrypterMap[encrypter];
     const keyStoreObj = this.keyStore;
-    const encryptedKey = encrypterObj.encryptKey({ key, password });
+    const encryptedKey = await encrypterObj.encryptKey({ key, password });
     const keyMetadata = await keyStoreObj.storeKeys({
       keys: [encryptedKey]
     })[0];
@@ -80,7 +77,7 @@ class KeyManager {
    * @returns a list of metadata about all stored keys
    * @throws on any error
    */
-  listKeys(): IKeyMetadata[] {
+  listKeys(): Promise<IKeyMetadata[]> {
     return this.keyStore.listKeys();
   }
 
@@ -114,10 +111,13 @@ class KeyManager {
     // TODO: read from cache
     const encryptedKey = await this.keyStore.loadKey({ publicKey });
     const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-    const key = encrypterObj.decryptKey({ key: encryptedKey, password });
+    const key = await encrypterObj.decryptKey({ key: encryptedKey, password });
     // TODO: write to cache
     const keyHandler = this.keyHandlerMap[key.type];
-    const signedTxnEnvelope = keyHandler.signTransaction({ txnEnvelope, key });
+    const signedTxnEnvelope = await keyHandler.signTransaction({
+      txnEnvelope,
+      key
+    });
     return signedTxnEnvelope;
   }
 
@@ -132,11 +132,13 @@ class KeyManager {
     newPassword
   }: IChangePasswordArgs): Promise<IKeyMetadata[]> {
     const oldKeys = await this.keyStore.loadAllKeys();
-    const newKeys = oldKeys.map(key => {
-      const encrypter = this.encrypterMap[key.encrypterName];
-      const key2 = encrypter.decryptKey({ key, password: oldPassword });
-      return encrypter.encryptKey({ key: key2, password: newPassword });
-    });
+    const newKeys = await Promise.all(
+      oldKeys.map(async key => {
+        const encrypter = this.encrypterMap[key.encrypterName];
+        const key2 = await encrypter.decryptKey({ key, password: oldPassword });
+        return encrypter.encryptKey({ key: key2, password: newPassword });
+      })
+    );
     const res = await this.keyStore.storeKeys({ keys: newKeys });
     // TODO: write to cache
     return res;
@@ -195,8 +197,8 @@ interface IDecryptKeyArgs {
  */
 interface IEncrypter {
   name: string;
-  encryptKey({ key, password }: IEncryptKeyArgs): IEncryptedKey;
-  decryptKey({ key, password }: IDecryptKeyArgs): IKey;
+  encryptKey({ key, password }: IEncryptKeyArgs): Promise<IEncryptedKey>;
+  decryptKey({ key, password }: IDecryptKeyArgs): Promise<IKey>;
 }
 
 /**
@@ -214,11 +216,14 @@ interface IKeyStore {
    * userid that is needed to properly access the key store for the logged-in
    * user.
    *
+   * Can be called repeatedly to update the KeyStore state when needed (say the
+   * authToken expires)
+   *
    * @param data any info needed to init the keystore
    * @returns void on success
    * @throws on any error
    */
-  init(data?: any): void;
+  configure(data?: any): Promise<void>;
 
   /**
    * store the given encrypted keys, atomically if possible.
@@ -253,7 +258,7 @@ interface IKeyStore {
    * @returns a list of metadata about all stored keys
    * @throws on any error
    */
-  listKeys(): IKeyMetadata[];
+  listKeys(): Promise<IKeyMetadata[]>;
 
   /**
    *  Load all encrypted keys
@@ -261,7 +266,12 @@ interface IKeyStore {
    * @returns a list of all stored keys
    * @throws on any error
    */
-  loadAllKeys(): IEncryptedKey[];
+  loadAllKeys(): Promise<IEncryptedKey[]>;
+}
+
+interface IHandlerSignTransactionArgs {
+  txnEnvelope: any;
+  key: IKey;
 }
 
 /**
@@ -274,5 +284,8 @@ interface IKeyStore {
  */
 interface IKeyTypeHandler {
   name: string;
-  signTransaction({ txnEnvelope, key }: { txnEnvelope: any; key: IKey }): any;
+  signTransaction({
+    txnEnvelope,
+    key
+  }: IHandlerSignTransactionArgs): Promise<any>;
 }
