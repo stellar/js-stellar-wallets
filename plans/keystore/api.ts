@@ -19,14 +19,25 @@ interface IChangePasswordArgs {
 }
 
 /**
- * KeyManager is the main class that is constructed to use the keystore API. It requires the following to function:
+ * KeyManager is the main class that is constructed to use the keystore API. It
+ * optionally caches keys internally so a user doesn't have to re-decrypt
+ * passwords so long as the KeyManager object is around in memory.
+ *
+ *  It requires the following to function:
  * - IKeyStore (passed into constructor)
  * - IKeyTypeHandler (one or more passed in via registerKeyHandler)
  * - IEncrypter (one or more passed in via registerEncrypter)
  */
 class KeyManager {
-  constructor(keyStore: IKeyStore) {
+  constructor({
+    keyStore,
+    shouldCache = true
+  }: {
+    keyStore: IKeyStore;
+    shouldCache: boolean;
+  }) {
     this.keyStore = keyStore;
+    this.shouldCache = shouldCache;
   }
 
   registerKeyHandler(keyHandler: IKeyTypeHandler) {
@@ -50,14 +61,15 @@ class KeyManager {
   async storeKey({
     key,
     password,
-    encrypter,
-    shouldCache = true
+    encrypter
   }: IAddKeyArgs): Promise<IKeyMetadata> {
     // happy path-only code to demonstrate idea
     const encrypterObj = this.encrypterMap[encrypter];
     const keyStoreObj = this.keyStore;
     const encryptedKey = encrypterObj.encryptKey({ key, password });
-    const keyMetadata = await keyStoreObj.storeKey({ key: encryptedKey });
+    const keyMetadata = await keyStoreObj.storeKeys({
+      keys: [encryptedKey]
+    })[0];
     // TODO: update cache here (if requested)
     return keyMetadata;
   }
@@ -97,9 +109,7 @@ class KeyManager {
   async signTransaction({
     txnEnvelope,
     publicKey,
-    password,
-    shouldReadCache = true,
-    shouldWriteCache = true
+    password
   }: ISignTransactionArgs): Promise<any> {
     // TODO: read from cache
     const encryptedKey = await this.keyStore.loadKey({ publicKey });
@@ -111,18 +121,32 @@ class KeyManager {
     return signedTxnEnvelope;
   }
 
-  changePassword({ oldPassword, newPassword }: IChangePasswordArgs) {
-    // TODO: rework this so password change handling goes to both the encrypter
-    // and the key store
-    if (typeof this.keyStore.handlePasswordChange === "function") {
-      return this.keyStore.handlePasswordChange({});
-    }
+  /**
+   * Update the stored keys to be encrypted with the new password.
+   *
+   * @param oldPassword the user's old password
+   * @param newPassword the user's new password
+   */
+  async changePassword({
+    oldPassword,
+    newPassword
+  }: IChangePasswordArgs): Promise<IKeyMetadata[]> {
+    const oldKeys = await this.keyStore.loadAllKeys();
+    const newKeys = oldKeys.map(key => {
+      const encrypter = this.encrypterMap[key.encrypterName];
+      const key2 = encrypter.decryptKey({ key, password: oldPassword });
+      return encrypter.encryptKey({ key: key2, password: newPassword });
+    });
+    const res = await this.keyStore.storeKeys({ keys: newKeys });
+    // TODO: write to cache
+    return res;
   }
 
   private encrypterMap: { [key: string]: IEncrypter } = {};
   private keyStore: IKeyStore;
   private keyHandlerMap: { [key: string]: IKeyTypeHandler } = {};
   private keyCache: { [publicKey: string]: IKey };
+  private shouldCache: boolean;
 }
 
 interface IKeyMetadata {
@@ -151,6 +175,16 @@ interface IEncryptedKey {
   salt: string;
 }
 
+interface IEncryptKeyArgs {
+  key: IKey;
+  password?: string;
+}
+
+interface IDecryptKeyArgs {
+  key: IEncryptedKey;
+  password?: string;
+}
+
 /**
  * This is the interface that an encryption plugin must implement.
  *
@@ -161,20 +195,8 @@ interface IEncryptedKey {
  */
 interface IEncrypter {
   name: string;
-  encryptKey({
-    key,
-    password
-  }: {
-    key: IKey;
-    password?: string;
-  }): IEncryptedKey;
-  decryptKey({
-    key,
-    password
-  }: {
-    key: IEncryptedKey;
-    password?: string;
-  }): IKey;
+  encryptKey({ key, password }: IEncryptKeyArgs): IEncryptedKey;
+  decryptKey({ key, password }: IDecryptKeyArgs): IKey;
 }
 
 /**
@@ -199,13 +221,13 @@ interface IKeyStore {
   init(data?: any): void;
 
   /**
-   * store the given encrypted key.
+   * store the given encrypted keys, atomically if possible.
    *
-   * @param key already encrypted key to add to store
-   * @returns void on success
+   * @param keys already encrypted keys to add to store
+   * @returns metadata about the keys once stored
    * @throws on any error
    */
-  storeKey({ key }: { key: IEncryptedKey }): Promise<IKeyMetadata>;
+  storeKeys({ keys }: { keys: IEncryptedKey[] }): Promise<IKeyMetadata[]>;
 
   /**
    *  load the key specified by this publicKey.
@@ -240,20 +262,6 @@ interface IKeyStore {
    * @throws on any error
    */
   loadAllKeys(): IEncryptedKey[];
-
-  /**
-   * (optional) handle password change in the keystore.
-   *
-   * The most basic approach to password change is to loadAllKeys(), decrypt &
-   * reencrypt them, and storeKey() them all back to the server. This works but
-   * is not atomic. Keybase specified an approach where a delta is uploaded to
-   * the server on password change, which avoids the need to re-encrypt and can
-   * be done atomically. This method is provided to allow schemes such as the
-   * keybase approach: https://keybase.io/docs/crypto/local-key-security
-   *
-   * @param data a data object needed by the keystore to handle a password change.
-   */
-  handlePasswordChange?(data: { [key: string]: any }): void;
 }
 
 /**
