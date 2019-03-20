@@ -16,7 +16,6 @@ export function getTokenIdentifier(token: Token): string {
 
 /**
  * Test if an object is a ReframedEffect.
- * @param obj
  */
 function isReframedEffect(obj: any): obj is ReframedEffect {
   return obj.baseToken !== undefined;
