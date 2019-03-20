@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 
-interface Account {
+export interface Account {
   publicKey: string;
 }
 
@@ -14,13 +14,13 @@ export interface Issuer {
 export interface Token {
   type: "native" | "credit_alphanum4" | "credit_alphanum12"; // or enum?
   code: string;
-  issuer: Issuer;
-  anchorAsset: string;
-  numAccounts: BigNumber;
-  amount: BigNumber;
-  bidCount: number;
-  askCount: number;
-  spread: BigNumber;
+  issuer?: Issuer;
+  anchorAsset?: string;
+  numAccounts?: BigNumber;
+  amount?: BigNumber;
+  bidCount?: number;
+  askCount?: number;
+  spread?: BigNumber;
 }
 
 export interface Effect {
@@ -31,5 +31,15 @@ export interface Effect {
   receiverAccount: Account;
   senderAmount: BigNumber;
   receiverAmount: BigNumber;
+  timestamp: number;
+}
+
+export interface ReframedEffect {
+  id: string;
+  baseToken: Token;
+  token: Token;
+  amount: BigNumber;
+  price: BigNumber;
+  sender: Account;
   timestamp: number;
 }

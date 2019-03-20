@@ -11,8 +11,11 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "tsc-watch --project tsconfig.json --onSuccess 'tslint --fix --project tsconfig.json'",
-    "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'"
+    "lintAndTest": "yarn lint && jest",
+    "lint": "tslint --fix --project tsconfig.json",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
+    "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'",
+    "test": "jest --watch"
   },
   "husky": {
     "hooks": {
@@ -31,7 +34,12 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.1",
+    "@babel/preset-typescript": "^7.3.3",
+    "babel-jest": "^24.5.0",
     "husky": "^1.3.1",
+    "jest": "^24.5.0",
     "lint-staged": "^8.1.5",
     "prettier": "^1.16.4",
     "tsc-watch": "^2.1.2",
