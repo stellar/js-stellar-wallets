@@ -1,5 +1,9 @@
 import BigNumber from "bignumber.js";
 
+interface Account {
+  publicKey: string;
+}
+
 export interface Issuer {
   key: string;
   name: string;
@@ -17,4 +21,15 @@ export interface Token {
   bidCount: number;
   askCount: number;
   spread: BigNumber;
+}
+
+export interface Effect {
+  id: string;
+  senderToken: Token;
+  receiverToken: Token;
+  senderAccount: Account;
+  receiverAccount: Account;
+  senderAmount: BigNumber;
+  receiverAmount: BigNumber;
+  timestamp: number;
 }
