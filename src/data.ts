@@ -1,5 +1,9 @@
-import { Token } from "./types";
+import { IToken } from "./types";
 
-export function getTokenIdentifier(token: Token) {
-  return `${token.code}-${token.issuer.key}`;
+export function getTokenIdentifier(token: IToken): string {
+  if (token.type === "native") {
+    return "native";
+  }
+
+  return `${token.code}:${token.issuer.key}`;
 }

@@ -8,9 +8,9 @@ export interface IIssuer {
 }
 
 export interface IToken {
-  type: string; // or enum?
+  type: "native" | "credit_alphanum4" | "credit_alphanum12"; // or enum?
   code: string;
-  issuer: Issuer;
+  issuer: IIssuer;
   anchorAsset: string;
   numAccounts: BigNumber;
   amount: BigNumber;

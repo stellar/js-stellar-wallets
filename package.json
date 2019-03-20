@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
     "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'"
   },
   "husky": {
