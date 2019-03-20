@@ -14,10 +14,6 @@ export function getTokenIdentifier(token: Token): string {
   return `${token.code}:${token.issuer.key}`;
 }
 
-/**
- * Test if an object is a ReframedEffect.
- * @private
- */
 function isReframedEffect(obj: any): obj is ReframedEffect {
   return obj.baseToken !== undefined;
 }
