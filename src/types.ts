@@ -1,5 +1,28 @@
 import BigNumber from "bignumber.js";
 
+export enum TokenType {
+  native = "native",
+  credit_alphanum4 = "credit_alphanum4",
+  credit_alphanum12 = "credit_alphanum12",
+}
+
+export enum EffectType {
+  account_created = "account_created",
+  account_credited = "account_credited",
+  account_debited = "account_debited",
+  account_home_domain_updated = "account_home_domain_updated",
+  account_inflation_destination_updated = "account_inflation_destination_updated",
+  account_removed = "account_removed",
+  account_thresholds_updated = "account_thresholds_updated",
+  signer_created = "signer_created",
+  signer_removed = "signer_removed",
+  signer_updated = "signer_updated",
+  trade = "trade",
+  trustline_created = "trustline_created",
+  trustline_removed = "trustline_removed",
+  trustline_updated = "trustline_updated",
+}
+
 export interface Account {
   publicKey: string;
 }
@@ -12,7 +35,7 @@ export interface Issuer {
 }
 
 export interface Token {
-  type: "native" | "credit_alphanum4" | "credit_alphanum12"; // or enum?
+  type: TokenType;
   code: string;
   issuer?: Issuer;
   anchorAsset?: string;
@@ -25,6 +48,7 @@ export interface Token {
 
 export interface Effect {
   id: string;
+  type: EffectType;
   senderToken: Token;
   receiverToken: Token;
   senderAccount: Account;
@@ -36,6 +60,7 @@ export interface Effect {
 
 export interface ReframedEffect {
   id: string;
+  type: EffectType;
   baseToken: Token;
   token: Token;
   amount: BigNumber;

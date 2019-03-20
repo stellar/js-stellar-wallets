@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { EffectType } from "./types";
 import { reframeEffect } from "./data";
 
 describe("reframeEffect", () => {
@@ -39,6 +40,7 @@ describe("reframeEffect", () => {
     */
     const effect = {
       id: "id",
+      type: EffectType.trade,
       senderToken: otherToken,
       senderAccount: otherAccount,
       senderAmount: BigNumber(2),
@@ -51,6 +53,7 @@ describe("reframeEffect", () => {
 
     expect(reframeEffect(observerAccount, effect)).toEqual({
       id: "id",
+      type: EffectType.trade,
       baseToken: nativeToken,
       token: otherToken,
       amount: BigNumber(2),
@@ -66,6 +69,7 @@ describe("reframeEffect", () => {
     */
     const effect = {
       id: "id",
+      type: EffectType.trade,
       receiverToken: otherToken,
       receiverAccount: otherAccount,
       receiverAmount: BigNumber(2),
@@ -78,6 +82,7 @@ describe("reframeEffect", () => {
 
     expect(reframeEffect(observerAccount, effect)).toEqual({
       id: "id",
+      type: EffectType.trade,
       baseToken: nativeToken,
       token: otherToken,
       amount: BigNumber(2),

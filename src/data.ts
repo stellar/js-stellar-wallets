@@ -37,19 +37,21 @@ export function reframeEffect(
     senderAmount,
     receiverAmount,
     timestamp,
+    type,
   } = effect;
 
   const isObserverSender = senderAccount.publicKey === observerAccount.publicKey;
 
   if (isObserverSender) {
     return {
-      amount: receiverAmount,
-      baseToken: senderToken,
       id,
+      baseToken: senderToken,
+      token: receiverToken,
+      amount: receiverAmount,
       price: senderAmount,
       sender: receiverAccount,
       timestamp,
-      token: receiverToken,
+      type,
     };
   }
 
@@ -61,5 +63,6 @@ export function reframeEffect(
     price: receiverAmount,
     sender: senderAccount,
     timestamp,
+    type,
   };
 }
