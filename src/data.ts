@@ -1,7 +1,10 @@
 import { Account, Effect, ReframedEffect, Token } from "./types";
 
+export * from "./DataProvider";
+
 /**
  * Get the string identifier for a token.
+ * @returns "native" if the token is native, otherwise returns `${tokenCode}:${issuerKey}`.
  */
 export function getTokenIdentifier(token: Token): string {
   if (token.type === "native" || !token.issuer) {
@@ -11,6 +14,10 @@ export function getTokenIdentifier(token: Token): string {
   return `${token.code}:${token.issuer.key}`;
 }
 
+/**
+ * Test if an object is a ReframedEffect.
+ * @param obj
+ */
 function isReframedEffect(obj: any): obj is ReframedEffect {
   return obj.baseToken !== undefined;
 }

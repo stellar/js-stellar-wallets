@@ -3,3 +3,4 @@ dist
 compiled
 *.log
 .DS_Store
+docs
