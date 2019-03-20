@@ -91,5 +91,18 @@ describe("reframeEffect", () => {
       timestamp: 1000,
     });
   });
-  test("sends back already-reframed effects", () => {});
+  test("sends back already-reframed effects", () => {
+    const reframedEffect = {
+      id: "id",
+      type: EffectType.trade,
+      baseToken: nativeToken,
+      token: otherToken,
+      amount: BigNumber(2),
+      price: BigNumber(200),
+      sender: otherAccount,
+      timestamp: 1000,
+    };
+
+    expect(reframeEffect(observerAccount, reframedEffect)).toEqual(reframedEffect);
+  });
 });
