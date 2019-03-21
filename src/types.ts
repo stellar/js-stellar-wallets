@@ -41,8 +41,8 @@ export interface Token {
   anchorAsset?: string;
   numAccounts?: BigNumber;
   amount?: BigNumber;
-  bidCount?: number;
-  askCount?: number;
+  bidCount?: BigNumber;
+  askCount?: BigNumber;
   spread?: BigNumber;
 }
 
