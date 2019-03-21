@@ -21,9 +21,9 @@ describe("reframeEffect", () => {
     code: "CLUE",
     issuer: {
       key: "THRABEN",
-      name: "Thraben Inspector",
-      url: "http://innistrad.gov",
-      hostName: "innistrad",
+      name: "Thraben",
+      url: "http://thraben.gov",
+      hostName: "thraben",
     },
     anchorAsset: "CLUE",
     numAccounts: new BigNumber(1000),
