@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 
 import { bigize } from "./bigize";
 
-test("{}", () => {
+test("empty object returns empty", () => {
   expect(bigize({}, ["cost"])).toEqual({});
 });
 

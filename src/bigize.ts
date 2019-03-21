@@ -28,19 +28,19 @@ export function bigize(obj: any, keys: string[] = []): any {
   }
 
   return Object.keys(obj).reduce((memo: object, key: string): object => {
-    if (keyMap[key] && typeof obj[key] !== "object") {
+    if (keyMap[key] && typeof (obj as KeyMap)[key] !== "object") {
       return {
         ...memo,
         [key]:
-          obj[key] === null || obj[key] === undefined
-            ? obj[key]
-            : new BigNumber(obj[key]).decimalPlaces(7, BigNumber.ROUND_HALF_UP),
+          (obj as KeyMap)[key] === null || (obj as KeyMap)[key] === undefined
+            ? (obj as KeyMap)[key]
+            : new BigNumber((obj as KeyMap)[key]).decimalPlaces(7, BigNumber.ROUND_HALF_UP),
       };
     }
 
     return {
       ...memo,
-      [key]: bigize(obj[key], keys),
+      [key]: bigize((obj as KeyMap)[key], keys),
     };
   }, {});
 }
