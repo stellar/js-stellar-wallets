@@ -3,9 +3,7 @@ import BigNumber from "bignumber.js";
 import isArray from "lodash/isArray";
 import isObject from "lodash/isObject";
 
-interface KeyMap {
-  [key: string]: any;
-}
+import { KeyMap } from "./types";
 
 /**
  * Given a list of key names to bigize, traverse an object (usually, an

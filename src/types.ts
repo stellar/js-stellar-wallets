@@ -1,5 +1,9 @@
 import BigNumber from "bignumber.js";
 
+export interface KeyMap {
+  [key: string]: any;
+}
+
 export enum TokenType {
   native = "native",
   credit_alphanum4 = "credit_alphanum4",
@@ -34,17 +38,24 @@ export interface Issuer {
   hostName: string;
 }
 
-export interface Token {
+export interface NativeToken {
   type: TokenType;
   code: string;
-  issuer?: Issuer;
-  anchorAsset?: string;
-  numAccounts?: BigNumber;
-  amount?: BigNumber;
-  bidCount?: BigNumber;
-  askCount?: BigNumber;
-  spread?: BigNumber;
 }
+
+export interface AssetToken {
+  type: TokenType;
+  code: string;
+  issuer: Issuer;
+  anchorAsset: string;
+  numAccounts: BigNumber;
+  amount: BigNumber;
+  bidCount: BigNumber;
+  askCount: BigNumber;
+  spread: BigNumber;
+}
+
+export type Token = NativeToken | AssetToken;
 
 export interface Effect {
   id: string;
@@ -67,4 +78,37 @@ export interface ReframedEffect {
   price: BigNumber;
   sender: Account;
   timestamp: number;
+}
+
+export interface Balance {
+  token: Token;
+  sellingLiabilities: BigNumber;
+
+  // for non-native tokens, this should be total - sellingLiabilities
+  // for native, it should also subtract the minimumBalance
+  available: BigNumber;
+  total: BigNumber;
+}
+
+export interface Balance {
+  // for non-native tokens, this should be total - sellingLiabilities
+  // for native, it should also subtract the minimumBalance
+  available: BigNumber;
+  total: BigNumber;
+  buyingLiabilities: BigNumber;
+  sellingLiabilities: BigNumber;
+}
+
+export interface AssetBalance extends Balance {
+  token: AssetToken;
+}
+
+export interface NativeBalance extends Balance {
+  token: NativeToken;
+  minimumBalance: BigNumber;
+}
+
+export interface Balances {
+  // [key: string]: AssetBalance;
+  native: NativeBalance;
 }
