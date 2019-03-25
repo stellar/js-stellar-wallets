@@ -1,5 +1,6 @@
-import StellarSdk from "stellar-sdk";
+import { Server } from "stellar-sdk";
 
+import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { Account } from "./types";
 
 function isAccount(obj: any): obj is Account {
@@ -7,22 +8,21 @@ function isAccount(obj: any): obj is Account {
 }
 
 export class DataProvider {
-  private serverUrl: string;
-  private server: StellarSdk.Server;
+  private server: Server;
 
   constructor(serverUrl: string) {
-    this.serverUrl = serverUrl;
-    this.server = new StellarSdk.Server(this.serverUrl);
+    this.server = new Server(serverUrl);
   }
 
   public async getBalancesForAccount(accountOrKey: Account | string) {
-    const accountKey = isAccount(accountOrKey) ? accountOrKey.publicKey : accountOrKey;
+    const accountKey = isAccount(accountOrKey)
+      ? accountOrKey.publicKey
+      : accountOrKey;
     const accountSummary = await this.server
       .accounts()
       .accountId(accountKey)
       .call();
 
-    // tslint-disable-next-line
-    console.log("account summary: ", accountSummary);
+    return makeDisplayableBalances(accountSummary);
   }
 }

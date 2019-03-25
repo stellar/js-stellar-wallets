@@ -59,7 +59,8 @@ export function reframeEffect(
     type,
   } = effect;
 
-  const isObserverSender = senderAccount.publicKey === observerAccount.publicKey;
+  const isObserverSender =
+    senderAccount.publicKey === observerAccount.publicKey;
 
   if (isObserverSender) {
     return {

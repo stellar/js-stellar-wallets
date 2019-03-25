@@ -4,27 +4,33 @@ export const AccountResponse = {
       href: "https://horizon.stellar.org/accounts/PHYREXIA",
     },
     transactions: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/transactions{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/transactions{?cursor,limit,order}",
       templated: true,
     },
     operations: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/operations{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/operations{?cursor,limit,order}",
       templated: true,
     },
     payments: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/payments{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/payments{?cursor,limit,order}",
       templated: true,
     },
     effects: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/effects{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/effects{?cursor,limit,order}",
       templated: true,
     },
     offers: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/offers{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/offers{?cursor,limit,order}",
       templated: true,
     },
     trades: {
-      href: "https://horizon.stellar.org/accounts/PHYREXIA/trades{?cursor,limit,order}",
+      href:
+        "https://horizon.stellar.org/accounts/PHYREXIA/trades{?cursor,limit,order}",
       templated: true,
     },
     data: {
@@ -37,7 +43,8 @@ export const AccountResponse = {
   account_id: "PHYREXIA",
   sequence: "74305992237514793",
   subentry_count: 5,
-  inflation_destination: "GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT",
+  inflation_destination:
+    "GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT",
   last_modified_ledger: 22997383,
   thresholds: {
     low_threshold: 0,

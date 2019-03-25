@@ -1,7 +1,7 @@
 module.exports = {
   arrowParens: "always",
   bracketSpacing: true,
-  printWidth: 100,
+  printWidth: 80,
   proseWrap: "always",
   semi: true,
   singleQuote: false,

@@ -47,7 +47,10 @@ test("undefined vals okay", () => {
 
 test("multilevel obj", () => {
   expect(
-    bigize({ cost: "0.001", cmc: "0.04", color: { cost: "0.001", cmc: "0.04" } }, ["cost", "cmc"]),
+    bigize(
+      { cost: "0.001", cmc: "0.04", color: { cost: "0.001", cmc: "0.04" } },
+      ["cost", "cmc"],
+    ),
   ).toEqual({
     cost: new BigNumber("0.001"),
     cmc: new BigNumber("0.04"),

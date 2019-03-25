@@ -11,7 +11,10 @@ import { KeyMap } from "./types";
  * (if it's a valid value).
  */
 export function bigize(obj: any, keys: string[] = []): any {
-  const keyMap: KeyMap = keys.reduce((memo, key) => ({ ...memo, [key]: true }), {});
+  const keyMap: KeyMap = keys.reduce(
+    (memo, key) => ({ ...memo, [key]: true }),
+    {},
+  );
 
   if (isArray(obj)) {
     return obj.map((o) => bigize(o, keys));
@@ -32,7 +35,10 @@ export function bigize(obj: any, keys: string[] = []): any {
         [key]:
           (obj as KeyMap)[key] === null || (obj as KeyMap)[key] === undefined
             ? (obj as KeyMap)[key]
-            : new BigNumber((obj as KeyMap)[key]).decimalPlaces(7, BigNumber.ROUND_HALF_UP),
+            : new BigNumber((obj as KeyMap)[key]).decimalPlaces(
+                7,
+                BigNumber.ROUND_HALF_UP,
+              ),
       };
     }
 

@@ -103,6 +103,8 @@ describe("reframeEffect", () => {
       timestamp: 1000,
     };
 
-    expect(reframeEffect(observerAccount, reframedEffect)).toEqual(reframedEffect);
+    expect(reframeEffect(observerAccount, reframedEffect)).toEqual(
+      reframedEffect,
+    );
   });
 });
