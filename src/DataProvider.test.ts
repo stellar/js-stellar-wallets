@@ -1,5 +1,5 @@
-import BigNumber from "bignumber.js";
 import MockAdapter from "axios-mock-adapter";
+import BigNumber from "bignumber.js";
 import StellarSdk from "stellar-sdk";
 
 import { DataProvider } from "./DataProvider";
@@ -9,8 +9,8 @@ const HorizonUrl = "https://horizon-live.stellar.org:1337";
 const publicKey = "PHYREXIA";
 
 describe("getbalancesForAccount", () => {
-  let axiosMockAdapter;
-  let dataProvider;
+  let axiosMockAdapter: MockAdapter;
+  let dataProvider: DataProvider;
 
   beforeEach(() => {
     axiosMockAdapter = new MockAdapter(StellarSdk.HorizonAxiosClient);
@@ -23,7 +23,7 @@ describe("getbalancesForAccount", () => {
 
   it("makes balances from a real-world example", async () => {
     axiosMockAdapter
-      .onGet(`${HorizonUrl}/accounts/${publicKey}`, 200)
+      .onGet(`${HorizonUrl}/accounts/${publicKey}`)
       .reply(200, AccountResponse);
 
     const balances = await dataProvider.getBalancesForAccount(publicKey);
@@ -104,7 +104,7 @@ describe("getbalancesForAccount", () => {
           },
         },
       },
-      native: {
+      "native": {
         balance: "999.5689234",
         buying_liabilities: "0.0000000",
         selling_liabilities: "0.0000000",
