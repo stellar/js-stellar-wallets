@@ -8,6 +8,7 @@ class App extends Component {
     dataProvider: null,
     balances: null,
     err: null,
+    updateTimes: [],
   };
 
   _fetchBalances = () => {
@@ -20,22 +21,26 @@ class App extends Component {
       dataProvider,
       balances: null,
       err: null,
+      updateTimes: [],
     });
 
     if (dataProvider.isValidKey()) {
-      dataProvider
-        .fetchBalances()
-        .then((balances) => {
-          this.setState({ balances });
-        })
-        .catch((err) => {
+      dataProvider.watchBalances({
+        onMessage: (balances) => {
+          this.setState({
+            balances,
+            updateTimes: [...this.state.updateTimes, new Date()],
+          });
+        },
+        onError: (err) => {
           this.setState({ err });
-        });
+        },
+      });
     }
   };
 
   render() {
-    const { key, dataProvider, balances, err } = this.state;
+    const { key, dataProvider, balances, err, updateTimes } = this.state;
     return (
       <div>
         <form
@@ -57,6 +62,12 @@ class App extends Component {
         </form>
 
         {dataProvider && dataProvider.isValidKey() && <p>Key is valid</p>}
+
+        <ul>
+          {updateTimes.map((time) => (
+            <li key={time.toString()}>{time.toString()}</li>
+          ))}
+        </ul>
 
         {balances && <pre>{JSON.stringify(balances, null, 2)}</pre>}
         {err && <p>Error: {err}</p>}

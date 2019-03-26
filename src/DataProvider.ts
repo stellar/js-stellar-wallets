@@ -38,10 +38,17 @@ export class DataProvider {
     this.callbacks = {};
   }
 
+  /**
+   * Return true if the key is valid. (It doesn't comment on whether the
+   * key is a funded account.)
+   */
   public isValidKey(): boolean {
     return StrKey.isValidEd25519PublicKey(this.accountKey);
   }
 
+  /**
+   * Fetch current balances from Horizon.
+   */
   public async fetchBalances() {
     const accountSummary = await this.server
       .accounts()
@@ -52,8 +59,16 @@ export class DataProvider {
     return makeDisplayableBalances(accountSummary);
   }
 
-  public watchBalances(params: BalanceWatcherParams) {
+  /**
+   * Fetch balances, then re-fetch whenever the balances update or could update.
+   * Returns a function that you can execute to stop the watcher.
+   */
+  public watchBalances(params: BalanceWatcherParams): () => void {
     const { onMessage, onError } = params;
+
+    this.fetchBalances()
+      .then(onMessage)
+      .catch(onError);
 
     this.callbacks.balances = debounce(() => {
       this.fetchBalances()
