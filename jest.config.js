@@ -10,4 +10,10 @@ module.exports = {
 
   // The test environment that will be used for testing
   testEnvironment: "node",
+
+  coveragePathIgnorePatterns: ["node_modules", "example", "build", "compiled"],
+
+  modulePathIgnorePatterns: ["build", "example", "build", "compiled"],
+
+  testPathIgnorePatterns: ["node_modules", "example", "build", "compiled"],
 };
