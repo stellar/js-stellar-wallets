@@ -9,6 +9,7 @@ class App extends Component {
     balances: null,
     err: null,
     updateTimes: [],
+    streamEnder: null,
   };
 
   _fetchBalances = () => {
@@ -17,26 +18,36 @@ class App extends Component {
       accountOrKey: this.state.key,
     });
 
+    // if there was a previous data  provider, kill the
+
+    if (this.state.streamEnder) {
+      this.state.streamEnder();
+    }
+
     this.setState({
       dataProvider,
       balances: null,
       err: null,
       updateTimes: [],
+      streamEnder: null,
     });
 
-    if (dataProvider.isValidKey()) {
-      dataProvider.watchBalances({
-        onMessage: (balances) => {
-          this.setState({
-            balances,
-            updateTimes: [...this.state.updateTimes, new Date()],
-          });
-        },
-        onError: (err) => {
-          this.setState({ err });
-        },
-      });
-    }
+    const streamEnder = dataProvider.watchBalances({
+      onMessage: (balances) => {
+        this.setState({
+          balances,
+          updateTimes: [...this.state.updateTimes, new Date()],
+        });
+      },
+      onError: (err) => {
+        this.setState({ err });
+        streamEnder();
+      },
+    });
+
+    this.setState({
+      streamEnder,
+    });
   };
 
   render() {
@@ -70,7 +81,7 @@ class App extends Component {
         </ul>
 
         {balances && <pre>{JSON.stringify(balances, null, 2)}</pre>}
-        {err && <p>Error: {err}</p>}
+        {err && <p>Error: {err.toString()}</p>}
       </div>
     );
   }
