@@ -1,3 +1,4 @@
+import debounce from "lodash/debounce";
 import { Server } from "stellar-sdk";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
@@ -48,11 +49,11 @@ export class DataProvider {
   public watchBalances(params: BalanceWatcherParams) {
     const { onMessage, onError } = params;
 
-    this.callbacks.balances = () => {
+    this.callbacks.balances = debounce(() => {
       this.getBalances()
         .then(onMessage)
         .catch(onError);
-    };
+    }, 2000);
 
     this._startEffectWatcher().catch((err) => {
       onError(err);
