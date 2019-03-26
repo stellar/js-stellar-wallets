@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js";
-import StellarSdk from "stellar-sdk";
 
 import { AccountResponse } from "./fixtures/AccountResponse";
 
