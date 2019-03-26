@@ -3,7 +3,7 @@ import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
-import { Account, Balances } from "./types";
+import { Account, Balances, Offers } from "./types";
 
 function isAccount(obj: any): obj is Account {
   return obj.publicKey !== undefined;
@@ -47,9 +47,18 @@ export class DataProvider {
   }
 
   /**
+   * Fetch outstanding offers.
+   */
+  public async fetchOpenOffers(): Promise<Offers> {
+    const offers = await this.server.offers("accounts", this.accountKey).call();
+    // @ts-ignore
+    return offers;
+  }
+
+  /**
    * Fetch current balances from Horizon.
    */
-  public async fetchBalances() {
+  public async fetchBalances(): Promise<Balances> {
     const accountSummary = await this.server
       .accounts()
       .accountId(this.accountKey)
@@ -60,8 +69,8 @@ export class DataProvider {
   }
 
   /**
-   * Fetch balances, then re-fetch whenever the balances update or could update.
-   * Returns a function that you can execute to stop the watcher.
+   * Fetch and watch balances. Returns a function that you can execute to stop
+   * the watcher.
    */
   public watchBalances(params: BalanceWatcherParams): () => void {
     const { onMessage, onError } = params;
@@ -86,7 +95,7 @@ export class DataProvider {
     };
   }
 
-  private async _startEffectWatcher() {
+  private async _startEffectWatcher(): Promise<{}> {
     if (this.effectStreamEnder) {
       return Promise.resolve({});
     }

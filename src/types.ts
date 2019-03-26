@@ -59,11 +59,11 @@ export type Token = NativeToken | AssetToken;
 
 export interface Effect {
   id: string;
-  type: EffectType;
+  type?: EffectType;
   senderToken: Token;
   receiverToken: Token;
   senderAccount: Account;
-  receiverAccount: Account;
+  receiverAccount?: Account;
   senderAmount: BigNumber;
   receiverAmount: BigNumber;
   timestamp: number;
@@ -71,13 +71,22 @@ export interface Effect {
 
 export interface ReframedEffect {
   id: string;
-  type: EffectType;
+  type?: EffectType;
   baseToken: Token;
   token: Token;
   amount: BigNumber;
   price: BigNumber;
-  sender: Account;
+  sender?: Account;
   timestamp: number;
+}
+
+export interface Trade extends ReframedEffect {
+  type: EffectType;
+  sender: Account;
+}
+
+export interface Offer extends ReframedEffect {
+  trades: Trade[];
 }
 
 export interface Balance {
@@ -109,6 +118,9 @@ export interface NativeBalance extends Balance {
 }
 
 export interface Balances {
-  // [key: string]: AssetBalance;
   native: NativeBalance;
+}
+
+export interface Offers {
+  [tokenIdentifier: string]: Offer;
 }
