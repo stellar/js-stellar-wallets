@@ -56,7 +56,7 @@ export class DataProvider {
     const { onMessage, onError } = params;
 
     this.callbacks.balances = debounce(() => {
-      this.getBalances()
+      this.fetchBalances()
         .then(onMessage)
         .catch(onError);
     }, 2000);

@@ -26,8 +26,8 @@ const StellarWallets = {
       getOutstandingBuyOffers,
       watchOfferCounts,
       watchOffer,
-      getBalancesForAccount,
-      watchBalancesForAccount,
+      getBalances,
+      watchBalances,
     },
   },
 };
@@ -127,12 +127,15 @@ function getTokenIdentifier(token: Token): string {
 
 ### Reframe an effect from the point of view of an account
 
-Effect-like objects by default have a "sender" and "receiver", but most of the time, wallets only
-care about showing "what did YOU send/receive." So this is a way of turning "senderAmount //
-receiverAmount" into "amount // price".
+Effect-like objects by default have a "sender" and "receiver", but most of the
+time, wallets only care about showing "what did YOU send/receive." So this is a
+way of turning "senderAmount // receiverAmount" into "amount // price".
 
 ```typescript
-function reframeEffect(observerAccount: Account, effect: Effect): ReframedEffect;
+function reframeEffect(
+  observerAccount: Account,
+  effect: Effect,
+): ReframedEffect;
 ```
 
 ## Getters and watchers
@@ -140,11 +143,13 @@ function reframeEffect(observerAccount: Account, effect: Effect): ReframedEffect
 ### Get a list of outstanding buy / sell offers for a given token
 
 ```typescript
-function getOutstandingBuyOffers(tokenIdentifier: string): Promise<Array<Offer>>;
+function getOutstandingBuyOffers(
+  tokenIdentifier: string,
+): Promise<Array<Offer>>;
 ```
 
-Note that this function alone doesn't have a way to watch for updates; the dev will have to manually
-run another function to watch for events.
+Note that this function alone doesn't have a way to watch for updates; the dev
+will have to manually run another function to watch for events.
 
 ### Get a live-updating count of all outstanding offers for an account
 
@@ -171,10 +176,10 @@ function callback(count: number): void;
 ### Get a list of tokens you own with total owned, available balance
 
 ```typescript
-  function getBalancesForAccount(accountId): Promise<Array<Balance>>
+  function getBalances(): Promise<Array<Balance>>
 
   // the watcher returns a function that you can run to cancel the watcher
-  function watchBalancesForAccount(accountId, {
-    onMessage: (balances: Array<Balance>),
+  function watchBalances({
+    onMessage: (balances) => Array<Balance>,
   }): function
 ```
