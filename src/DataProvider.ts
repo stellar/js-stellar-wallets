@@ -1,5 +1,6 @@
+// @ts-ignore
 import debounce from "lodash/debounce";
-import { Server } from "stellar-sdk";
+import { Server, StrKey } from "stellar-sdk";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { Account, Balances } from "./types";
@@ -37,12 +38,17 @@ export class DataProvider {
     this.callbacks = {};
   }
 
-  public async getBalances() {
+  public isValidKey(): boolean {
+    return StrKey.isValidEd25519PublicKey(this.accountKey);
+  }
+
+  public async fetchBalances() {
     const accountSummary = await this.server
       .accounts()
       .accountId(this.accountKey)
       .call();
 
+    // @ts-ignore
     return makeDisplayableBalances(accountSummary);
   }
 

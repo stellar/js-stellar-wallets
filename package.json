@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:typedefs": "tsc --declaration --outDir compiled/ -p tsconfig.json --emitDeclarationOnly",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
     "docs": "typedoc src/",
     "lint": "tslint --fix --project tsconfig.json",
