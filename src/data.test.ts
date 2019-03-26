@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
-import { EffectType } from "./types";
 import { reframeEffect } from "./data";
+import { EffectType, TokenType } from "./types";
 
 describe("reframeEffect", () => {
   const observerAccount = {
@@ -12,25 +12,25 @@ describe("reframeEffect", () => {
   };
 
   const nativeToken = {
-    type: "native",
+    type: TokenType.native,
     code: "XLM",
   };
 
   const otherToken = {
-    type: "credit_alphanum12",
+    type: TokenType.credit_alphanum12,
     code: "CLUE",
     issuer: {
       key: "THRABEN",
-      name: "Thraben Inspector",
-      url: "http://innistrad.gov",
-      hostname: "innistrad",
+      name: "Thraben",
+      url: "http://thraben.gov",
+      hostName: "thraben",
     },
     anchorAsset: "CLUE",
-    numAccounts: BigNumber(1000),
-    amount: BigNumber(100000),
-    bidCount: BigNumber(10),
-    askCount: BigNumber(10),
-    spread: BigNumber(2),
+    numAccounts: new BigNumber(1000),
+    amount: new BigNumber(100000),
+    bidCount: new BigNumber(10),
+    askCount: new BigNumber(10),
+    spread: new BigNumber(2),
   };
 
   test("reframes effects: you're the receiver", () => {
@@ -43,11 +43,11 @@ describe("reframeEffect", () => {
       type: EffectType.trade,
       senderToken: otherToken,
       senderAccount: otherAccount,
-      senderAmount: BigNumber(2),
+      senderAmount: new BigNumber(2),
 
       receiverToken: nativeToken,
       receiverAccount: observerAccount,
-      receiverAmount: BigNumber(200),
+      receiverAmount: new BigNumber(200),
       timestamp: 1000,
     };
 
@@ -56,8 +56,8 @@ describe("reframeEffect", () => {
       type: EffectType.trade,
       baseToken: nativeToken,
       token: otherToken,
-      amount: BigNumber(2),
-      price: BigNumber(200),
+      amount: new BigNumber(2),
+      price: new BigNumber(200),
       sender: otherAccount,
       timestamp: 1000,
     });
@@ -72,11 +72,11 @@ describe("reframeEffect", () => {
       type: EffectType.trade,
       receiverToken: otherToken,
       receiverAccount: otherAccount,
-      receiverAmount: BigNumber(2),
+      receiverAmount: new BigNumber(2),
 
       senderToken: nativeToken,
       senderAccount: observerAccount,
-      senderAmount: BigNumber(200),
+      senderAmount: new BigNumber(200),
       timestamp: 1000,
     };
 
@@ -85,8 +85,8 @@ describe("reframeEffect", () => {
       type: EffectType.trade,
       baseToken: nativeToken,
       token: otherToken,
-      amount: BigNumber(2),
-      price: BigNumber(200),
+      amount: new BigNumber(2),
+      price: new BigNumber(200),
       sender: otherAccount,
       timestamp: 1000,
     });
@@ -97,12 +97,14 @@ describe("reframeEffect", () => {
       type: EffectType.trade,
       baseToken: nativeToken,
       token: otherToken,
-      amount: BigNumber(2),
-      price: BigNumber(200),
+      amount: new BigNumber(2),
+      price: new BigNumber(200),
       sender: otherAccount,
       timestamp: 1000,
     };
 
-    expect(reframeEffect(observerAccount, reframedEffect)).toEqual(reframedEffect);
+    expect(reframeEffect(observerAccount, reframedEffect)).toEqual(
+      reframedEffect,
+    );
   });
 });
