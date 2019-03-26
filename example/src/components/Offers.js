@@ -6,7 +6,7 @@ class Balances extends Component {
   state = {
     key: "GCCQAELN4NBN37T5WT5JYIASANP7YRLHNH27E5WCRRVDY5SPIFA76MIA",
     dataProvider: null,
-    balances: null,
+    offers: null,
     err: null,
     updateTimes: [],
     streamEnder: null,
@@ -18,7 +18,7 @@ class Balances extends Component {
     }
   }
 
-  _fetchBalances = () => {
+  _fetchOffers = async () => {
     const dataProvider = new DataProvider({
       serverUrl: "https://horizon.stellar.org",
       accountOrKey: this.state.key,
@@ -32,39 +32,26 @@ class Balances extends Component {
 
     this.setState({
       dataProvider,
-      balances: null,
+      offers: null,
       err: null,
       updateTimes: [],
       streamEnder: null,
     });
 
-    const streamEnder = dataProvider.watchBalances({
-      onMessage: (balances) => {
-        this.setState({
-          balances,
-          updateTimes: [...this.state.updateTimes, new Date()],
-        });
-      },
-      onError: (err) => {
-        this.setState({ err });
-        streamEnder();
-      },
-    });
+    const offers = await dataProvider.fetchOpenOffers();
 
-    this.setState({
-      streamEnder,
-    });
+    this.setState({ offers });
   };
 
   render() {
-    const { key, dataProvider, balances, err, updateTimes } = this.state;
+    const { key, dataProvider, offers, err, updateTimes } = this.state;
     return (
       <div>
         <form
           onSubmit={(ev) => {
             ev.preventDefault();
 
-            this._fetchBalances();
+            this._fetchOffers();
           }}
         >
           <label>
@@ -74,7 +61,7 @@ class Balances extends Component {
               value={key}
               onChange={(ev) => this.setState({ key: ev.target.value })}
             />
-            <button>Fetch balances</button>
+            <button>Fetch offers</button>
           </label>
         </form>
 
@@ -86,7 +73,7 @@ class Balances extends Component {
           ))}
         </ul>
 
-        {balances && <pre>{JSON.stringify(balances, null, 2)}</pre>}
+        {offers && <pre>{JSON.stringify(offers, null, 2)}</pre>}
         {err && <p>Error: {err.toString()}</p>}
       </div>
     );
