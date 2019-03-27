@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { Horizon, Server } from "stellar-sdk";
 
-import { Balances, TokenType } from "./types";
+import { Balances } from "./types";
 
 import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "./constants/stellar";
 
@@ -29,7 +29,7 @@ export function makeDisplayableBalances(
           ...memo,
           native: {
             token: {
-              type: TokenType.native,
+              type: "native",
               code: "XLM",
             },
             total,

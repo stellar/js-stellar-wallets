@@ -1,13 +1,8 @@
 import BigNumber from "bignumber.js";
+import { AssetType } from "stellar-base";
 
 export interface KeyMap {
   [key: string]: any;
-}
-
-export enum TokenType {
-  native = "native",
-  credit_alphanum4 = "credit_alphanum4",
-  credit_alphanum12 = "credit_alphanum12",
 }
 
 export enum EffectType {
@@ -39,12 +34,12 @@ export interface Issuer {
 }
 
 export interface NativeToken {
-  type: TokenType;
+  type: AssetType;
   code: string;
 }
 
 export interface AssetToken {
-  type: TokenType;
+  type: AssetType;
   code: string;
   issuer: Issuer;
   anchorAsset: string;
@@ -80,12 +75,21 @@ export interface ReframedEffect {
   timestamp: number;
 }
 
-export interface Trade extends ReframedEffect {
+export interface Trade extends Effect {
   type: EffectType;
   sender: Account;
 }
 
-export interface Offer extends ReframedEffect {
+export interface Offer {
+  id: string;
+  offerer: Account;
+  paymentToken: Token;
+  incomingToken: Token;
+  incomingTokenPrice: BigNumber;
+  incomingAmount: BigNumber;
+  paymentAmount: BigNumber;
+  timestamp: number;
+
   trades: Trade[];
 }
 
