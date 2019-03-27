@@ -64,6 +64,7 @@ export function makeDisplayableOffers(
         incomingToken,
         incomingAmount: new BigNumber(price_r.n).div(price_r.d).times(amount),
         incomingTokenPrice: new BigNumber(1).div(price_r.n).times(price_r.d),
+        trades: [],
       },
     };
   }, {});
