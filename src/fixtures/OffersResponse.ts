@@ -48,6 +48,36 @@ export const OffersResponse = {
         last_modified_ledger: 23121355,
         last_modified_time: "2019-03-26T21:26:27Z",
       },
+      {
+        _links: {
+          self: {
+            href: "https://horizon.stellar.org/offers/78448448",
+          },
+          offer_maker: {
+            href: "https://horizon.stellar.org/accounts/PHYREXIA",
+          },
+        },
+        id: 78448448,
+        paging_token: "78448448",
+        seller: "PHYREXIA",
+        selling: {
+          asset_type: "native",
+        },
+        buying: {
+          asset_type: "credit_alphanum4",
+          asset_code: "BAT",
+          asset_issuer:
+            "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
+        },
+        amount: "157.5538252",
+        price_r: {
+          n: 2500000,
+          d: 6507729,
+        },
+        price: "0.3841586",
+        last_modified_ledger: 23231292,
+        last_modified_time: "2019-04-02T20:22:00Z",
+      },
     ],
   },
 };
