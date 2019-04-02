@@ -1,12 +1,13 @@
 import BigNumber from "bignumber.js";
 
 import { AccountResponse } from "./fixtures/AccountResponse";
+import { parseResponse } from "./testUtils";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 
 it("makes balances from a real-world example", async () => {
   // @ts-ignore
-  const balances = makeDisplayableBalances(AccountResponse);
+  const balances = makeDisplayableBalances(parseResponse(AccountResponse));
 
   expect(balances).toEqual({
     "BAT:GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR": {

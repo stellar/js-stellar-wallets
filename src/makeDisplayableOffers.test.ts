@@ -1,12 +1,14 @@
 import BigNumber from "bignumber.js";
 
+import { parseResponse } from "./testUtils";
+
 import { OffersResponse } from "./fixtures/OffersResponse";
 
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 
 it("makes offers from real-world examples", () => {
   // @ts-ignore
-  const offers = makeDisplayableOffers(OffersResponse);
+  const offers = makeDisplayableOffers(parseResponse(OffersResponse));
 
   expect(offers).toEqual({
     76884793: {
