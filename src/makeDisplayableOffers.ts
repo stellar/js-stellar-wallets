@@ -15,9 +15,26 @@ export interface Effect {
 }
 */
 
-export function makeDisplayableOffers(
-  offers: Server.CollectionPage<Server.OfferRecord>,
-): Offers {
+interface DisplayableOffersParams {
+  offers: Server.CollectionPage<Server.OfferRecord>;
+  trades: Server.CollectionPage<Server.TradeRecord>;
+}
+export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
+  const { offers, trades } = params;
+
+  // make a map of trades to their original offerids
+  const offeridsToTradesMap = trades.records.reduce(
+    (memo: any, trade: Server.TradeRecord) => ({
+      ...memo,
+      [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
+      [trade.counter_offer_id]: [
+        ...(memo[trade.counter_offer_id] || []),
+        trade,
+      ],
+    }),
+    {},
+  );
+
   return offers.records.reduce((memo, offer: Server.OfferRecord) => {
     const {
       id,
@@ -64,7 +81,7 @@ export function makeDisplayableOffers(
         incomingToken,
         incomingAmount: new BigNumber(price_r.n).div(price_r.d).times(amount),
         incomingTokenPrice: new BigNumber(1).div(price_r.n).times(price_r.d),
-        trades: [],
+        trades: offeridsToTradesMap[id] || [],
       },
     };
   }, {});

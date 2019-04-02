@@ -3,12 +3,17 @@ import BigNumber from "bignumber.js";
 import { parseResponse } from "./testUtils";
 
 import { OffersResponse } from "./fixtures/OffersResponse";
+import { TradesResponsePartialFill } from "./fixtures/TradesResponse";
 
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 
 it("makes offers from real-world examples", () => {
-  // @ts-ignore
-  const offers = makeDisplayableOffers(parseResponse(OffersResponse));
+  const offers = makeDisplayableOffers({
+    // @ts-ignore
+    offers: parseResponse(OffersResponse),
+    // @ts-ignore
+    trades: parseResponse(TradesResponsePartialFill),
+  });
 
   expect(offers["76884793"]).toEqual({
     id: 76884793,
@@ -32,4 +37,5 @@ it("makes offers from real-world examples", () => {
     timestamp: 23121355,
     trades: [],
   });
+  expect(offers["76884793"].trades.length).toEqual(1);
 });
