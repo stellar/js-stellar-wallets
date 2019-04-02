@@ -37,5 +37,5 @@ it("makes offers from real-world examples", () => {
     timestamp: 23121355,
     trades: [],
   });
-  expect(offers["76884793"].trades.length).toEqual(1);
+  expect(offers["78448448"].trades.length).toEqual(1);
 });
