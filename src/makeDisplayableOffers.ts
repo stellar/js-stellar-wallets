@@ -47,10 +47,10 @@ export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
   const offeridsToTradesMap: OfferIdMap = getAllTrades(tradeResponses).reduce(
     (memo: any, trade: Server.TradeRecord) => ({
       ...memo,
-      [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade.id],
+      [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
       [trade.counter_offer_id]: [
         ...(memo[trade.counter_offer_id] || []),
-        trade.id,
+        trade,
       ],
     }),
     {},
@@ -102,7 +102,9 @@ export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
         incomingToken,
         incomingAmount: new BigNumber(price_r.n).div(price_r.d).times(amount),
         incomingTokenPrice: new BigNumber(1).div(price_r.n).times(price_r.d),
-        resultingTrades: offeridsToTradesMap[id] || [],
+        resultingTrades: (offeridsToTradesMap[id] || []).map(
+          (trade) => trade.id,
+        ),
       },
     };
   }, {});
