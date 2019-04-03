@@ -1,16 +1,28 @@
 import React, { Component } from "react";
 
-import { DataProvider } from "../js-stellar-wallets/";
-
 class Balances extends Component {
   state = {
-    key: "GCCQAELN4NBN37T5WT5JYIASANP7YRLHNH27E5WCRRVDY5SPIFA76MIA",
-    dataProvider: null,
     balances: null,
     err: null,
     updateTimes: [],
     streamEnder: null,
   };
+
+  componentDidMount() {
+    if (this.props.dataProvider) {
+      this._fetchBalances(this.props.dataProvider);
+    }
+  }
+
+  componentWillUpdate(nextProps) {
+    if (
+      typeof this.props.dataProvider !== typeof nextProps.dataProvider ||
+      this.props.dataProvider.getAccountKey() !==
+        nextProps.dataProvider.getAccountKey()
+    ) {
+      this._fetchBalances(nextProps.dataProvider);
+    }
+  }
 
   componentWillUnmount() {
     if (this.state.streamEnder) {
@@ -18,20 +30,13 @@ class Balances extends Component {
     }
   }
 
-  _fetchBalances = () => {
-    const dataProvider = new DataProvider({
-      serverUrl: "https://horizon.stellar.org",
-      accountOrKey: this.state.key,
-    });
-
+  _fetchBalances = (dataProvider) => {
     // if there was a previous data  provider, kill the
-
     if (this.state.streamEnder) {
       this.state.streamEnder();
     }
 
     this.setState({
-      dataProvider,
       balances: null,
       err: null,
       updateTimes: [],
@@ -46,6 +51,7 @@ class Balances extends Component {
         });
       },
       onError: (err) => {
+        console.log("error: ", err);
         this.setState({ err });
         streamEnder();
       },
@@ -57,29 +63,10 @@ class Balances extends Component {
   };
 
   render() {
-    const { key, dataProvider, balances, err, updateTimes } = this.state;
+    const { balances, err, updateTimes } = this.state;
     return (
       <div>
-        <form
-          onSubmit={(ev) => {
-            ev.preventDefault();
-
-            this._fetchBalances();
-          }}
-        >
-          <label>
-            Public key
-            <input
-              type="text"
-              value={key}
-              onChange={(ev) => this.setState({ key: ev.target.value })}
-            />
-            <button>Fetch balances</button>
-          </label>
-        </form>
-
-        {dataProvider && dataProvider.isValidKey() && <p>Key is valid</p>}
-
+        <h2>Balances</h2>
         <ul>
           {updateTimes.map((time) => (
             <li key={time.toString()}>{time.toString()}</li>

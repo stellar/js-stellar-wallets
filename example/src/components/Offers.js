@@ -2,15 +2,29 @@ import React, { Component } from "react";
 
 import { DataProvider } from "../js-stellar-wallets/";
 
-class Balances extends Component {
+class Offers extends Component {
   state = {
-    key: "GCCQAELN4NBN37T5WT5JYIASANP7YRLHNH27E5WCRRVDY5SPIFA76MIA",
-    dataProvider: null,
     offers: null,
     err: null,
     updateTimes: [],
     streamEnder: null,
   };
+
+  componentDidMount() {
+    if (this.props.dataProvider) {
+      this._fetchOffers(this.props.dataProvider);
+    }
+  }
+
+  componentWillUpdate(nextProps) {
+    if (
+      typeof this.props.dataProvider !== typeof nextProps.dataProvider ||
+      this.props.dataProvider.getAccountKey() !==
+        nextProps.dataProvider.getAccountKey()
+    ) {
+      this._fetchOffers(nextProps.dataProvider);
+    }
+  }
 
   componentWillUnmount() {
     if (this.state.streamEnder) {
@@ -18,14 +32,8 @@ class Balances extends Component {
     }
   }
 
-  _fetchOffers = async () => {
-    const dataProvider = new DataProvider({
-      serverUrl: "https://horizon.stellar.org",
-      accountOrKey: this.state.key,
-    });
-
+  _fetchOffers = async (dataProvider) => {
     // if there was a previous data  provider, kill the
-
     if (this.state.streamEnder) {
       this.state.streamEnder();
     }
@@ -44,28 +52,10 @@ class Balances extends Component {
   };
 
   render() {
-    const { key, dataProvider, offers, err, updateTimes } = this.state;
+    const { offers, err, updateTimes } = this.state;
     return (
       <div>
-        <form
-          onSubmit={(ev) => {
-            ev.preventDefault();
-
-            this._fetchOffers();
-          }}
-        >
-          <label>
-            Public key
-            <input
-              type="text"
-              value={key}
-              onChange={(ev) => this.setState({ key: ev.target.value })}
-            />
-            <button>Fetch offers</button>
-          </label>
-        </form>
-
-        {dataProvider && dataProvider.isValidKey() && <p>Key is valid</p>}
+        <h2>Offers</h2>
 
         <ul>
           {updateTimes.map((time) => (
@@ -80,4 +70,4 @@ class Balances extends Component {
   }
 }
 
-export default Balances;
+export default Offers;

@@ -23,17 +23,19 @@ export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
   const { offers, trades } = params;
 
   // make a map of trades to their original offerids
-  const offeridsToTradesMap = trades.records.reduce(
-    (memo: any, trade: Server.TradeRecord) => ({
-      ...memo,
-      [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
-      [trade.counter_offer_id]: [
-        ...(memo[trade.counter_offer_id] || []),
-        trade,
-      ],
-    }),
-    {},
-  );
+  const offeridsToTradesMap = trades.records
+    ? trades.records.reduce(
+        (memo: any, trade: Server.TradeRecord) => ({
+          ...memo,
+          [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
+          [trade.counter_offer_id]: [
+            ...(memo[trade.counter_offer_id] || []),
+            trade,
+          ],
+        }),
+        {},
+      )
+    : {};
 
   return offers.records.reduce((memo, offer: Server.OfferRecord) => {
     const {

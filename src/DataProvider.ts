@@ -2,6 +2,7 @@
 import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
+import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { Account, Balances, Offers } from "./types";
 
@@ -47,16 +48,23 @@ export class DataProvider {
   }
 
   /**
+   * Return the current key.
+   */
+  public getAccountKey(): string {
+    return this.accountKey;
+  }
+
+  /**
    * Fetch outstanding offers.
    */
   public async fetchOpenOffers(): Promise<Offers> {
     const [offers, trades] = await Promise.all([
-      () => this.server.offers("accounts", this.accountKey).call(),
-      () =>
-        this.server
-          .trades()
-          .forAccount(this.accountKey)
-          .call(),
+      this.server.offers("accounts", this.accountKey).call(),
+
+      this.server
+        .trades()
+        .forAccount(this.accountKey)
+        .call(),
     ]);
     // @ts-ignore
     return makeDisplayableOffers({ offers, trades });
