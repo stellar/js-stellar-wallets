@@ -1,6 +1,9 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
 
+export type TradeId = string;
+export type OfferId = string;
+
 export interface KeyMap {
   [key: string]: any;
 }
@@ -75,13 +78,22 @@ export interface ReframedEffect {
   timestamp: number;
 }
 
-export interface Trade extends Effect {
-  type: EffectType;
-  sender: Account;
+export interface Trade {
+  senderToken: Token;
+  senderAccount: Account;
+  senderAmount: BigNumber;
+  senderOfferId?: OfferId;
+
+  receiverToken: Token;
+  receiverAccount: Account;
+  receiverAmount: BigNumber;
+  receiverOfferId?: OfferId;
+
+  timestamp: number;
 }
 
 export interface Offer {
-  id: string;
+  id: OfferId;
   offerer: Account;
   paymentToken: Token;
   incomingToken: Token;
@@ -90,7 +102,7 @@ export interface Offer {
   paymentAmount: BigNumber;
   timestamp: number;
 
-  trades: Trade[];
+  resultingTrades: TradeId[];
 }
 
 export interface Balance {
@@ -127,4 +139,8 @@ export interface Balances {
 
 export interface Offers {
   [tokenIdentifier: string]: Offer;
+}
+
+export interface Trades {
+  [tokenIdentifier: string]: Trade;
 }

@@ -35,7 +35,7 @@ it("makes offers from real-world examples", () => {
     paymentAmount: new BigNumber(8),
     incomingTokenPrice: new BigNumber(4),
     timestamp: 23121355,
-    trades: [],
+    resultingTrades: [],
   });
-  expect(offers["78448448"].trades.length).toEqual(1);
+  expect(offers["78448448"].resultingTrades.length).toEqual(1);
 });
