@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import flatten from "lodash/flatten";
 import { Server } from "stellar-sdk";
 
 import { Offers, Token } from "./types";
@@ -15,27 +16,45 @@ export interface Effect {
 }
 */
 
+/**
+ * Given an array of trades per offer, flatten them to a list of trades
+ */
+export function getAllTrades(
+  tradeResponses: TradeCollection[],
+): Server.TradeRecord[] {
+  return flatten(
+    tradeResponses.map(
+      (trades: TradeCollection): Server.TradeRecord[] => trades.records,
+    ),
+  );
+}
+
+type TradeCollection = Server.CollectionPage<Server.TradeRecord>;
+
+interface OfferIdMap {
+  [offerid: string]: Server.TradeRecord[];
+}
+
 interface DisplayableOffersParams {
   offers: Server.CollectionPage<Server.OfferRecord>;
-  trades: Server.CollectionPage<Server.TradeRecord>;
+  tradeResponses: TradeCollection[];
 }
 export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
-  const { offers, trades } = params;
+  const { offers, tradeResponses } = params;
 
-  // make a map of trades to their original offerids
-  const offeridsToTradesMap = trades.records
-    ? trades.records.reduce(
-        (memo: any, trade: Server.TradeRecord) => ({
-          ...memo,
-          [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
-          [trade.counter_offer_id]: [
-            ...(memo[trade.counter_offer_id] || []),
-            trade,
-          ],
-        }),
-        {},
-      )
-    : {};
+  // make a map of offerids to the trades involved with them
+  // (reminder that each trade has two offerids, one for each side)
+  const offeridsToTradesMap: OfferIdMap = getAllTrades(tradeResponses).reduce(
+    (memo: any, trade: Server.TradeRecord) => ({
+      ...memo,
+      [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade.id],
+      [trade.counter_offer_id]: [
+        ...(memo[trade.counter_offer_id] || []),
+        trade.id,
+      ],
+    }),
+    {},
+  );
 
   return offers.records.reduce((memo, offer: Server.OfferRecord) => {
     const {

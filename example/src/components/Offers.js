@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 
-import { DataProvider } from "../js-stellar-wallets/";
-
 class Offers extends Component {
   state = {
     offers: null,

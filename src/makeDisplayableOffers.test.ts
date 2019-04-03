@@ -7,12 +7,13 @@ import { TradesResponsePartialFill } from "./fixtures/TradesResponse";
 
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 
-it("makes offers from real-world examples", () => {
+it("makes offers from partial fill", () => {
+  const tradeResponse = parseResponse(TradesResponsePartialFill);
   const offers = makeDisplayableOffers({
     // @ts-ignore
     offers: parseResponse(OffersResponse),
     // @ts-ignore
-    trades: parseResponse(TradesResponsePartialFill),
+    tradeResponses: [tradeResponse],
   });
 
   expect(offers["76884793"]).toEqual({
@@ -37,5 +38,5 @@ it("makes offers from real-world examples", () => {
     timestamp: 23121355,
     resultingTrades: [],
   });
-  expect(offers["78448448"].resultingTrades.length).toEqual(1);
+  expect(offers["78448448"].resultingTrades).toEqual(["99777639383887873-0"]);
 });

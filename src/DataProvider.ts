@@ -58,16 +58,20 @@ export class DataProvider {
    * Fetch outstanding offers.
    */
   public async fetchOpenOffers(): Promise<Offers> {
-    const [offers, trades] = await Promise.all([
-      this.server.offers("accounts", this.accountKey).call(),
+    // first, fetch all offers
+    const offers = await this.server.offers("accounts", this.accountKey).call();
 
+    // find all offerids and check for trades of each
+    const tradeRequests = offers.records.map(({ id }) =>
       this.server
         .trades()
-        .forAccount(this.accountKey)
+        .forOffer(id)
         .call(),
-    ]);
+    );
+    const tradeResponses = await Promise.all(tradeRequests);
+
     // @ts-ignore
-    return makeDisplayableOffers({ offers, trades });
+    return makeDisplayableOffers({ offers, tradeResponses });
   }
 
   /**
