@@ -4,4 +4,3 @@ compiled
 *.log
 .DS_Store
 docs
-example/src/js-stellar-wallets
