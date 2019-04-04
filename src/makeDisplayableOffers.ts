@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import flatten from "lodash/flatten";
 import { Server } from "stellar-sdk";
 
-import { Offers, Token } from "./types";
+import { OfferMap, Token } from "./types";
 
 /*
 export interface Effect {
@@ -39,7 +39,9 @@ interface DisplayableOffersParams {
   offers: Server.CollectionPage<Server.OfferRecord>;
   tradeResponses: TradeCollection[];
 }
-export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
+export function makeDisplayableOffers(
+  params: DisplayableOffersParams,
+): OfferMap {
   const { offers, tradeResponses } = params;
 
   // make a map of offerids to the trades involved with them

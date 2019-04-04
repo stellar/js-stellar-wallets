@@ -5,6 +5,7 @@ import { DataProvider } from "./js-stellar-wallets/";
 
 import Balances from "./components/Balances";
 import Offers from "./components/Offers";
+import Trades from "./components/Trades";
 
 const El = styled.div`
   display: flex;
@@ -56,7 +57,10 @@ class App extends Component {
         {dataProvider && dataProvider.isValidKey() && (
           <El>
             <Balances dataProvider={dataProvider} />
-            <Offers dataProvider={dataProvider} />
+            <div>
+              <Offers dataProvider={dataProvider} />
+              <Trades dataProvider={dataProvider} />
+            </div>
           </El>
         )}
       </div>

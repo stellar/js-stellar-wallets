@@ -1,6 +1,7 @@
 ## Design goals
 
-The overall goal of this library is **to make it easy to add wallet functionality to an app**.
+The overall goal of this library is **to make it easy to add wallet
+functionality to an app**.
 
 This library is meant to prioritize **ease of use**. That means:
 
@@ -13,3 +14,9 @@ This library is meant to prioritize **ease of use**. That means:
 - There should generally be only one obvious way of accomplishing a task. No
   name aliases or alternate APIs.
 - We will not attempt to completely replace the JS SDK.
+
+## Some consistent design decisions
+
+- When requesting what could be a list of data, we'll almost always return a
+  _map of ids to objects_, instead of as an array. You'll be in charge of
+  sorting that information.

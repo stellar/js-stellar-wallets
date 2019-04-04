@@ -4,7 +4,8 @@ import { Server, StrKey } from "stellar-sdk";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
-import { Account, Balances, Offers } from "./types";
+import { makeDisplayableTrades } from "./makeDisplayableTrades";
+import { Account, BalanceMap, OfferMap, TradeMap } from "./types";
 
 function isAccount(obj: any): obj is Account {
   return obj.publicKey !== undefined;
@@ -16,7 +17,7 @@ interface DataProviderParams {
 }
 
 interface BalanceWatcherParams {
-  onMessage: (balances: Balances) => void;
+  onMessage: (balances: BalanceMap) => void;
   onError: (error: any) => void;
 }
 
@@ -57,7 +58,7 @@ export class DataProvider {
   /**
    * Fetch outstanding offers.
    */
-  public async fetchOpenOffers(): Promise<Offers> {
+  public async fetchOpenOffers(): Promise<OfferMap> {
     // first, fetch all offers
     const offers = await this.server.offers("accounts", this.accountKey).call();
 
@@ -75,9 +76,21 @@ export class DataProvider {
   }
 
   /**
+   * Fetch recent trades.
+   */
+  public async fetchTrades(): Promise<TradeMap> {
+    const trades = await this.server
+      .trades()
+      .forAccount(this.accountKey)
+      .call();
+
+    return makeDisplayableTrades(trades);
+  }
+
+  /**
    * Fetch current balances from Horizon.
    */
-  public async fetchBalances(): Promise<Balances> {
+  public async fetchBalances(): Promise<BalanceMap> {
     const accountSummary = await this.server
       .accounts()
       .accountId(this.accountKey)

@@ -133,14 +133,14 @@ export interface NativeBalance extends Balance {
   minimumBalance: BigNumber;
 }
 
-export interface Balances {
+export interface BalanceMap {
   native: NativeBalance;
 }
 
-export interface Offers {
+export interface OfferMap {
   [tokenIdentifier: string]: Offer;
 }
 
-export interface Trades {
+export interface TradeMap {
   [tokenIdentifier: string]: Trade;
 }

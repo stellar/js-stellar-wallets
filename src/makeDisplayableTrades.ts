@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { Server } from "stellar-sdk";
 
-import { Trades } from "./types";
+import { TradeMap } from "./types";
 
 /*
   {
@@ -45,7 +45,7 @@ import { Trades } from "./types";
 
 export function makeDisplayableTrades(
   trades: Server.CollectionPage<Server.TradeRecord>,
-): Trades {
+): TradeMap {
   // make a map of trades to their original offerids
   return trades.records.reduce((memo: any, trade: Server.TradeRecord) => {
     const base = {
