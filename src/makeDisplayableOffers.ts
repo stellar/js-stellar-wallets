@@ -16,37 +16,25 @@ export interface Effect {
 }
 */
 
-/**
- * Given an array of trades per offer, flatten them to a list of trades
- */
-export function getAllTrades(
-  tradeResponses: TradeCollection[],
-): Server.TradeRecord[] {
-  return flatten(
-    tradeResponses.map(
-      (trades: TradeCollection): Server.TradeRecord[] => trades.records,
-    ),
-  );
-}
-
-type TradeCollection = Server.CollectionPage<Server.TradeRecord>;
+type TradeCollection = Server.TradeRecord[];
 
 interface OfferIdMap {
   [offerid: string]: Server.TradeRecord[];
 }
 
 interface DisplayableOffersParams {
-  offers: Server.CollectionPage<Server.OfferRecord>;
+  offers: Server.OfferRecord[];
   tradeResponses: TradeCollection[];
 }
 export function makeDisplayableOffers(
   params: DisplayableOffersParams,
 ): OfferMap {
   const { offers, tradeResponses } = params;
+  const trades = flatten(tradeResponses);
 
   // make a map of offerids to the trades involved with them
   // (reminder that each trade has two offerids, one for each side)
-  const offeridsToTradesMap: OfferIdMap = getAllTrades(tradeResponses).reduce(
+  const offeridsToTradesMap: OfferIdMap = trades.reduce(
     (memo: any, trade: Server.TradeRecord) => ({
       ...memo,
       [trade.base_offer_id]: [...(memo[trade.base_offer_id] || []), trade],
@@ -58,7 +46,7 @@ export function makeDisplayableOffers(
     {},
   );
 
-  return offers.records.reduce((memo, offer: Server.OfferRecord) => {
+  return offers.reduce((memo, offer: Server.OfferRecord) => {
     const {
       id,
       selling,

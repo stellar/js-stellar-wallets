@@ -43,11 +43,9 @@ import { TradeMap } from "./types";
 
 */
 
-export function makeDisplayableTrades(
-  trades: Server.CollectionPage<Server.TradeRecord>,
-): TradeMap {
+export function makeDisplayableTrades(trades: Server.TradeRecord[]): TradeMap {
   // make a map of trades to their original offerids
-  return trades.records.reduce((memo: any, trade: Server.TradeRecord) => {
+  return trades.reduce((memo: any, trade: Server.TradeRecord) => {
     const base = {
       publicKey: trade.base_account,
     };

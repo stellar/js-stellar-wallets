@@ -9,7 +9,7 @@ import { makeDisplayableTrades } from "./makeDisplayableTrades";
 it("makes trades from real-world examples", () => {
   const trades = makeDisplayableTrades(
     // @ts-ignore
-    parseResponse(TradesResponsePartialFill),
+    parseResponse(TradesResponsePartialFill).records,
   );
 
   expect(trades).toEqual({

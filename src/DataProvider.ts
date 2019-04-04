@@ -60,14 +60,18 @@ export class DataProvider {
    */
   public async fetchOpenOffers(): Promise<OfferMap> {
     // first, fetch all offers
-    const offers = await this.server.offers("accounts", this.accountKey).call();
+    const offers = await this.server
+      .offers("accounts", this.accountKey)
+      .call()
+      .then((data) => data.records);
 
     // find all offerids and check for trades of each
-    const tradeRequests = offers.records.map(({ id }) =>
+    const tradeRequests = offers.map(({ id }) =>
       this.server
         .trades()
         .forOffer(id)
-        .call(),
+        .call()
+        .then((data) => data.records),
     );
     const tradeResponses = await Promise.all(tradeRequests);
 
@@ -82,7 +86,8 @@ export class DataProvider {
     const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
-      .call();
+      .call()
+      .then((data) => data.records);
 
     return makeDisplayableTrades(trades);
   }

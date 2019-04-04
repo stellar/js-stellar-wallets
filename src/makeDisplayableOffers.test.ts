@@ -11,9 +11,9 @@ it("makes offers from partial fill", () => {
   const tradeResponse = parseResponse(TradesResponsePartialFill);
   const offers = makeDisplayableOffers({
     // @ts-ignore
-    offers: parseResponse(OffersResponse),
+    offers: parseResponse(OffersResponse).records,
     // @ts-ignore
-    tradeResponses: [tradeResponse],
+    tradeResponses: [tradeResponse.records],
   });
 
   expect(offers["76884793"]).toEqual({
