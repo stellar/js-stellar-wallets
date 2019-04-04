@@ -6,27 +6,26 @@ meaning most of the API can be consistent across both.
 ### Types
 
 ```ts
-type startWithdrawal = (transferServer: string) => PendingWithdrawal;
-type startDeposit = (transferServer: string) => PendingDeposit;
-
 type kycPrompt = (response: InteractiveKycNeeded) => Promise<KycPromptStatus>;
 type getKycUrl = (
   response: InteractiveKycNeeded,
   callbackUrl: string,
 ) => string;
 
-class PendingTransfer {
-  supportedAssets: () => WithdrawInfo | DepositInfo;
-  getFinalFee: (args: FeeArgs) => Promise<number>;
+class TransferProvider {
+  constructor(transferServer) {}
+  fetchSupportedAssets: () => Promise<WithdrawInfo> | Promise<DepositInfo>;
+  fetchFinalFee: (args: FeeArgs) => Promise<number>;
 }
 
-class PendingWithdrawal extends PendingTransfer {
-  withdraw: (args: WithdrawRequest) => Promise<Request>;
+class WithdrawalProvider extends TransferProvider {
+  withdraw: (args: WithdrawRequest) => Promise<TransferResponse>;
 }
 
-class PendingDeposit extends PendingTransfer {
-  deposit: (args: DepositRequest) => Promise<Request>;
+class DepositProvider extends TransferProvider {
+  deposit: (args: DepositRequest) => Promise<TransferResponse>;
 }
+
 interface FeeArgs {
   assetCode: string;
   amount: string;
@@ -167,22 +166,21 @@ interface Memo {
 ```js
 import { startWithdrawal, startDeposit, RESPONSE_TYPES } from "wallet-sdk";
 
-// Retrieves /info and returns a class used to complete the withdrawal/deposit
-const withdrawal = await startWithdrawal(transferServerUrl);
-const deposit = await startDeposit(transferServerUrl);
+const withdrawProvider = new WithdrawProvider(transferServerUrl);
+const depositProvider = new DepositProvider(transferServerUrl);
 
-// Returns `WithdrawalInfo`. Used to display options to the user, allowing an
-// asset and withdrawal type to be selected.
-withdrawal.supportedAssets();
-deposit.supportedAssets();
+// Retrieve supported assets. Used to display options to the user, including
+// things like simple fees, asset codes, and withdrawal types.
+await withdrawalProvider.fetchSupportedAssets();
+await depositProvider.fetchSupportedAssets();
 
 // Returns a single number of how much the user will pay, in units of the asset
-const fee = await withdrawal.getFinalFee({
+const fee = await withdrawalProvider.fetchFinalFee({
   assetCode,
   amount,
   type,
 });
-const fee = await deposit.getFinalFee({
+const fee = await depositProvider.fetchFinalFee({
   assetCode,
   amount,
   type,
