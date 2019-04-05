@@ -193,12 +193,21 @@ switch (result.type) {
     showUser(result);
     break;
   case RESPONSE_TYPES.interactiveKyc:
-    if (isServerEnv) {
-      const kycRedirect = getKycUrl(result, callbackUrl);
-    } else if (isBrowser) {
-      kycPrompt(result).then((kycResult) => {
-        // KycPromptStatus
+    if (isBrowser) {
+      // To avoid popup blockers, the new window has to be opened directly in
+      // response to a user click event, so we need consumers to provide us a
+      // window instance that they created previously.
+      const popup = window.open("", "name", "dimensions etc");
+
+      kycPrompt(result, popup).then((kycResult /*: KycPromptStatus */) => {
+        showUser(kycResult);
       });
+    } else if (isServerEnv || isNativeEnv) {
+      const kycRedirect = getKycUrl(result, callbackUrl);
+      // On e.g. react native, the client will have to open a webview manually
+      // and pass a callback URL that the app has "claimed." This is very similar
+      // to e.g. OAuth flows.
+      // https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
     }
     break;
   case RESPONSE_TYPES.nonInteractiveKyc:
