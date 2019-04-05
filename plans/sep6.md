@@ -3,6 +3,31 @@
 Deposit and withdraw share a good number of steps and Transferresponse shapes,
 meaning most of the API can be consistent across both.
 
+The high-level flow is:
+
+- Fetch supported assets
+- User picks deposit/withdrawal type, provides amount/destination
+  - Fetch/calculate final fee
+- Submit request, and depending on the response:
+  - if KYC
+    - if manual
+      - Redirect to KYC form
+      - User submits KYC info
+      - Redirect back to wallet
+      - (go to "if ok")
+    - if automatic
+      - ([SEP-12](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0012.md)
+        is still TODO)
+    - if pending
+      - "KYC is pending, we're checking for updates"
+      - link to more info if available
+    - if denied
+      - "KYC failed"
+      - link to more info if available
+  - if ok
+    - Display how for deposits, submit transaction to the network for
+      withdrawals
+
 ### Types
 
 ```ts
