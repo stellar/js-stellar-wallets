@@ -1,8 +1,9 @@
 import BigNumber from "bignumber.js";
 import flatten from "lodash/flatten";
+import { AssetType } from "stellar-base";
 import { Server } from "stellar-sdk";
 
-import { OfferMap, Token } from "./types";
+import { Offer, Offers, Token } from "./types";
 
 /*
 export interface Effect {
@@ -26,9 +27,7 @@ interface DisplayableOffersParams {
   offers: Server.OfferRecord[];
   tradeResponses: TradeCollection[];
 }
-export function makeDisplayableOffers(
-  params: DisplayableOffersParams,
-): OfferMap {
+export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
   const { offers, tradeResponses } = params;
   const trades = flatten(tradeResponses);
 
@@ -46,45 +45,46 @@ export function makeDisplayableOffers(
     {},
   );
 
-  return offers.reduce((memo, offer: Server.OfferRecord) => {
-    const {
-      id,
-      selling,
-      seller,
-      buying,
-      amount,
-      price_r,
-      last_modified_ledger,
-    } = offer;
+  return offers.map(
+    (offer: Server.OfferRecord): Offer => {
+      const {
+        id,
+        selling,
+        seller,
+        buying,
+        amount,
+        price_r,
+        last_modified_ledger,
+      } = offer;
 
-    const paymentToken: Token = {
-      type: selling.asset_type,
-      code: selling.asset_code || "XLM",
-      issuer:
-        selling.asset_type === "native"
-          ? undefined
-          : {
-              publicKey: selling.asset_issuer,
-            },
-    };
+      console.log("seellar fucko: ", seller);
 
-    const incomingToken: Token = {
-      type: buying.asset_type,
-      code: buying.asset_code || "XLM",
-      issuer:
-        buying.asset_type === "native"
-          ? undefined
-          : {
-              publicKey: buying.asset_issuer,
-            },
-    };
+      const paymentToken: Token = {
+        type: selling.asset_type as AssetType,
+        code: selling.asset_code || "XLM",
+        issuer:
+          selling.asset_type === "native"
+            ? undefined
+            : {
+                publicKey: selling.asset_issuer,
+              },
+      };
 
-    return {
-      ...memo,
-      [id]: {
+      const incomingToken: Token = {
+        type: buying.asset_type as AssetType,
+        code: buying.asset_code || "XLM",
+        issuer:
+          buying.asset_type === "native"
+            ? undefined
+            : {
+                publicKey: buying.asset_issuer,
+              },
+      };
+
+      return {
         id,
         offerer: {
-          publicKey: seller,
+          publicKey: seller as string,
         },
         timestamp: last_modified_ledger,
         paymentToken,
@@ -95,7 +95,7 @@ export function makeDisplayableOffers(
         resultingTrades: (offeridsToTradesMap[id] || []).map(
           (trade) => trade.id,
         ),
-      },
-    };
-  }, {});
+      };
+    },
+  );
 }

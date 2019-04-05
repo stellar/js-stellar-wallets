@@ -12,8 +12,8 @@ it("makes trades from real-world examples", () => {
     parseResponse(TradesResponsePartialFill).records,
   );
 
-  expect(trades).toEqual({
-    "99777639383887873-0": {
+  expect(trades).toEqual([
+    {
       id: "99777639383887873-0",
 
       senderToken: {
@@ -42,5 +42,5 @@ it("makes trades from real-world examples", () => {
 
       timestamp: 1554236520,
     },
-  });
+  ]);
 });

@@ -5,7 +5,7 @@ import { Server, StrKey } from "stellar-sdk";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
-import { Account, BalanceMap, OfferMap, TradeMap } from "./types";
+import { Account, BalanceMap, Offers, Trades } from "./types";
 
 function isAccount(obj: any): obj is Account {
   return obj.publicKey !== undefined;
@@ -19,6 +19,12 @@ interface DataProviderParams {
 interface BalanceWatcherParams {
   onMessage: (balances: BalanceMap) => void;
   onError: (error: any) => void;
+}
+
+interface CollectionParams {
+  limit?: number;
+  order?: "desc" | "asc";
+  cursor?: string;
 }
 
 interface CallbacksObject {
@@ -58,10 +64,13 @@ export class DataProvider {
   /**
    * Fetch outstanding offers.
    */
-  public async fetchOpenOffers(): Promise<OfferMap> {
+  public async fetchOpenOffers(params: CollectionParams = {}): Promise<Offers> {
     // first, fetch all offers
     const offers = await this.server
       .offers("accounts", this.accountKey)
+      .limit(params.limit || 10)
+      .order(params.order || "desc")
+      .cursor(params.cursor || "")
       .call()
       .then((data) => data.records);
 
@@ -82,10 +91,13 @@ export class DataProvider {
   /**
    * Fetch recent trades.
    */
-  public async fetchTrades(): Promise<TradeMap> {
+  public async fetchTrades(params: CollectionParams = {}): Promise<Trades> {
     const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
+      .limit(params.limit || 10)
+      .order(params.order || "desc")
+      .cursor(params.cursor || "")
       .call()
       .then((data) => data.records);
 

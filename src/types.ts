@@ -79,6 +79,7 @@ export interface ReframedEffect {
 }
 
 export interface Trade {
+  id: string;
   senderToken: Token;
   senderAccount: Account;
   senderAmount: BigNumber;
@@ -137,10 +138,6 @@ export interface BalanceMap {
   native: NativeBalance;
 }
 
-export interface OfferMap {
-  [tokenIdentifier: string]: Offer;
-}
+export type Offers = Offer[];
 
-export interface TradeMap {
-  [tokenIdentifier: string]: Trade;
-}
+export type Trades = Trade[];

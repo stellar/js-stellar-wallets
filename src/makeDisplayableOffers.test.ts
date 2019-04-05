@@ -16,7 +16,7 @@ it("makes offers from partial fill", () => {
     tradeResponses: [tradeResponse.records],
   });
 
-  expect(offers["76884793"]).toEqual({
+  expect(offers[0]).toEqual({
     id: 76884793,
     offerer: {
       publicKey: "PHYREXIA",
@@ -38,5 +38,5 @@ it("makes offers from partial fill", () => {
     timestamp: 23121355,
     resultingTrades: [],
   });
-  expect(offers["78448448"].resultingTrades).toEqual(["99777639383887873-0"]);
+  expect(offers[1].resultingTrades).toEqual(["99777639383887873-0"]);
 });
