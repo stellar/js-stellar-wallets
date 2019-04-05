@@ -118,8 +118,8 @@ export class DataProvider {
   }
 
   /**
-   * Fetch and watch balances. Returns a function that you can execute to stop
-   * the watcher.
+   * Fetch balances, then re-fetch whenever the balances update or could update.
+   * Returns a function that you can execute to stop the watcher.
    */
   public watchBalances(params: BalanceWatcherParams): () => void {
     const { onMessage, onError } = params;
