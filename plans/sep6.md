@@ -18,7 +18,7 @@ class TransferProvider {
   fetchFinalFee: (args: FeeArgs) => Promise<number>;
 }
 
-class WithdrawalProvider extends TransferProvider {
+class WithdrawProvider extends TransferProvider {
   withdraw: (args: WithdrawRequest) => Promise<TransferResponse>;
 }
 
@@ -171,26 +171,48 @@ const depositProvider = new DepositProvider(transferServerUrl);
 
 // Retrieve supported assets. Used to display options to the user, including
 // things like simple fees, asset codes, and withdrawal types.
-await withdrawalProvider.fetchSupportedAssets();
+await withdrawProvider.fetchSupportedAssets();
 await depositProvider.fetchSupportedAssets();
 
 // Returns a single number of how much the user will pay, in units of the asset
-const fee = await withdrawalProvider.fetchFinalFee({
+fee = await withdrawProvider.fetchFinalFee({
   assetCode,
   amount,
   type,
 });
-const fee = await depositProvider.fetchFinalFee({
+fee = await depositProvider.fetchFinalFee({
   assetCode,
   amount,
   type,
 });
 
-const result = await withdrawal.withdraw({ asset, destination, etc });
+/**
+ * Deposit just needs to display information to the user for them to complete on
+ * their own, but withdraw needs to actually submit a transaction, so the code
+ * paths are a little bit different.
+ */
+const depositResult = await depositProvider.withdraw({
+  asset,
+  destination,
+  etc,
+});
+const withdrawResult = await withdrawProvider.withdraw({
+  asset,
+  destination,
+  etc,
+});
 
-switch (result.type) {
+switch (depositResult.type /* or withdrawResult */) {
   case RESPONSE_TYPES.ok:
-    showUser(result);
+    // if deposit
+    showUser(depositResult);
+
+    // if withdraw, need to sign/submit transaction
+    submitPayment({
+      memo: withdrawResult.memo,
+      destination: withdrawResult.accountId,
+      amount,
+    });
     break;
   case RESPONSE_TYPES.interactiveKyc:
     if (isBrowser) {
@@ -199,22 +221,35 @@ switch (result.type) {
       // window instance that they created previously.
       const popup = window.open("", "name", "dimensions etc");
 
-      kycPrompt(result, popup).then((kycResult /*: KycPromptStatus */) => {
-        showUser(kycResult);
+      const kycResult = await withdrawProvider.kycPrompt(withdrawResult, popup);
+
+      // if deposit
+      showUser(kycResult);
+
+      // if withdraw, need to sign/submit transaction
+      submitPayment({
+        memo: kycResult.memo,
+        destination: kycResult.accountId,
+        amount,
       });
     } else if (isServerEnv || isNativeEnv) {
-      const kycRedirect = getKycUrl(result, callbackUrl);
-      // On e.g. react native, the client will have to open a webview manually
-      // and pass a callback URL that the app has "claimed." This is very similar
-      // to e.g. OAuth flows.
-      // https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
+      const kycRedirect = getKycUrl(withdrawResult, callbackUrl);
+      /**
+       * On e.g. react native, the client will have to open a webview manually
+       * and pass a callback URL that the app has "claimed." This is very similar
+       * to e.g. OAuth flows.
+       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
+       * This adds a lot of friction though. They'll have to re-submit the
+       * withdraw/deposit request in order to get the correct information, which
+       * may be tricky because of the redirection involved.
+       */
     }
     break;
   case RESPONSE_TYPES.nonInteractiveKyc:
     // TODO: SEP-12 data submission
     break;
   case RESPONSE_TYPES.kycStatus:
-    showUser(result);
+    showUser(whateverResult);
     break;
 }
 ```
