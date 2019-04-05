@@ -101,6 +101,7 @@ export interface Offer {
   incomingTokenPrice: BigNumber;
   incomingAmount: BigNumber;
   paymentAmount: BigNumber;
+  initialPaymentAmount: BigNumber;
   timestamp: number;
 
   resultingTrades: TradeId[];
