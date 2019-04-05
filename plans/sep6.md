@@ -31,16 +31,22 @@ The high-level flow is:
 ### Types
 
 ```ts
-type kycPrompt = (response: InteractiveKycNeeded) => Promise<KycPromptStatus>;
-type getKycUrl = (
-  response: InteractiveKycNeeded,
-  callbackUrl: string,
-) => string;
+type getKycUrl = (args: GetKycArgs) => string;
+
+interface GetKycArgs {
+  request: WithdrawRequest | DepositRequest;
+  response: InteractiveKycNeeded;
+  callbackUrl: string;
+}
 
 class TransferProvider {
   constructor(transferServer) {}
   fetchSupportedAssets: () => Promise<WithdrawInfo> | Promise<DepositInfo>;
   fetchFinalFee: (args: FeeArgs) => Promise<number>;
+  fetchKycInBrowser: ({
+    response: InteractiveKycNeeded,
+    window: Window,
+  }) => Promise<KycPromptStatus>;
 }
 
 class WithdrawProvider extends TransferProvider {
@@ -55,7 +61,7 @@ interface FeeArgs {
   assetCode: string;
   amount: string;
   operation: "withdraw" | "deposit";
-  type: "string";
+  type: string;
 }
 
 interface WithdrawAssetInfo {
@@ -102,15 +108,13 @@ interface DepositRequest {
   type?: string;
 }
 
-type responseTypes =
-  | "ok"
-  | "non_interactive_customer_info_needed"
-  | "interactive_customer_info_needed"
-  | "customer_info_status"
-  | "error";
-
 interface TransferResponse {
-  type: responseTypes;
+  type:
+    | "ok"
+    | "non_interactive_customer_info_needed"
+    | "interactive_customer_info_needed"
+    | "customer_info_status"
+    | "error";
 }
 
 interface WithdrawOk extends TransferResponse {
@@ -122,7 +126,9 @@ interface WithdrawOk extends TransferResponse {
   minAmount?: number;
   maxAmount?: number;
   fee: Fee;
-  extraInfo?;
+  extraInfo?: {
+    message: string;
+  };
 }
 
 interface DepositOk extends TransferResponse {
@@ -233,6 +239,7 @@ switch (depositResult.type /* or withdrawResult */) {
     showUser(depositResult);
 
     // if withdraw, need to sign/submit transaction
+    // (submitPayment is a placeholder function)
     submitPayment({
       memo: withdrawResult.memo,
       destination: withdrawResult.accountId,
@@ -243,30 +250,39 @@ switch (depositResult.type /* or withdrawResult */) {
     if (isBrowser) {
       // To avoid popup blockers, the new window has to be opened directly in
       // response to a user click event, so we need consumers to provide us a
-      // window instance that they created previously.
+      // window instance that they created previously. This could also be done in
+      // an iframe or something.
       const popup = window.open("", "name", "dimensions etc");
 
-      const kycResult = await withdrawProvider.kycPrompt(withdrawResult, popup);
+      const kycResult = await withdrawProvider.fetchKycInBrowser({
+        response: withdrawResult,
+        window: popup,
+      });
 
       // if deposit
       showUser(kycResult);
 
       // if withdraw, need to sign/submit transaction
+      // (submitPayment is a placeholder function)
       submitPayment({
         memo: kycResult.memo,
         destination: kycResult.accountId,
         amount,
       });
     } else if (isServerEnv || isNativeEnv) {
-      const kycRedirect = getKycUrl(withdrawResult, callbackUrl);
+      const kycRedirect = getKycUrl({
+        result: withdrawResult,
+        request: withdrawRequest,
+        callbackUrl,
+      });
       /**
        * On e.g. react native, the client will have to open a webview manually
        * and pass a callback URL that the app has "claimed." This is very similar
        * to e.g. OAuth flows.
        * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
-       * This adds a lot of friction though. They'll have to re-submit the
-       * withdraw/deposit request in order to get the correct information, which
-       * may be tricky because of the redirection involved.
+       * Include the original request so it can be provided as a querystring to
+       * the callback URL. Simplifies re-submission dramatically after receiving
+       * KYC results.
        */
     }
     break;
