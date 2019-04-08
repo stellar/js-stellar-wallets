@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
+  "types": "dist/index.js",
   "repository": "git@github.com:stellar/js-stellar-wallets.git",
   "author": "Stellar Development Foundation <hello@stellar.org>",
   "license": "Apache-2.0",
@@ -11,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "build:typedefs": "tsc --declaration --outDir compiled/ -p tsconfig.json --emitDeclarationOnly",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
     "docs": "typedoc src/",
     "lint": "tslint --fix --project tsconfig.json",
