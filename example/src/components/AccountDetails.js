@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
-class Balances extends Component {
+class AccountDetails extends Component {
   state = {
-    balances: null,
+    accountDetails: null,
     err: null,
     updateTimes: [],
     streamEnder: null,
@@ -10,7 +10,7 @@ class Balances extends Component {
 
   componentDidMount() {
     if (this.props.dataProvider) {
-      this._fetchBalances(this.props.dataProvider);
+      this._fetchAccountDetails(this.props.dataProvider);
     }
   }
 
@@ -20,7 +20,7 @@ class Balances extends Component {
       this.props.dataProvider.getAccountKey() !==
         nextProps.dataProvider.getAccountKey()
     ) {
-      this._fetchBalances(nextProps.dataProvider);
+      this._fetchAccountDetails(nextProps.dataProvider);
     }
   }
 
@@ -30,23 +30,23 @@ class Balances extends Component {
     }
   }
 
-  _fetchBalances = (dataProvider) => {
+  _fetchAccountDetails = (dataProvider) => {
     // if there was a previous data  provider, kill the
     if (this.state.streamEnder) {
       this.state.streamEnder();
     }
 
     this.setState({
-      balances: null,
+      accountDetails: null,
       err: null,
       updateTimes: [],
       streamEnder: null,
     });
 
-    const streamEnder = dataProvider.watchBalances({
-      onMessage: (balances) => {
+    const streamEnder = dataProvider.watchAccountDetails({
+      onMessage: (accountDetails) => {
         this.setState({
-          balances,
+          accountDetails,
           updateTimes: [...this.state.updateTimes, new Date()],
         });
       },
@@ -63,21 +63,21 @@ class Balances extends Component {
   };
 
   render() {
-    const { balances, err, updateTimes } = this.state;
+    const { accountDetails, err, updateTimes } = this.state;
     return (
       <div>
-        <h2>Balances</h2>
+        <h2>Account Details</h2>
         <ul>
           {updateTimes.map((time) => (
             <li key={time.toString()}>{time.toString()}</li>
           ))}
         </ul>
 
-        {balances && <pre>{JSON.stringify(balances, null, 2)}</pre>}
+        {accountDetails && <pre>{JSON.stringify(accountDetails, null, 2)}</pre>}
         {err && <p>Error: {err.toString()}</p>}
       </div>
     );
   }
 }
 
-export default Balances;
+export default AccountDetails;
