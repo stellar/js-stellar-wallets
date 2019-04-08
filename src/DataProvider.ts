@@ -5,7 +5,7 @@ import { Server, StrKey } from "stellar-sdk";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
-import { Account, BalanceMap, Offers, Trades } from "./types";
+import { Account, AccountDetails, Offers, Trades } from "./types";
 
 function isAccount(obj: any): obj is Account {
   return obj.publicKey !== undefined;
@@ -16,8 +16,8 @@ interface DataProviderParams {
   accountOrKey: Account | string;
 }
 
-interface BalanceWatcherParams {
-  onMessage: (balances: BalanceMap) => void;
+interface WatcherParams {
+  onMessage: (accountDetails: AccountDetails) => void;
   onError: (error: any) => void;
 }
 
@@ -28,7 +28,7 @@ interface CollectionParams {
 }
 
 interface CallbacksObject {
-  balances?: () => void;
+  accountDetails?: () => void;
 }
 
 export class DataProvider {
@@ -105,31 +105,42 @@ export class DataProvider {
   }
 
   /**
-   * Fetch current balances from Horizon.
+   * Fetch account details (balances, signers, etc.).
    */
-  public async fetchBalances(): Promise<BalanceMap> {
+  public async fetchAccountDetails(): Promise<AccountDetails> {
     const accountSummary = await this.server
       .accounts()
       .accountId(this.accountKey)
       .call();
 
     // @ts-ignore
-    return makeDisplayableBalances(accountSummary);
+    const balances = makeDisplayableBalances(accountSummary);
+
+    return {
+      id: accountSummary.id,
+      subentryCount: accountSummary.subentry_count,
+      inflationDestination: accountSummary.inflation_destination,
+      lastModifiedLedger: accountSummary.last_modified_ledger,
+      thresholds: accountSummary.thresholds,
+      signers: accountSummary.signers,
+      flags: accountSummary.flags,
+      balances,
+    };
   }
 
   /**
-   * Fetch balances, then re-fetch whenever the balances update or could update.
-   * Returns a function that you can execute to stop the watcher.
+   * Fetch account detqails, then re-fetch whenever the details update.
+   * Returns a function you can execute to stop the watcher.
    */
-  public watchBalances(params: BalanceWatcherParams): () => void {
+  public watchAccountDetails(params: WatcherParams): () => void {
     const { onMessage, onError } = params;
 
-    this.fetchBalances()
+    this.fetchAccountDetails()
       .then(onMessage)
       .catch(onError);
 
-    this.callbacks.balances = debounce(() => {
-      this.fetchBalances()
+    this.callbacks.accountDetails = debounce(() => {
+      this.fetchAccountDetails()
         .then(onMessage)
         .catch(onError);
     }, 2000);
@@ -140,7 +151,7 @@ export class DataProvider {
 
     // if they exec this function, don't make the balance callback do anything
     return () => {
-      delete this.callbacks.balances;
+      delete this.callbacks.accountDetails;
     };
   }
 

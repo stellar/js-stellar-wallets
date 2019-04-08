@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
+import { Horizon } from "stellar-sdk";
 
 export type TradeId = string;
 export type OfferId = string;
@@ -109,15 +110,7 @@ export interface Offer {
 
 export interface Balance {
   token: Token;
-  sellingLiabilities: BigNumber;
 
-  // for non-native tokens, this should be total - sellingLiabilities
-  // for native, it should also subtract the minimumBalance
-  available: BigNumber;
-  total: BigNumber;
-}
-
-export interface Balance {
   // for non-native tokens, this should be total - sellingLiabilities
   // for native, it should also subtract the minimumBalance
   available: BigNumber;
@@ -137,6 +130,17 @@ export interface NativeBalance extends Balance {
 
 export interface BalanceMap {
   native: NativeBalance;
+}
+
+export interface AccountDetails {
+  id: string;
+  subentryCount: number;
+  inflationDestination?: string;
+  lastModifiedLedger: number;
+  thresholds: Horizon.AccountThresholds;
+  signers: Horizon.AccountSigner[];
+  flags: Horizon.Flags;
+  balances: BalanceMap;
 }
 
 export type Offers = Offer[];
