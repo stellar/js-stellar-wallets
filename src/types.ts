@@ -1,13 +1,11 @@
 import BigNumber from "bignumber.js";
+import { AssetType } from "stellar-base";
+
+export type TradeId = string;
+export type OfferId = string;
 
 export interface KeyMap {
   [key: string]: any;
-}
-
-export enum TokenType {
-  native = "native",
-  credit_alphanum4 = "credit_alphanum4",
-  credit_alphanum12 = "credit_alphanum12",
 }
 
 export enum EffectType {
@@ -39,12 +37,12 @@ export interface Issuer {
 }
 
 export interface NativeToken {
-  type: TokenType;
+  type: AssetType;
   code: string;
 }
 
 export interface AssetToken {
-  type: TokenType;
+  type: AssetType;
   code: string;
   issuer: Issuer;
   anchorAsset: string;
@@ -59,11 +57,11 @@ export type Token = NativeToken | AssetToken;
 
 export interface Effect {
   id: string;
-  type: EffectType;
+  type?: EffectType;
   senderToken: Token;
   receiverToken: Token;
   senderAccount: Account;
-  receiverAccount: Account;
+  receiverAccount?: Account;
   senderAmount: BigNumber;
   receiverAmount: BigNumber;
   timestamp: number;
@@ -71,13 +69,42 @@ export interface Effect {
 
 export interface ReframedEffect {
   id: string;
-  type: EffectType;
+  type?: EffectType;
   baseToken: Token;
   token: Token;
   amount: BigNumber;
   price: BigNumber;
-  sender: Account;
+  sender?: Account;
   timestamp: number;
+}
+
+export interface Trade {
+  id: string;
+  senderToken: Token;
+  senderAccount: Account;
+  senderAmount: BigNumber;
+  senderOfferId?: OfferId;
+
+  receiverToken: Token;
+  receiverAccount: Account;
+  receiverAmount: BigNumber;
+  receiverOfferId?: OfferId;
+
+  timestamp: number;
+}
+
+export interface Offer {
+  id: OfferId;
+  offerer: Account;
+  paymentToken: Token;
+  incomingToken: Token;
+  incomingTokenPrice: BigNumber;
+  incomingAmount: BigNumber;
+  paymentAmount: BigNumber;
+  initialPaymentAmount: BigNumber;
+  timestamp: number;
+
+  resultingTrades: TradeId[];
 }
 
 export interface Balance {
@@ -108,7 +135,10 @@ export interface NativeBalance extends Balance {
   minimumBalance: BigNumber;
 }
 
-export interface Balances {
-  // [key: string]: AssetBalance;
+export interface BalanceMap {
   native: NativeBalance;
 }
+
+export type Offers = Offer[];
+
+export type Trades = Trade[];

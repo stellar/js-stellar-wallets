@@ -3,7 +3,9 @@ import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
-import { Account, Balances } from "./types";
+import { makeDisplayableOffers } from "./makeDisplayableOffers";
+import { makeDisplayableTrades } from "./makeDisplayableTrades";
+import { Account, BalanceMap, Offers, Trades } from "./types";
 
 function isAccount(obj: any): obj is Account {
   return obj.publicKey !== undefined;
@@ -15,8 +17,14 @@ interface DataProviderParams {
 }
 
 interface BalanceWatcherParams {
-  onMessage: (balances: Balances) => void;
+  onMessage: (balances: BalanceMap) => void;
   onError: (error: any) => void;
+}
+
+interface CollectionParams {
+  limit?: number;
+  order?: "desc" | "asc";
+  cursor?: string;
 }
 
 interface CallbacksObject {
@@ -47,9 +55,59 @@ export class DataProvider {
   }
 
   /**
+   * Return the current key.
+   */
+  public getAccountKey(): string {
+    return this.accountKey;
+  }
+
+  /**
+   * Fetch outstanding offers.
+   */
+  public async fetchOpenOffers(params: CollectionParams = {}): Promise<Offers> {
+    // first, fetch all offers
+    const offers = await this.server
+      .offers("accounts", this.accountKey)
+      .limit(params.limit || 10)
+      .order(params.order || "desc")
+      .cursor(params.cursor || "")
+      .call()
+      .then((data) => data.records);
+
+    // find all offerids and check for trades of each
+    const tradeRequests = offers.map(({ id }) =>
+      this.server
+        .trades()
+        .forOffer(id)
+        .call()
+        .then((data) => data.records),
+    );
+    const tradeResponses = await Promise.all(tradeRequests);
+
+    // @ts-ignore
+    return makeDisplayableOffers({ offers, tradeResponses });
+  }
+
+  /**
+   * Fetch recent trades.
+   */
+  public async fetchTrades(params: CollectionParams = {}): Promise<Trades> {
+    const trades = await this.server
+      .trades()
+      .forAccount(this.accountKey)
+      .limit(params.limit || 10)
+      .order(params.order || "desc")
+      .cursor(params.cursor || "")
+      .call()
+      .then((data) => data.records);
+
+    return makeDisplayableTrades(trades);
+  }
+
+  /**
    * Fetch current balances from Horizon.
    */
-  public async fetchBalances() {
+  public async fetchBalances(): Promise<BalanceMap> {
     const accountSummary = await this.server
       .accounts()
       .accountId(this.accountKey)
@@ -86,7 +144,7 @@ export class DataProvider {
     };
   }
 
-  private async _startEffectWatcher() {
+  private async _startEffectWatcher(): Promise<{}> {
     if (this.effectStreamEnder) {
       return Promise.resolve({});
     }

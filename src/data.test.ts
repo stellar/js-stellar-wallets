@@ -1,6 +1,8 @@
 import BigNumber from "bignumber.js";
+import { AssetType } from "stellar-sdk";
+
 import { reframeEffect } from "./data";
-import { EffectType, TokenType } from "./types";
+import { EffectType } from "./types";
 
 describe("reframeEffect", () => {
   const observerAccount = {
@@ -12,12 +14,12 @@ describe("reframeEffect", () => {
   };
 
   const nativeToken = {
-    type: TokenType.native,
+    type: "native" as AssetType.native,
     code: "XLM",
   };
 
   const otherToken = {
-    type: TokenType.credit_alphanum12,
+    type: "credit_alphanum12" as AssetType.credit12,
     code: "CLUE",
     issuer: {
       key: "THRABEN",

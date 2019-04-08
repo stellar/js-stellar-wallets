@@ -1,76 +1,68 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 
 import { DataProvider } from "./js-stellar-wallets/";
 
+import Balances from "./components/Balances";
+import Offers from "./components/Offers";
+import Trades from "./components/Trades";
+
+const El = styled.div`
+  display: flex;
+`;
+
 class App extends Component {
   state = {
-    key: "GCCQAELN4NBN37T5WT5JYIASANP7YRLHNH27E5WCRRVDY5SPIFA76MIA",
+    keyInput: "GCCQAELN4NBN37T5WT5JYIASANP7YRLHNH27E5WCRRVDY5SPIFA76MIA",
     dataProvider: null,
-    balances: null,
-    err: null,
-    updateTimes: [],
   };
 
-  _fetchBalances = () => {
+  _setKey = (publicKey) => {
     const dataProvider = new DataProvider({
       serverUrl: "https://horizon.stellar.org",
-      accountOrKey: this.state.key,
+      accountOrKey: publicKey,
     });
 
     this.setState({
       dataProvider,
-      balances: null,
-      err: null,
-      updateTimes: [],
     });
-
-    if (dataProvider.isValidKey()) {
-      dataProvider.watchBalances({
-        onMessage: (balances) => {
-          this.setState({
-            balances,
-            updateTimes: [...this.state.updateTimes, new Date()],
-          });
-        },
-        onError: (err) => {
-          this.setState({ err });
-        },
-      });
-    }
   };
 
   render() {
-    const { key, dataProvider, balances, err, updateTimes } = this.state;
+    const { keyInput, dataProvider } = this.state;
+
     return (
       <div>
         <form
           onSubmit={(ev) => {
             ev.preventDefault();
-
-            this._fetchBalances();
+            this._setKey(keyInput);
           }}
         >
           <label>
             Public key
             <input
               type="text"
-              value={key}
-              onChange={(ev) => this.setState({ key: ev.target.value })}
+              value={keyInput}
+              onChange={(ev) => this.setState({ keyInput: ev.target.value })}
             />
-            <button>Fetch balances</button>
+            <button>Set key</button>
           </label>
         </form>
 
-        {dataProvider && dataProvider.isValidKey() && <p>Key is valid</p>}
+        {dataProvider && !dataProvider.isValidKey() && (
+          <p>That's an invalid key!</p>
+        )}
 
-        <ul>
-          {updateTimes.map((time) => (
-            <li key={time.toString()}>{time.toString()}</li>
-          ))}
-        </ul>
-
-        {balances && <pre>{JSON.stringify(balances, null, 2)}</pre>}
-        {err && <p>Error: {err}</p>}
+        {dataProvider && dataProvider.isValidKey() && (
+          <El>
+            <Balances dataProvider={dataProvider} />
+            <div>
+              <Offers dataProvider={dataProvider} />
+              <Trades dataProvider={dataProvider} />
+            </div>
+          </El>
+        )}
       </div>
     );
   }
