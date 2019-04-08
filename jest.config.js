@@ -13,7 +13,7 @@ module.exports = {
 
   coveragePathIgnorePatterns: ["node_modules", "example", "build"],
 
-  modulePathIgnorePatterns: ["build", "example", "build"],
+  modulePathIgnorePatterns: ["example", "build"],
 
   testPathIgnorePatterns: ["node_modules", "example", "build"],
 };
