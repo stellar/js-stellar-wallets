@@ -2,8 +2,6 @@ import { Horizon } from "stellar-sdk";
 
 import { Account, AssetToken, Effect, ReframedEffect, Token } from "./types";
 
-export * from "./DataProvider";
-
 /**
  * Get the string identifier for a token.
  * @returns "native" if the token is native, otherwise returns `${tokenCode}:${issuerKey}`.
