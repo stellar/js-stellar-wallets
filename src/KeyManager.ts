@@ -1,5 +1,15 @@
+import {
+  EncryptedKey,
+  Encrypter,
+  Key,
+  KeyMetadata,
+  KeyStore,
+  KeyTypeHandler,
+} from "./types";
+
 interface KeyManagerParams {
   keyStore: KeyStore;
+  keyCache: KeyStore;
   shouldCache: boolean;
 }
 
@@ -34,7 +44,7 @@ export class KeyManager {
   private encrypterMap: { [key: string]: Encrypter } = {};
   private keyStore: KeyStore;
   private keyHandlerMap: { [key: string]: KeyTypeHandler } = {};
-  private keyCache: { [publicKey: string]: Key };
+  private keyCache: { [publicKey: string]: Key } = {};
   private shouldCache: boolean;
 
   constructor({ keyStore, shouldCache = true }: KeyManagerParams) {
@@ -57,7 +67,7 @@ export class KeyManager {
    * @param password encrypt key with this as the secret
    * @param encrypter encryption algorithm to use (must have been registered)
    *
-   * @returns void on success
+   * @returns The metadata of the key
    * @throws on any error
    */
   public async storeKey({
@@ -72,6 +82,8 @@ export class KeyManager {
     const keyMetadata = await keyStoreObj.storeKeys({
       keys: [encryptedKey],
     });
+
+    this._writeToCache(key.publicKey, key);
 
     return keyMetadata[0];
   }
@@ -99,7 +111,7 @@ export class KeyManager {
     publicKey: string;
   }): Promise<KeyMetadata> {
     const res = await this.keyStore.removeKey(publicKey);
-    // TODO update cache here
+    this._writeToCache(publicKey, undefined);
     return res;
   }
 
@@ -117,11 +129,15 @@ export class KeyManager {
     publicKey,
     password,
   }: SignTransactionArgs): Promise<any> {
-    // TODO: read from cache
-    const encryptedKey = await this.keyStore.loadKey({ publicKey });
-    const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-    const key = await encrypterObj.decryptKey({ key: encryptedKey, password });
-    // TODO: write to cache
+    let key = this._readFromCache(publicKey);
+
+    if (!key) {
+      const encryptedKey = await this.keyStore.loadKey({ publicKey });
+      const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
+      key = await encrypterObj.decryptKey({ key: encryptedKey, password });
+      this._writeToCache(publicKey, key);
+    }
+
     const keyHandler = this.keyHandlerMap[key.type];
     const signedTxnEnvelope = await keyHandler.signTransaction({
       txnEnvelope,
@@ -142,154 +158,34 @@ export class KeyManager {
   }: ChangePasswordArgs): Promise<KeyMetadata[]> {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
-      oldKeys.map(async (key) => {
+      oldKeys.map(async (key: EncryptedKey) => {
         const encrypter = this.encrypterMap[key.encrypterName];
         const key2 = await encrypter.decryptKey({ key, password: oldPassword });
         return encrypter.encryptKey({ key: key2, password: newPassword });
       }),
     );
-    const res = await this.keyStore.storeKeys({ keys: newKeys });
-    // TODO: write to cache
-    return res;
+    const keys = await this.keyStore.storeKeys({ keys: newKeys });
+
+    if (this.shouldCache) {
+      keys.forEach((key: Key) => {
+        this._writeToCache(key.publicKey, key);
+      });
+    }
+
+    return keys;
   }
-}
 
-interface KeyMetadata {
-  type: string;
-  encrypterName: string;
-  publicKey: string;
-  name?: string;
-  path?: string;
-  extra?: string;
-  creationTime: Date;
-  modifiedTime: Date;
-}
+  private _readFromCache(publicKey: string): Key | undefined {
+    if (!this.shouldCache) {
+      return undefined;
+    }
 
-interface Key {
-  type: string;
-  publicKey: string;
-  name?: string;
-  secretKey?: string;
-  path?: string;
-  extra?: string;
-}
+    return this.keyCache[publicKey];
+  }
 
-interface EncryptedKey {
-  key: Key;
-  encrypterName: string;
-  salt: string;
-}
-
-interface EncryptKeyArgs {
-  key: Key;
-  password?: string;
-}
-
-interface DecryptKeyArgs {
-  key: EncryptedKey;
-  password?: string;
-}
-
-/**
- * This is the interface that an encryption plugin must implement.
- *
- * example encrypters:
- *  - identity encrypter (does nothing, ok to use for Ledger / Trezor)
- *  - scrypt password + nacl box (what StellarX uses)
- *  - scrypt password and then xor with Stellar key (what Keybase does)
- * https://keybase.io/docs/crypto/local-key-security
- */
-interface Encrypter {
-  name: string;
-  encryptKey({ key, password }: EncryptKeyArgs): Promise<EncryptedKey>;
-  decryptKey({ key, password }: DecryptKeyArgs): Promise<Key>;
-}
-
-/**
- * This is the interface that a keystore plugin must implement.
- *
- * types of keystores:
- *   - authenticated server-side storage
- *   - storage on local device
- */
-interface KeyStore {
-  name: string;
-
-  /**
-   * Initialize the keystore. Can be used to set up state like an authToken or
-   * userid that is needed to properly access the key store for the logged-in
-   * user.
-   *
-   * Can be called repeatedly to update the KeyStore state when needed (say the
-   * authToken expires)
-   *
-   * @param data any info needed to init the keystore
-   * @returns void on success
-   * @throws on any error
-   */
-  configure(data?: any): Promise<void>;
-
-  /**
-   * store the given encrypted keys, atomically if possible.
-   *
-   * @param keys already encrypted keys to add to store
-   * @returns metadata about the keys once stored
-   * @throws on any error
-   */
-  storeKeys({ keys }: { keys: EncryptedKey[] }): Promise<KeyMetadata[]>;
-
-  /**
-   *  load the key specified by this publicKey.
-   *
-   * @param publicKey specifies which key to load
-   * @returns an encrypted key promise
-   * @throws on any error
-   */
-  loadKey({ publicKey }: { publicKey: string }): Promise<EncryptedKey>;
-
-  /**
-   *  remove the key specified by this publicKey.
-   *
-   * @param publicKey specifies which key to remove
-   * @returns void on success
-   * @throws on any error
-   */
-  removeKey(publicKey: string): Promise<KeyMetadata>;
-
-  /**
-   *  List information about stored keys
-   *
-   * @returns a list of metadata about all stored keys
-   * @throws on any error
-   */
-  listKeys(): Promise<KeyMetadata[]>;
-
-  /**
-   *  Load all encrypted keys
-   *
-   * @returns a list of all stored keys
-   * @throws on any error
-   */
-  loadAllKeys(): Promise<EncryptedKey[]>;
-}
-
-interface HandlerSignTransactionArgs {
-  txnEnvelope: any;
-  key: Key;
-}
-
-/**
- * This is the interface that a key type plugin must implement.
- *
- * types of keys:
- *   - plaintext secret key (S...)
- *   - Ledger
- *   - Trezor
- */
-interface KeyTypeHandler {
-  name: string;
-  signTransaction({
-    txnEnvelope,
-    key,
-  }: HandlerSignTransactionArgs): Promise<any>;
+  private _writeToCache(publicKey: string, key: Key | undefined) {
+    if (this.shouldCache && key) {
+      this.keyCache[publicKey] = key;
+    }
+  }
 }

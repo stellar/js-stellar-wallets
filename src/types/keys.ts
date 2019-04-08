@@ -18,7 +18,7 @@ export interface Key {
   extra?: string;
 }
 
-interface EncryptedKey {
+export interface EncryptedKey {
   key: Key;
   encrypterName: string;
   salt: string;
