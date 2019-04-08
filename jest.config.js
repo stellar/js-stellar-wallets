@@ -16,6 +16,4 @@ module.exports = {
   modulePathIgnorePatterns: ["build", "example", "build", "compiled"],
 
   testPathIgnorePatterns: ["node_modules", "example", "build", "compiled"],
-
-  testMatch: ["*.test.ts"],
 };
