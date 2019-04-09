@@ -13,7 +13,8 @@ Each scenario must define the following to work with the key management API:
 
 ## Key Handlers
 
-The key handlers are shared across all the different scenarios, so just define them up here
+The key handlers are shared across all the different scenarios, so just define
+them up here
 
 - plaintext key handler
   - takes the key object
@@ -22,12 +23,13 @@ The key handlers are shared across all the different scenarios, so just define t
   - returns signed transaction
 - The Trezor / Ledger handlers
   - read the public key and path from key object
-  - Use Ledger / Trezor JS libraries to transmit transaction and receive signed transaction
+  - Use Ledger / Trezor JS libraries to transmit transaction and receive signed
+    transaction
   - returns signed transaction
 
 ## Encrypters
 
-  A few standard encrypters:
+A few standard encrypters:
 
 - identity
   - does nothing, returns plaintext as the ciphertext
@@ -67,9 +69,11 @@ KeyStore: Keys stored in DynamoDB, accessed via AppSync GraphQL
 
 - initialized with null authToken
 - storeKeys/loadKey make authenticated calls to AppSync GraphQL endpoints
-  - authentication is handled with singleton that makes AppSync calls, so no need to initialize any authToken in the KeyStore
+  - authentication is handled with singleton that makes AppSync calls, so no
+    need to initialize any authToken in the KeyStore
 - multiple keys are supported
-- changePassword is handled in the usual way via `loadAllKeys()` and `storeKeys()`
+- changePassword is handled in the usual way via `loadAllKeys()` and
+  `storeKeys()`
 
 KeyHandlers: plaintext, Trezor / Ledger
 
@@ -77,11 +81,17 @@ KeyHandlers: plaintext, Trezor / Ledger
 
 Auth strategy: Keybase's user management
 
-Encrypter: Keybase gives each device a different private / public key pair. They all have equal power, and are called sibling keys (sibkeys). Further, each device has the publicKey for each other device. The [KB key exchange doc](https://keybase.io/docs/crypto/key-exchange) explains this more.
+Encrypter: Keybase gives each device a different private / public key pair. They
+all have equal power, and are called sibling keys (sibkeys). Further, each
+device has the publicKey for each other device. The
+[KB key exchange doc](https://keybase.io/docs/crypto/key-exchange) explains this
+more.
 
 password: effectively uses this device's public / private key pair
 
-`secretKey` in `IEncryptedKey`: string-encoded JSON mapping device name to Stellar key encrypted with the given device's public key. This allows the `secretKey` to store the Stellar key in a way that any device can decrypt it.
+`secretKey` in `IEncryptedKey`: string-encoded JSON mapping device name to
+Stellar key encrypted with the given device's public key. This allows the
+`secretKey` to store the Stellar key in a way that any device can decrypt it.
 
 to encrypt:
 
@@ -90,7 +100,8 @@ to encrypt:
 
 to decrypt:
 
-- use the current device's name to look up the right encrypted key from the `secretKey` JSON
+- use the current device's name to look up the right encrypted key from the
+  `secretKey` JSON
 - decrypt it with the per-device privateKey
 
 KeyStore: stored on KB's servers
@@ -107,18 +118,24 @@ Cases to handle:
 - password change
   - this doesn't affect the per-device keys, so no need to do anything
 - change of keys for device
-  - this reduces to `changePassword()` in the normal flow, so it is used as normal, passing the old `privateKey` in for `oldPassword`, and a string-encoded JSON mapping device name to public key for the `newPassword`. The map of course contains the new `publicKey` for this device.
+  - this reduces to `changePassword()` in the normal flow, so it is used as
+    normal, passing the old `privateKey` in for `oldPassword`, and a
+    string-encoded JSON mapping device name to public key for the `newPassword`.
+    The map of course contains the new `publicKey` for this device.
 - new device provisioned
   - called from outside of the Key Manager API
   - the provisioner must decrypt all Stellar secret keys
-  - encrypt them using the new set of device encrypted keys and create a new `secretKey` entry in each `IEncryptedKey`
+  - encrypt them using the new set of device encrypted keys and create a new
+    `secretKey` entry in each `IEncryptedKey`
   - store the result to the server
 
 ## Stellar Wallet JS SDK
 
-See
-[stellar-wallet-js-sdk](https://github.com/stellar/stellar-wallet-js-sdk).
-It's a system that combines auth functionality with storing your stellar
-keys.
+See [stellar-wallet-js-sdk](https://github.com/stellar/stellar-wallet-js-sdk).
+It's a system that combines auth functionality with storing your stellar keys.
 
-Unfortunately, it can't be straight-forwardly implemented using the KeyManager API because encryption, auth, and key storage are all lumped together in functions like `getWallet`. However, if encryption and key storage were exposed separately with lower-level functions, one could build KeyManager-compatible plugins.
+Unfortunately, it can't be straight-forwardly implemented using the KeyManager
+API because encryption, auth, and key storage are all lumped together in
+functions like `getWallet`. However, if encryption and key storage were exposed
+separately with lower-level functions, one could build KeyManager-compatible
+plugins.
