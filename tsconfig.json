@@ -30,8 +30,7 @@
     "node_modules",
     "dist",
     "examples/src/js-stellar-wallets",
-    "src/fixtures",
-    "**/*.test.ts"
+    "src/fixtures"
   ],
   "typedocOptions": {
     "out": "docs",

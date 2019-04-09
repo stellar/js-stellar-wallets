@@ -1,15 +1,18 @@
 import sinon from "sinon";
 
-import { EncryptedKey } from "../types";
+import { EncryptedKey, KeyType } from "../types";
 import { MemoryKeyStore } from "./MemoryKeyStore";
 
+// tslint:disable-next-line
 describe("MemoryKeyStore", function() {
+  let clock: sinon.SinonFakeTimers;
+
   beforeEach(() => {
-    this.clock = sinon.useFakeTimers(666);
+    clock = sinon.useFakeTimers(666);
   });
 
   afterEach(() => {
-    this.clock.restore();
+    clock.restore();
   });
 
   it("properly stores keys", async () => {
@@ -17,15 +20,16 @@ describe("MemoryKeyStore", function() {
 
     const encryptedKey: EncryptedKey = {
       key: {
-        type: "Angel",
+        type: KeyType.plainTextKey,
         publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
       },
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
 
     const keyMetadata = {
-      type: "Angel",
+      type: KeyType.plainTextKey,
       encrypterName: "Test",
       publicKey: "AVACYN",
       creationTime: 666,
@@ -50,15 +54,16 @@ describe("MemoryKeyStore", function() {
 
     const encryptedKey: EncryptedKey = {
       key: {
-        type: "Angel",
+        type: KeyType.plainTextKey,
         publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
       },
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
 
     const keyMetadata = {
-      type: "Angel",
+      type: KeyType.plainTextKey,
       encrypterName: "Test",
       publicKey: "AVACYN",
       creationTime: 666,

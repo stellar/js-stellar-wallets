@@ -1,37 +1,50 @@
-export interface KeyMetadata {
-  type: string;
-  encrypterName: string;
+import { Transaction } from "stellar-base";
+
+export enum KeyType {
+  ledger = "ledger",
+  plainTextKey = "plainTextKey",
+}
+
+interface BaseKey {
   publicKey: string;
-  name?: string;
-  path?: string;
   extra?: string;
+}
+
+export interface LedgerKey extends BaseKey {
+  type: KeyType;
+  path: string;
+}
+
+export interface PlainTextKey extends BaseKey {
+  type: KeyType;
+  privateKey: string;
+}
+
+/**
+ * The whole, unencrypted blob. Should be enough information to sign a
+ * key alone, or with a library that reaches out to a hardware device.
+ * The "extra" property is for miscellaneous notes about the key.
+ */
+export type Key = LedgerKey | PlainTextKey;
+
+/**
+ * Metadata about the key, without any private information.
+ */
+export interface KeyMetadata extends BaseKey {
+  type: KeyType;
+  encrypterName: string;
+  path?: string;
   creationTime: number;
   modifiedTime: number;
 }
 
-export interface Key {
-  type: string;
-  publicKey: string;
-  name?: string;
-  secretKey?: string;
-  path?: string;
-  extra?: string;
-}
-
+/**
+ * Metadata about the key, without any private information.
+ */
 export interface EncryptedKey {
   key: Key;
   encrypterName: string;
   salt: string;
-}
-
-interface EncryptKeyArgs {
-  key: Key;
-  password?: string;
-}
-
-interface DecryptKeyArgs {
-  key: EncryptedKey;
-  password?: string;
 }
 
 /**
@@ -45,8 +58,20 @@ interface DecryptKeyArgs {
  */
 export interface Encrypter {
   name: string;
-  encryptKey({ key, password }: EncryptKeyArgs): Promise<EncryptedKey>;
-  decryptKey({ key, password }: DecryptKeyArgs): Promise<Key>;
+  encryptKey({
+    key,
+    password,
+  }: {
+    key: Key;
+    password?: string;
+  }): Promise<EncryptedKey>;
+  decryptKey({
+    key,
+    password,
+  }: {
+    key: EncryptedKey;
+    password?: string;
+  }): Promise<Key>;
 }
 
 /**
@@ -118,7 +143,7 @@ export interface KeyStore {
 }
 
 interface HandlerSignTransactionArgs {
-  txnEnvelope: any;
+  transaction: Transaction;
   key: Key;
 }
 
@@ -133,7 +158,7 @@ interface HandlerSignTransactionArgs {
 export interface KeyTypeHandler {
   name: string;
   signTransaction({
-    txnEnvelope,
+    transaction,
     key,
-  }: HandlerSignTransactionArgs): Promise<any>;
+  }: HandlerSignTransactionArgs): Promise<Transaction>;
 }

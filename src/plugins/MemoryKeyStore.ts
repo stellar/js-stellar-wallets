@@ -1,9 +1,10 @@
+import { getKeyMetadata } from "../KeyHelpers";
 import { EncryptedKey, KeyMetadata, KeyStore } from "../types";
 
 interface MemoryItem {
   creationTime: number;
   modifiedTime: number;
-  key: EncryptedKey;
+  encryptedKey: EncryptedKey;
 }
 
 interface MemoryStorer {
@@ -14,13 +15,8 @@ function getNow() {
   return Math.floor(Date.now());
 }
 
-function getMetadataFromMemoryItem(item: MemoryItem): KeyMetadata {
-  return {
-    ...item.key.key,
-    encrypterName: item.key.encrypterName,
-    creationTime: item.creationTime,
-    modifiedTime: item.modifiedTime,
-  };
+function getMetadataFromMemoryItem(item: any): KeyMetadata {
+  return getKeyMetadata(item);
 }
 
 export class MemoryKeyStore implements KeyStore {
@@ -47,21 +43,24 @@ export class MemoryKeyStore implements KeyStore {
       this.keyStore[publicKey] = {
         creationTime,
         modifiedTime,
-        key: encryptedKey,
+        encryptedKey,
       };
-      metadata.push({
-        ...encryptedKey.key,
-        encrypterName: encryptedKey.encrypterName,
-        creationTime,
-        modifiedTime,
-      });
+      metadata.push(
+        getMetadataFromMemoryItem({
+          encryptedKey,
+          creationTime,
+          modifiedTime,
+        }),
+      );
     });
     return Promise.resolve(metadata);
   }
 
   public loadKey(publicKey: string) {
     return Promise.resolve(
-      this.keyStore[publicKey] ? this.keyStore[publicKey].key : undefined,
+      this.keyStore[publicKey]
+        ? this.keyStore[publicKey].encryptedKey
+        : undefined,
     );
   }
 
@@ -86,7 +85,7 @@ export class MemoryKeyStore implements KeyStore {
 
   public loadAllKeys() {
     return Promise.resolve(
-      Object.values(this.keyStore).map((item: MemoryItem) => item.key),
+      Object.values(this.keyStore).map((item: MemoryItem) => item.encryptedKey),
     );
   }
 }

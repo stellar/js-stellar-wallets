@@ -1,3 +1,5 @@
+import { Transaction } from "stellar-base";
+
 import {
   EncryptedKey,
   Encrypter,
@@ -20,7 +22,7 @@ interface AddKeyArgs {
 }
 
 interface SignTransactionArgs {
-  txnEnvelope: any;
+  transaction: Transaction;
   publicKey: string;
   password?: string;
 }
@@ -113,13 +115,13 @@ export class KeyManager {
    * Sign a transaction using the specified publicKey. Supports both using a
    * cached key and going out to the keystore to read and decrypt
    *
-   * @param txnEnvelope transaction envelope to sign
+   * @param transaction Transaction object to sign
    * @param publicKey key to sign with
    * @returns signed transaction envelope
    * @throws on any error, or if no key was found
    */
   public async signTransaction({
-    txnEnvelope,
+    transaction,
     publicKey,
     password,
   }: SignTransactionArgs): Promise<any> {
@@ -139,7 +141,7 @@ export class KeyManager {
 
     const keyHandler = this.keyHandlerMap[key.type];
     const signedTxnEnvelope = await keyHandler.signTransaction({
-      txnEnvelope,
+      transaction,
       key,
     });
     return signedTxnEnvelope;
@@ -159,19 +161,21 @@ export class KeyManager {
     const newKeys = await Promise.all(
       oldKeys.map(async (key: EncryptedKey) => {
         const encrypter = this.encrypterMap[key.encrypterName];
-        const key2 = await encrypter.decryptKey({ key, password: oldPassword });
-        return encrypter.encryptKey({ key: key2, password: newPassword });
+        const decryptedKey = await encrypter.decryptKey({
+          key,
+          password: oldPassword,
+        });
+
+        this._writeToCache(key.key.publicKey, decryptedKey);
+
+        return encrypter.encryptKey({
+          key: decryptedKey,
+          password: newPassword,
+        });
       }),
     );
-    const keys = await this.keyStore.storeKeys(newKeys);
 
-    if (this.shouldCache) {
-      keys.forEach((key: Key) => {
-        this._writeToCache(key.publicKey, key);
-      });
-    }
-
-    return keys;
+    return this.keyStore.storeKeys(newKeys);
   }
 
   private _readFromCache(publicKey: string): Key | undefined {

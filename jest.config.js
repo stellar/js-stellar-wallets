@@ -11,9 +11,9 @@ module.exports = {
   // The test environment that will be used for testing
   testEnvironment: "node",
 
-  coveragePathIgnorePatterns: ["node_modules", "example", "build"],
+  coveragePathIgnorePatterns: ["node_modules", "example", "build", "dist"],
 
-  modulePathIgnorePatterns: ["example", "build"],
+  modulePathIgnorePatterns: ["example", "build", "dist"],
 
-  testPathIgnorePatterns: ["node_modules", "example", "build"],
+  testPathIgnorePatterns: ["node_modules", "example", "build", "dist"],
 };
