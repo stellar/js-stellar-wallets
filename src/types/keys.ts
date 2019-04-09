@@ -80,16 +80,16 @@ export interface KeyStore {
    * @returns metadata about the keys once stored
    * @throws on any error
    */
-  storeKeys({ keys }: { keys: EncryptedKey[] }): Promise<KeyMetadata[]>;
+  storeKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
    *  load the key specified by this publicKey.
    *
    * @param publicKey specifies which key to load
-   * @returns an encrypted key promise
+   * @returns an encrypted key promise, or null
    * @throws on any error
    */
-  loadKey({ publicKey }: { publicKey: string }): Promise<EncryptedKey>;
+  loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
 
   /**
    *  remove the key specified by this publicKey.
@@ -98,7 +98,7 @@ export interface KeyStore {
    * @returns void on success
    * @throws on any error
    */
-  removeKey(publicKey: string): Promise<KeyMetadata>;
+  removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
 
   /**
    *  List information about stored keys

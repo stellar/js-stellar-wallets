@@ -79,9 +79,7 @@ export class KeyManager {
     const encrypterObj = this.encrypterMap[encrypter];
     const keyStoreObj = this.keyStore;
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
-    const keyMetadata = await keyStoreObj.storeKeys({
-      keys: [encryptedKey],
-    });
+    const keyMetadata = await keyStoreObj.storeKeys([encryptedKey]);
 
     this._writeToCache(key.publicKey, key);
 
@@ -102,14 +100,10 @@ export class KeyManager {
    *  remove the key specified by this publicKey.
    *
    * @param publicKey specifies which key to remove
-   * @returns void on success
+   * @returns Metadata of the removed key
    * @throws on any error
    */
-  public async removeKey({
-    publicKey,
-  }: {
-    publicKey: string;
-  }): Promise<KeyMetadata> {
+  public async removeKey(publicKey: string): Promise<KeyMetadata | undefined> {
     const res = await this.keyStore.removeKey(publicKey);
     this._writeToCache(publicKey, undefined);
     return res;
@@ -122,7 +116,7 @@ export class KeyManager {
    * @param txnEnvelope transaction envelope to sign
    * @param publicKey key to sign with
    * @returns signed transaction envelope
-   * @throws on any error
+   * @throws on any error, or if no key was found
    */
   public async signTransaction({
     txnEnvelope,
@@ -132,7 +126,12 @@ export class KeyManager {
     let key = this._readFromCache(publicKey);
 
     if (!key) {
-      const encryptedKey = await this.keyStore.loadKey({ publicKey });
+      const encryptedKey = await this.keyStore.loadKey(publicKey);
+
+      if (!encryptedKey) {
+        throw new Error("No key found");
+      }
+
       const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
       key = await encrypterObj.decryptKey({ key: encryptedKey, password });
       this._writeToCache(publicKey, key);
@@ -164,7 +163,7 @@ export class KeyManager {
         return encrypter.encryptKey({ key: key2, password: newPassword });
       }),
     );
-    const keys = await this.keyStore.storeKeys({ keys: newKeys });
+    const keys = await this.keyStore.storeKeys(newKeys);
 
     if (this.shouldCache) {
       keys.forEach((key: Key) => {
