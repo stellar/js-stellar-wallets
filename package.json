@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
-  "types": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "git@github.com:stellar/js-stellar-wallets.git",
   "author": "Stellar Development Foundation <hello@stellar.org>",
   "license": "Apache-2.0",
