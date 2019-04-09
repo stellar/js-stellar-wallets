@@ -55,7 +55,7 @@ export class KeyManager {
   }
 
   public registerKeyHandler(keyHandler: KeyTypeHandler) {
-    this.keyHandlerMap[keyHandler.name] = keyHandler;
+    this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
   public registerEncrypter(encrypter: Encrypter) {

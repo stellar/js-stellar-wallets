@@ -156,7 +156,7 @@ interface HandlerSignTransactionArgs {
  *   - Trezor
  */
 export interface KeyTypeHandler {
-  name: string;
+  keyType: KeyType;
   signTransaction({
     transaction,
     key,
