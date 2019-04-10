@@ -1,18 +1,20 @@
-import { Key } from "../types";
+import { EncryptedKey, Key } from "../types";
 
-interface IdentityEncrypterParams {
-  key: Key;
-}
+const NAME = "IdentityEncrypter";
 
 /**
- * "Encrypt" keys by returning exactly what
+ * "Encrypt" keys in a very basic, naive way.
  */
 export const IdentityEncrypter = {
-  name: "IdentityEncrypter",
-  encryptKey({ key }: IdentityEncrypterParams) {
-    return Promise.resolve(key);
+  name: NAME,
+  encryptKey({ key }: { key: Key }) {
+    return Promise.resolve({
+      key,
+      encrypterName: NAME,
+      salt: "identity",
+    });
   },
-  decryptKey({ key }: IdentityEncrypterParams) {
-    return Promise.resolve(key);
+  decryptKey({ encryptedKey }: { encryptedKey: EncryptedKey }) {
+    return Promise.resolve(encryptedKey.key);
   },
 };

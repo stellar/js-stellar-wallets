@@ -47,6 +47,7 @@
     "jest": "^24.7.1",
     "lint-staged": "^8.1.5",
     "prettier": "^1.16.4",
+    "regenerator-runtime": "^0.13.2",
     "sinon": "^7.3.1",
     "tsc-watch": "^2.1.2",
     "tslint": "^5.14.0",

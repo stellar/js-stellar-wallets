@@ -2,28 +2,26 @@ import { KeyType } from "../types";
 
 import { IdentityEncrypter } from "./IdentityEncrypter";
 
-it("encrypts to itself", async () => {
-  const key = {
+const key = {
+  type: KeyType.plaintextKey,
+  publicKey: "AVACYN",
+  privateKey: "ARCHANGEL",
+};
+
+const encryptedKey = {
+  key: {
     type: KeyType.plaintextKey,
     publicKey: "AVACYN",
     privateKey: "ARCHANGEL",
-  };
-  expect(
-    await IdentityEncrypter.encryptKey({
-      key,
-    }),
-  ).toEqual(key);
+  },
+  encrypterName: "IdentityEncrypter",
+  salt: "identity",
+};
+
+it("encrypts to itself", async () => {
+  expect(await IdentityEncrypter.encryptKey({ key })).toEqual(encryptedKey);
 });
 
 it("decrypts to itself", async () => {
-  const key = {
-    type: KeyType.plaintextKey,
-    publicKey: "AVACYN",
-    privateKey: "ARCHANGEL",
-  };
-  expect(
-    await IdentityEncrypter.decryptKey({
-      key,
-    }),
-  ).toEqual(key);
+  expect(await IdentityEncrypter.decryptKey({ encryptedKey })).toEqual(key);
 });

@@ -15,13 +15,12 @@ import {
 
 interface KeyManagerParams {
   keyStore: KeyStore;
-  keyCache: KeyStore;
-  shouldCache: boolean;
+  shouldCache?: boolean;
 }
 
 interface AddKeyArgs {
   key: Key;
-  encrypter: string;
+  encrypterName: string;
   password?: string;
 }
 
@@ -48,16 +47,21 @@ interface ChangePasswordArgs {
  * plaintext key handler are provided automatically.)
  */
 export class KeyManager {
-  private encrypterMap: { [key: string]: Encrypter } = {};
+  private encrypterMap: { [key: string]: Encrypter };
   private keyStore: KeyStore;
-  private keyHandlerMap: { [key: string]: KeyTypeHandler } = {
-    [KeyType.ledger]: ledgerHandler,
-    [KeyType.plaintextKey]: plaintextKeyHandler,
-  };
-  private keyCache: { [publicKey: string]: Key } = {};
+  private keyHandlerMap: { [key: string]: KeyTypeHandler };
+  private keyCache: { [publicKey: string]: Key };
   private shouldCache: boolean;
 
   constructor({ keyStore, shouldCache = true }: KeyManagerParams) {
+    this.encrypterMap = {};
+    this.keyHandlerMap = {
+      [KeyType.ledger]: ledgerHandler,
+      [KeyType.plaintextKey]: plaintextKeyHandler,
+    };
+
+    this.keyCache = {};
+
     this.keyStore = keyStore;
     this.shouldCache = shouldCache;
   }
@@ -66,16 +70,16 @@ export class KeyManager {
     this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
-  public registerEncrypter(encrypter: Encrypter) {
-    this.encrypterMap[encrypter.name] = encrypter;
+  public registerEncrypter(encrypterName: Encrypter) {
+    this.encrypterMap[encrypterName.name] = encrypterName;
   }
 
   /**
-   * Stores a key in the keyStore after encrypting it with the encrypter.
+   * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @param key key to store
    * @param password encrypt key with this as the secret
-   * @param encrypter encryption algorithm to use (must have been registered)
+   * @param encrypterName encryption algorithm to use (must have been registered)
    *
    * @returns The metadata of the key
    * @throws on any error
@@ -83,13 +87,12 @@ export class KeyManager {
   public async storeKey({
     key,
     password,
-    encrypter,
+    encrypterName,
   }: AddKeyArgs): Promise<KeyMetadata> {
     // happy path-only code to demonstrate idea
-    const encrypterObj = this.encrypterMap[encrypter];
-    const keyStoreObj = this.keyStore;
+    const encrypterObj = this.encrypterMap[encrypterName];
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
-    const keyMetadata = await keyStoreObj.storeKeys([encryptedKey]);
+    const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
     this._writeToCache(key.publicKey, key);
 
@@ -168,15 +171,15 @@ export class KeyManager {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (key: EncryptedKey) => {
-        const encrypter = this.encrypterMap[key.encrypterName];
-        const decryptedKey = await encrypter.decryptKey({
+        const encrypterName = this.encrypterMap[key.encrypterName];
+        const decryptedKey = await encrypterName.decryptKey({
           key,
           password: oldPassword,
         });
 
         this._writeToCache(key.key.publicKey, decryptedKey);
 
-        return encrypter.encryptKey({
+        return encrypterName.encryptKey({
           key: decryptedKey,
           password: newPassword,
         });

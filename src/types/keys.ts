@@ -6,17 +6,16 @@ export enum KeyType {
 }
 
 interface BaseKey {
+  type: KeyType | string;
   publicKey: string;
   extra?: string;
 }
 
 export interface LedgerKey extends BaseKey {
-  type: KeyType;
   path: string;
 }
 
 export interface PlainTextKey extends BaseKey {
-  type: KeyType;
   privateKey: string;
 }
 
@@ -31,7 +30,7 @@ export type Key = LedgerKey | PlainTextKey;
  * Metadata about the key, without any private information.
  */
 export interface KeyMetadata extends BaseKey {
-  type: KeyType;
+  type: KeyType | string;
   encrypterName: string;
   path?: string;
   creationTime: number;
@@ -51,7 +50,7 @@ export interface EncryptedKey {
  * This is the export interface that an encryption plugin must implement.
  *
  * example encrypters:
- *  - identity encrypter (does nothing, ok to use for Ledger / Trezor)
+ *  - identity encrypterName (does nothing, ok to use for Ledger / Trezor)
  *  - scrypt password + nacl box (what StellarX uses)
  *  - scrypt password and then xor with Stellar key (what Keybase does)
  * https://keybase.io/docs/crypto/local-key-security
