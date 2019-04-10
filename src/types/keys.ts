@@ -65,10 +65,10 @@ export interface Encrypter {
     password?: string;
   }): Promise<EncryptedKey>;
   decryptKey({
-    key,
+    encryptedKey,
     password,
   }: {
-    key: EncryptedKey;
+    encryptedKey: EncryptedKey;
     password?: string;
   }): Promise<Key>;
 }
