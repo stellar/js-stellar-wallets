@@ -993,6 +993,21 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/ledgerhq__hw-transport-u2f@^4.21.1":
+  version "4.21.1"
+  resolved "https://registry.yarnpkg.com/@types/ledgerhq__hw-transport-u2f/-/ledgerhq__hw-transport-u2f-4.21.1.tgz#8193aa3199cc5ba6cf7f9d880a88f2993a6c6c3b"
+  integrity sha512-8mVUb2/Oj3VtP/ERpm//HL/JOLxKFZycMeFjKxkRMp3283Vz0slBkeHxSdjxRQjiZi7zRu9amQ8dPXnr1B5nIg==
+  dependencies:
+    "@types/ledgerhq__hw-transport" "*"
+    "@types/node" "*"
+
+"@types/ledgerhq__hw-transport@*":
+  version "4.21.1"
+  resolved "https://registry.yarnpkg.com/@types/ledgerhq__hw-transport/-/ledgerhq__hw-transport-4.21.1.tgz#ceaaeb4fbd91d0244f2e2ef382e352879f4f8f3f"
+  integrity sha512-TPsB6seugMHuqGa3xPz4CgjSlmQdVf4VltxHGcdDSG3Fu7nKqD1zZVE+AnULq4oIgs2lIRcGHiDCgN7kZFDeUw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/lodash@^4.14.110":
   version "4.14.123"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.123.tgz#39be5d211478c8dd3bdae98ee75bb7efe4abfe4d"

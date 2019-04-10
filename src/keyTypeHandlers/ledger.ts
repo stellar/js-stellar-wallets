@@ -1,5 +1,5 @@
-import LedgerTransport from "@ledgerhq/hq-transport-u2f";
 import LedgerStr from "@ledgerhq/hw-app-str";
+import LedgerTransport from "@ledgerhq/hw-transport-u2f";
 import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
