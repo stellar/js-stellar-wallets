@@ -117,14 +117,14 @@ export class KeyManager {
    *
    * @param transaction Transaction object to sign
    * @param publicKey key to sign with
-   * @returns signed transaction envelope
+   * @returns signed transaction
    * @throws on any error, or if no key was found
    */
   public async signTransaction({
     transaction,
     publicKey,
     password,
-  }: SignTransactionArgs): Promise<any> {
+  }: SignTransactionArgs): Promise<Transaction> {
     let key = this._readFromCache(publicKey);
 
     if (!key) {
@@ -140,11 +140,11 @@ export class KeyManager {
     }
 
     const keyHandler = this.keyHandlerMap[key.type];
-    const signedTxnEnvelope = await keyHandler.signTransaction({
+    const signedTransaction = await keyHandler.signTransaction({
       transaction,
       key,
     });
-    return signedTxnEnvelope;
+    return signedTransaction;
   }
 
   /**
