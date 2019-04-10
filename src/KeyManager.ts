@@ -1,11 +1,15 @@
 import { Transaction } from "stellar-base";
 
+import { ledgerHandler } from "./keyTypeHandlers/ledger";
+import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
+
 import {
   EncryptedKey,
   Encrypter,
   Key,
   KeyMetadata,
   KeyStore,
+  KeyType,
   KeyTypeHandler,
 } from "./types";
 
@@ -39,13 +43,17 @@ interface ChangePasswordArgs {
  *
  *  It requires the following to function:
  * - KeyStore (passed into constructor)
- * - KeyTypeHandler (one or more passed in via registerKeyHandler)
  * - Encrypter (one or more passed in via registerEncrypter)
+ * - KeyTypeHandler (one or more passed in via registerKeyHandler. a ledger and
+ * plaintext key handler are provided automatically.)
  */
 export class KeyManager {
   private encrypterMap: { [key: string]: Encrypter } = {};
   private keyStore: KeyStore;
-  private keyHandlerMap: { [key: string]: KeyTypeHandler } = {};
+  private keyHandlerMap: { [key: string]: KeyTypeHandler } = {
+    [KeyType.ledger]: ledgerHandler,
+    [KeyType.plaintextKey]: plaintextKeyHandler,
+  };
   private keyCache: { [publicKey: string]: Key } = {};
   private shouldCache: boolean;
 

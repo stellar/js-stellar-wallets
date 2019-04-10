@@ -20,7 +20,7 @@ describe("MemoryKeyStore", function() {
 
     const encryptedKey: EncryptedKey = {
       key: {
-        type: KeyType.plainTextKey,
+        type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         privateKey: "ARCHANGEL",
       },
@@ -29,7 +29,7 @@ describe("MemoryKeyStore", function() {
     };
 
     const keyMetadata = {
-      type: KeyType.plainTextKey,
+      type: KeyType.plaintextKey,
       encrypterName: "Test",
       publicKey: "AVACYN",
       creationTime: 666,
@@ -54,7 +54,7 @@ describe("MemoryKeyStore", function() {
 
     const encryptedKey: EncryptedKey = {
       key: {
-        type: KeyType.plainTextKey,
+        type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         privateKey: "ARCHANGEL",
       },
@@ -63,7 +63,7 @@ describe("MemoryKeyStore", function() {
     };
 
     const keyMetadata = {
-      type: KeyType.plainTextKey,
+      type: KeyType.plaintextKey,
       encrypterName: "Test",
       publicKey: "AVACYN",
       creationTime: 666,

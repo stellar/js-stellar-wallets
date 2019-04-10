@@ -4,7 +4,7 @@ import { IdentityEncrypter } from "./IdentityEncrypter";
 
 it("encrypts to itself", async () => {
   const key = {
-    type: KeyType.plainTextKey,
+    type: KeyType.plaintextKey,
     publicKey: "AVACYN",
     privateKey: "ARCHANGEL",
   };
@@ -17,7 +17,7 @@ it("encrypts to itself", async () => {
 
 it("decrypts to itself", async () => {
   const key = {
-    type: KeyType.plainTextKey,
+    type: KeyType.plaintextKey,
     publicKey: "AVACYN",
     privateKey: "ARCHANGEL",
   };

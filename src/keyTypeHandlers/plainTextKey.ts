@@ -3,7 +3,7 @@ import StellarSdk from "stellar-sdk";
 
 import { Key, KeyType, KeyTypeHandler, PlainTextKey } from "../types";
 
-export const ledgerHandler: KeyTypeHandler = {
+export const plaintextKeyHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,
   async signTransaction({
     transaction,

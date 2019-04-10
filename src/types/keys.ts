@@ -2,7 +2,7 @@ import { Transaction } from "stellar-base";
 
 export enum KeyType {
   ledger = "ledger",
-  plainTextKey = "plainTextKey",
+  plaintextKey = "plaintextKey",
 }
 
 interface BaseKey {
