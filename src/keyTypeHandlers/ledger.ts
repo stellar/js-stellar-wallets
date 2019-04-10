@@ -33,7 +33,7 @@ export const ledgerHandler: KeyTypeHandler = {
     const transport = await LedgerTransport.create(60 * 1000);
     const ledgerApi = new LedgerStr(transport);
     const result = await ledgerApi.signTransaction(
-      "44'/148'/0'",
+      key.path,
       transaction.signatureBase(),
     );
 
@@ -44,7 +44,6 @@ export const ledgerHandler: KeyTypeHandler = {
     });
     transaction.signatures.push(decoratedSignature);
 
-    console.log("key: ", key);
     return Promise.resolve(transaction);
   },
 };
