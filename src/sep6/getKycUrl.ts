@@ -1,6 +1,5 @@
 import { InteractiveKycNeeded } from "./types";
 
-export const getKycUrl = (
-  response: InteractiveKycNeeded,
-  callbackUrl: string,
-) => `${response.url}&callback=${callbackUrl}`;
+export function getKycUrl(response: InteractiveKycNeeded, callbackUrl: string) {
+  return `${response.url}&callback=${callbackUrl}`;
+}

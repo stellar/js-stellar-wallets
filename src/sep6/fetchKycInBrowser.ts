@@ -1,13 +1,13 @@
 import { getKycUrl } from "./getKycUrl";
 import { InteractiveKycNeeded, KycPromptStatus } from "./types";
 
-export const fetchKycInBrowser = ({
+export function fetchKycInBrowser({
   response,
   window: windowContext,
 }: {
   response: InteractiveKycNeeded;
   window: Window;
-}): Promise<KycPromptStatus> => {
+}): Promise<KycPromptStatus> {
   const { origin } = new URL(response.url);
   return new Promise((resolve, reject) => {
     const handleMessage = (e: MessageEvent) => {
@@ -30,4 +30,4 @@ export const fetchKycInBrowser = ({
     windowContext.addEventListener("message", handleMessage);
     windowContext.location.href = getKycUrl(response, "postMessage");
   });
-};
+}

@@ -9,7 +9,7 @@ import {
   WithdrawInfo,
 } from "./types";
 
-export const parseInfo = (info: RawInfo) => {
+export function parseInfo(info: RawInfo) {
   const { fee, transactions, transaction } = info;
   return {
     withdraw: parseWithdraw(info),
@@ -18,7 +18,7 @@ export const parseInfo = (info: RawInfo) => {
     transactions,
     transaction,
   };
-};
+}
 
 const parseFee = (
   {
@@ -46,20 +46,24 @@ const parseFee = (
   }
 };
 
-const parseType = ([typeName, type]: [string, RawType]) => ({
-  name: typeName,
-  fields: Object.entries(type.fields).map(parseField),
-});
+function parseType([typeName, type]: [string, RawType]) {
+  return {
+    name: typeName,
+    fields: Object.entries(type.fields).map(parseField),
+  };
+}
 
 type FieldEntry = [string, RawField];
 
-const parseField = ([fieldName, field]: FieldEntry): Field => ({
-  ...field,
-  name: fieldName,
-});
+function parseField([fieldName, field]: FieldEntry): Field {
+  return {
+    ...field,
+    name: fieldName,
+  };
+}
 
-export const parseWithdraw = (info: RawInfo): WithdrawInfo =>
-  Object.entries(info.withdraw).reduce(
+export function parseWithdraw(info: RawInfo): WithdrawInfo {
+  return Object.entries(info.withdraw).reduce(
     (accum, [assetCode, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
 
@@ -74,9 +78,10 @@ export const parseWithdraw = (info: RawInfo): WithdrawInfo =>
     },
     {} as WithdrawInfo,
   );
+}
 
-export const parseDeposit = (info: RawInfo): DepositInfo =>
-  Object.entries(info.deposit).reduce(
+export function parseDeposit(info: RawInfo): DepositInfo {
+  return Object.entries(info.deposit).reduce(
     (accum, [assetCode, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
 
@@ -91,3 +96,4 @@ export const parseDeposit = (info: RawInfo): DepositInfo =>
     },
     {} as DepositInfo,
   );
+}
