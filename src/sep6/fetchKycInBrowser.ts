@@ -1,11 +1,11 @@
 import { getKycUrl } from "./getKycUrl";
-import { InteractiveKycNeeded, KycPromptStatus } from "./types";
+import { InteractiveKycNeededResponse, KycPromptStatus } from "./types";
 
 export function fetchKycInBrowser({
   response,
   window: windowContext,
 }: {
-  response: InteractiveKycNeeded;
+  response: InteractiveKycNeededResponse;
   window: Window;
 }): Promise<KycPromptStatus> {
   const { origin } = new URL(response.url);

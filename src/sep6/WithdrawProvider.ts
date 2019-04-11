@@ -5,7 +5,7 @@ import { fetchKycInBrowser } from "./fetchKycInBrowser";
 import { TransferProvider } from "./TransferProvider";
 import {
   FeeArgs,
-  InteractiveKycNeeded,
+  InteractiveKycNeededResponse,
   TransferResponse,
   WithdrawRequest,
 } from "./types";
@@ -34,7 +34,7 @@ export class WithdrawProvider extends TransferProvider {
     request,
     window: windowContext,
   }: {
-    response: InteractiveKycNeeded;
+    response: InteractiveKycNeededResponse;
     request: WithdrawRequest;
     window: Window;
   }) {

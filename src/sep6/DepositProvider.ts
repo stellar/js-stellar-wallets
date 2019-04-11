@@ -6,7 +6,7 @@ import { TransferProvider } from "./TransferProvider";
 import {
   DepositRequest,
   FeeArgs,
-  InteractiveKycNeeded,
+  InteractiveKycNeededResponse,
   TransferResponse,
 } from "./types";
 
@@ -34,7 +34,7 @@ export class DepositProvider extends TransferProvider {
     request,
     window: windowContext,
   }: {
-    response: InteractiveKycNeeded;
+    response: InteractiveKycNeededResponse;
     request: DepositRequest;
     window: Window;
   }) {

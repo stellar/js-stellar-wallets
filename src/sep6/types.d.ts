@@ -2,7 +2,7 @@ export type getKycUrl = (args: GetKycArgs) => string;
 
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
-  response: InteractiveKycNeeded;
+  response: InteractiveKycNeededResponse;
   callbackUrl: string;
 }
 
@@ -151,13 +151,13 @@ export interface DepositOk extends TransferResponse {
   };
 }
 
-export interface NonInteractiveKycNeeded extends TransferResponse {
+export interface NonInteractiveKycNeededResponse extends TransferResponse {
   type: "non_interactive_customer_info_needed";
   fields: string[]; // This can be restricted to the list of strings in SEP-9
   // https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0009.md#kyc--aml-fields
 }
 
-export interface InteractiveKycNeeded extends TransferResponse {
+export interface InteractiveKycNeededResponse extends TransferResponse {
   type: "interactive_customer_info_needed";
   url: string;
   interactiveDeposit?: boolean;
