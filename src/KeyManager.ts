@@ -1,23 +1,26 @@
 import { Transaction } from "stellar-base";
 
+import { ledgerHandler } from "./keyTypeHandlers/ledger";
+import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
+
 import {
   EncryptedKey,
   Encrypter,
   Key,
   KeyMetadata,
   KeyStore,
+  KeyType,
   KeyTypeHandler,
 } from "./types";
 
 interface KeyManagerParams {
   keyStore: KeyStore;
-  keyCache: KeyStore;
-  shouldCache: boolean;
+  shouldCache?: boolean;
 }
 
 interface AddKeyArgs {
   key: Key;
-  encrypter: string;
+  encrypterName: string;
   password?: string;
 }
 
@@ -39,17 +42,26 @@ interface ChangePasswordArgs {
  *
  *  It requires the following to function:
  * - KeyStore (passed into constructor)
- * - KeyTypeHandler (one or more passed in via registerKeyHandler)
  * - Encrypter (one or more passed in via registerEncrypter)
+ * - KeyTypeHandler (one or more passed in via registerKeyHandler. a ledger and
+ * plaintext key handler are provided automatically.)
  */
 export class KeyManager {
-  private encrypterMap: { [key: string]: Encrypter } = {};
+  private encrypterMap: { [key: string]: Encrypter };
   private keyStore: KeyStore;
-  private keyHandlerMap: { [key: string]: KeyTypeHandler } = {};
-  private keyCache: { [publicKey: string]: Key } = {};
+  private keyHandlerMap: { [key: string]: KeyTypeHandler };
+  private keyCache: { [publicKey: string]: Key };
   private shouldCache: boolean;
 
   constructor({ keyStore, shouldCache = true }: KeyManagerParams) {
+    this.encrypterMap = {};
+    this.keyHandlerMap = {
+      [KeyType.ledger]: ledgerHandler,
+      [KeyType.plaintextKey]: plaintextKeyHandler,
+    };
+
+    this.keyCache = {};
+
     this.keyStore = keyStore;
     this.shouldCache = shouldCache;
   }
@@ -58,16 +70,16 @@ export class KeyManager {
     this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
-  public registerEncrypter(encrypter: Encrypter) {
-    this.encrypterMap[encrypter.name] = encrypter;
+  public registerEncrypter(encrypterName: Encrypter) {
+    this.encrypterMap[encrypterName.name] = encrypterName;
   }
 
   /**
-   * Stores a key in the keyStore after encrypting it with the encrypter.
+   * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @param key key to store
    * @param password encrypt key with this as the secret
-   * @param encrypter encryption algorithm to use (must have been registered)
+   * @param encrypterName encryption algorithm to use (must have been registered)
    *
    * @returns The metadata of the key
    * @throws on any error
@@ -75,13 +87,12 @@ export class KeyManager {
   public async storeKey({
     key,
     password,
-    encrypter,
+    encrypterName,
   }: AddKeyArgs): Promise<KeyMetadata> {
     // happy path-only code to demonstrate idea
-    const encrypterObj = this.encrypterMap[encrypter];
-    const keyStoreObj = this.keyStore;
+    const encrypterObj = this.encrypterMap[encrypterName];
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
-    const keyMetadata = await keyStoreObj.storeKeys([encryptedKey]);
+    const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
     this._writeToCache(key.publicKey, key);
 
@@ -117,14 +128,14 @@ export class KeyManager {
    *
    * @param transaction Transaction object to sign
    * @param publicKey key to sign with
-   * @returns signed transaction envelope
+   * @returns signed transaction
    * @throws on any error, or if no key was found
    */
   public async signTransaction({
     transaction,
     publicKey,
     password,
-  }: SignTransactionArgs): Promise<any> {
+  }: SignTransactionArgs): Promise<Transaction> {
     let key = this._readFromCache(publicKey);
 
     if (!key) {
@@ -135,16 +146,16 @@ export class KeyManager {
       }
 
       const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-      key = await encrypterObj.decryptKey({ key: encryptedKey, password });
+      key = await encrypterObj.decryptKey({ encryptedKey, password });
       this._writeToCache(publicKey, key);
     }
 
     const keyHandler = this.keyHandlerMap[key.type];
-    const signedTxnEnvelope = await keyHandler.signTransaction({
+    const signedTransaction = await keyHandler.signTransaction({
       transaction,
       key,
     });
-    return signedTxnEnvelope;
+    return signedTransaction;
   }
 
   /**
@@ -159,16 +170,16 @@ export class KeyManager {
   }: ChangePasswordArgs): Promise<KeyMetadata[]> {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
-      oldKeys.map(async (key: EncryptedKey) => {
-        const encrypter = this.encrypterMap[key.encrypterName];
-        const decryptedKey = await encrypter.decryptKey({
-          key,
+      oldKeys.map(async (encryptedKey: EncryptedKey) => {
+        const encrypterName = this.encrypterMap[encryptedKey.encrypterName];
+        const decryptedKey = await encrypterName.decryptKey({
+          encryptedKey,
           password: oldPassword,
         });
 
-        this._writeToCache(key.key.publicKey, decryptedKey);
+        this._writeToCache(encryptedKey.publicKey, decryptedKey);
 
-        return encrypter.encryptKey({
+        return encrypterName.encryptKey({
           key: decryptedKey,
           password: newPassword,
         });

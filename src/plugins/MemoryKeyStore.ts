@@ -35,7 +35,7 @@ export class MemoryKeyStore implements KeyStore {
   public storeKeys(keys: EncryptedKey[]) {
     const metadata: KeyMetadata[] = [];
     keys.forEach((encryptedKey: EncryptedKey) => {
-      const publicKey = encryptedKey.key.publicKey;
+      const publicKey = encryptedKey.publicKey;
       const creationTime = this.keyStore[publicKey]
         ? this.keyStore[publicKey].creationTime
         : getNow();

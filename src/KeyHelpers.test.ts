@@ -6,7 +6,7 @@ describe("isLedgerKey", () => {
   test("ledger key", () => {
     expect(
       isLedgerKey({
-        type: KeyType.plainTextKey,
+        type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         path: "seraph/sanctuary",
       }),
@@ -15,9 +15,31 @@ describe("isLedgerKey", () => {
   test("private key", () => {
     expect(
       isLedgerKey({
-        type: KeyType.plainTextKey,
+        type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         privateKey: "ARCHANGEL",
+      }),
+    ).toEqual(false);
+  });
+  test("encrypted ledger key", () => {
+    expect(
+      isLedgerKey({
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        path: "seraph/sanctuary",
+        encrypterName: "test",
+        salt: "salty salt",
+      }),
+    ).toEqual(true);
+  });
+  test("encrypted private key", () => {
+    expect(
+      isLedgerKey({
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        encrypterName: "test",
+        salt: "salty salt",
+        encryptedPrivateKey: "ARCHANGEL",
       }),
     ).toEqual(false);
   });
@@ -26,11 +48,9 @@ describe("isLedgerKey", () => {
 describe("getKeyMetadata", () => {
   test("ledger key", () => {
     const encryptedKey: EncryptedKey = {
-      key: {
-        type: KeyType.plainTextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      },
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      encryptedPrivateKey: "ARCHANGEL",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
@@ -42,7 +62,7 @@ describe("getKeyMetadata", () => {
         modifiedTime: 666,
       }),
     ).toEqual({
-      type: KeyType.plainTextKey,
+      type: KeyType.plaintextKey,
       encrypterName: "Test",
       publicKey: "AVACYN",
       creationTime: 666,

@@ -2,22 +2,33 @@ import { Transaction } from "stellar-base";
 
 export enum KeyType {
   ledger = "ledger",
-  plainTextKey = "plainTextKey",
+  plaintextKey = "plaintextKey",
 }
 
 interface BaseKey {
+  type: KeyType | string;
   publicKey: string;
   extra?: string;
 }
 
 export interface LedgerKey extends BaseKey {
-  type: KeyType;
   path: string;
 }
 
-export interface PlainTextKey extends BaseKey {
-  type: KeyType;
+export interface PlaintextKey extends BaseKey {
   privateKey: string;
+}
+
+interface BaseEncryptedKey extends BaseKey {
+  encrypterName: string;
+  salt: string;
+}
+
+export interface EncryptedLedgerKey extends BaseEncryptedKey {
+  path: string;
+}
+export interface EncryptedPlaintextKey extends BaseEncryptedKey {
+  encryptedPrivateKey: string;
 }
 
 /**
@@ -25,13 +36,20 @@ export interface PlainTextKey extends BaseKey {
  * key alone, or with a library that reaches out to a hardware device.
  * The "extra" property is for miscellaneous notes about the key.
  */
-export type Key = LedgerKey | PlainTextKey;
+export type Key = LedgerKey | PlaintextKey;
+
+/**
+ * A blob that's similar to, but not completely like, the key. (The difference
+ * is that if there's a secret in the key, that property is absent and an
+ * encrypted version of that field is present.)
+ */
+export type EncryptedKey = EncryptedLedgerKey | EncryptedPlaintextKey;
 
 /**
  * Metadata about the key, without any private information.
  */
 export interface KeyMetadata extends BaseKey {
-  type: KeyType;
+  type: KeyType | string;
   encrypterName: string;
   path?: string;
   creationTime: number;
@@ -39,19 +57,10 @@ export interface KeyMetadata extends BaseKey {
 }
 
 /**
- * Metadata about the key, without any private information.
- */
-export interface EncryptedKey {
-  key: Key;
-  encrypterName: string;
-  salt: string;
-}
-
-/**
  * This is the export interface that an encryption plugin must implement.
  *
  * example encrypters:
- *  - identity encrypter (does nothing, ok to use for Ledger / Trezor)
+ *  - identity encrypterName (does nothing, ok to use for Ledger / Trezor)
  *  - scrypt password + nacl box (what StellarX uses)
  *  - scrypt password and then xor with Stellar key (what Keybase does)
  * https://keybase.io/docs/crypto/local-key-security
@@ -66,10 +75,10 @@ export interface Encrypter {
     password?: string;
   }): Promise<EncryptedKey>;
   decryptKey({
-    key,
+    encryptedKey,
     password,
   }: {
-    key: EncryptedKey;
+    encryptedKey: EncryptedKey;
     password?: string;
   }): Promise<Key>;
 }
