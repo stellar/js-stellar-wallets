@@ -1,6 +1,15 @@
-import { EncryptedKey, KeyMetadata, LedgerKey, PlainTextKey } from "./types";
+import {
+  EncryptedKey,
+  EncryptedLedgerKey,
+  EncryptedPlaintextKey,
+  KeyMetadata,
+  LedgerKey,
+  PlaintextKey,
+} from "./types";
 
-export function isLedgerKey(key: LedgerKey | PlainTextKey): key is LedgerKey {
+export function isLedgerKey(
+  key: LedgerKey | PlaintextKey | EncryptedLedgerKey | EncryptedPlaintextKey,
+): key is LedgerKey | EncryptedLedgerKey {
   return (key as LedgerKey).path !== undefined;
 }
 
@@ -15,9 +24,9 @@ export function getKeyMetadata({
 }): KeyMetadata {
   return {
     encrypterName: encryptedKey.encrypterName,
-    type: encryptedKey.key.type,
-    publicKey: encryptedKey.key.publicKey,
-    path: isLedgerKey(encryptedKey.key) ? encryptedKey.key.path : undefined,
+    type: encryptedKey.type,
+    publicKey: encryptedKey.publicKey,
+    path: isLedgerKey(encryptedKey) ? encryptedKey.path : undefined,
     creationTime,
     modifiedTime,
   };

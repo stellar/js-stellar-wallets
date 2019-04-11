@@ -177,7 +177,7 @@ export class KeyManager {
           password: oldPassword,
         });
 
-        this._writeToCache(encryptedKey.key.publicKey, decryptedKey);
+        this._writeToCache(encryptedKey.publicKey, decryptedKey);
 
         return encrypterName.encryptKey({
           key: decryptedKey,

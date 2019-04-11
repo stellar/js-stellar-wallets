@@ -19,11 +19,9 @@ describe("MemoryKeyStore", function() {
     const testStore = new MemoryKeyStore();
 
     const encryptedKey: EncryptedKey = {
-      key: {
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      },
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      encryptedPrivateKey: "ARCHANGEL",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
@@ -53,11 +51,9 @@ describe("MemoryKeyStore", function() {
     const testStore = new MemoryKeyStore();
 
     const encryptedKey: EncryptedKey = {
-      key: {
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      },
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      encryptedPrivateKey: "ARCHANGEL",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };

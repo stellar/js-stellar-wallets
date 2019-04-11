@@ -21,16 +21,36 @@ describe("isLedgerKey", () => {
       }),
     ).toEqual(false);
   });
+  test("encrypted ledger key", () => {
+    expect(
+      isLedgerKey({
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        path: "seraph/sanctuary",
+        encrypterName: "test",
+        salt: "salty salt",
+      }),
+    ).toEqual(true);
+  });
+  test("encrypted private key", () => {
+    expect(
+      isLedgerKey({
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        encrypterName: "test",
+        salt: "salty salt",
+        encryptedPrivateKey: "ARCHANGEL",
+      }),
+    ).toEqual(false);
+  });
 });
 
 describe("getKeyMetadata", () => {
   test("ledger key", () => {
     const encryptedKey: EncryptedKey = {
-      key: {
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      },
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      encryptedPrivateKey: "ARCHANGEL",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };

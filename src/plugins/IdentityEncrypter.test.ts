@@ -9,11 +9,9 @@ const key = {
 };
 
 const encryptedKey = {
-  key: {
-    type: KeyType.plaintextKey,
-    publicKey: "AVACYN",
-    privateKey: "ARCHANGEL",
-  },
+  type: KeyType.plaintextKey,
+  publicKey: "AVACYN",
+  encryptedPrivateKey: "ARCHANGEL",
   encrypterName: "IdentityEncrypter",
   salt: "identity",
 };

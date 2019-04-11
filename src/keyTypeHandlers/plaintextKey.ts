@@ -1,7 +1,7 @@
 import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
-import { Key, KeyType, KeyTypeHandler, PlainTextKey } from "../types";
+import { Key, KeyType, KeyTypeHandler, PlaintextKey } from "../types";
 
 export const plaintextKeyHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,
@@ -12,7 +12,7 @@ export const plaintextKeyHandler: KeyTypeHandler = {
     transaction: Transaction;
     key: Key;
   }) {
-    if ((key as PlainTextKey).privateKey === undefined) {
+    if ((key as PlaintextKey).privateKey === undefined) {
       throw new Error(
         `Non-plaintext key sent to plaintext handler: ${JSON.stringify(
           key.publicKey,
@@ -21,7 +21,7 @@ export const plaintextKeyHandler: KeyTypeHandler = {
     }
 
     const keyPair = StellarSdk.Keypair.fromSecret(
-      (key as PlainTextKey).privateKey,
+      (key as PlaintextKey).privateKey,
     );
     transaction.sign(keyPair);
 

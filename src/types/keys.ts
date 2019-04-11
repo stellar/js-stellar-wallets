@@ -15,8 +15,20 @@ export interface LedgerKey extends BaseKey {
   path: string;
 }
 
-export interface PlainTextKey extends BaseKey {
+export interface PlaintextKey extends BaseKey {
   privateKey: string;
+}
+
+interface BaseEncryptedKey extends BaseKey {
+  encrypterName: string;
+  salt: string;
+}
+
+export interface EncryptedLedgerKey extends BaseEncryptedKey {
+  path: string;
+}
+export interface EncryptedPlaintextKey extends BaseEncryptedKey {
+  encryptedPrivateKey: string;
 }
 
 /**
@@ -24,7 +36,14 @@ export interface PlainTextKey extends BaseKey {
  * key alone, or with a library that reaches out to a hardware device.
  * The "extra" property is for miscellaneous notes about the key.
  */
-export type Key = LedgerKey | PlainTextKey;
+export type Key = LedgerKey | PlaintextKey;
+
+/**
+ * A blob that's similar to, but not completely like, the key. (The difference
+ * is that if there's a secret in the key, that property is absent and an
+ * encrypted version of that field is present.)
+ */
+export type EncryptedKey = EncryptedLedgerKey | EncryptedPlaintextKey;
 
 /**
  * Metadata about the key, without any private information.
@@ -35,15 +54,6 @@ export interface KeyMetadata extends BaseKey {
   path?: string;
   creationTime: number;
   modifiedTime: number;
-}
-
-/**
- * Metadata about the key, without any private information.
- */
-export interface EncryptedKey {
-  key: Key;
-  encrypterName: string;
-  salt: string;
 }
 
 /**
