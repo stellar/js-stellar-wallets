@@ -26,7 +26,7 @@ describe("KeyManager", function() {
 
   testKeyManager.registerEncrypter(IdentityEncrypter);
 
-  test("Save keys", async () => {
+  test("Save / remove keys", async () => {
     const metadata = await testKeyManager.storeKey({
       key: {
         type: KeyType.plaintextKey,
@@ -44,5 +44,19 @@ describe("KeyManager", function() {
       creationTime: 666,
       modifiedTime: 666,
     });
+
+    expect(await testKeyManager.listKeys()).toEqual([
+      {
+        type: KeyType.plaintextKey,
+        encrypterName: "IdentityEncrypter",
+        publicKey: "AVACYN",
+        creationTime: 666,
+        modifiedTime: 666,
+      },
+    ]);
+
+    await testKeyManager.removeKey("AVACYN");
+
+    expect(await testKeyManager.listKeys()).toEqual([]);
   });
 });
