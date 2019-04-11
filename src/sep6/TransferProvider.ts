@@ -1,7 +1,13 @@
 import queryString from "query-string";
 
 import { parseInfo } from "./parseInfo";
-import { DepositInfo, FeeArgs, Info, RawInfo, WithdrawInfo } from "./types";
+import {
+  DepositInfo,
+  FeeArgs,
+  Info,
+  RawInfoResponse,
+  WithdrawInfo,
+} from "./types";
 
 export abstract class TransferProvider {
   public transferServer: string;
@@ -12,7 +18,7 @@ export abstract class TransferProvider {
 
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(`${this.transferServer}/info`);
-    const rawInfo = (await response.json()) as RawInfo;
+    const rawInfo = (await response.json()) as RawInfoResponse;
 
     return parseInfo(rawInfo);
   }

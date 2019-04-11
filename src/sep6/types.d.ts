@@ -13,7 +13,7 @@ export interface FeeArgs {
   type: string;
 }
 
-export interface RawInfo {
+export interface RawInfoResponse {
   withdraw: {
     [assetCode: string]: {
       enabled: boolean;

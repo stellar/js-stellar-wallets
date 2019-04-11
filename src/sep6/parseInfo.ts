@@ -3,13 +3,13 @@ import {
   Fee,
   Field,
   RawField,
-  RawInfo,
+  RawInfoResponse,
   RawType,
   SimpleFee,
   WithdrawInfo,
 } from "./types";
 
-export function parseInfo(info: RawInfo) {
+export function parseInfo(info: RawInfoResponse) {
   const { fee, transactions, transaction } = info;
   return {
     withdraw: parseWithdraw(info),
@@ -62,7 +62,7 @@ function parseField([fieldName, field]: FieldEntry): Field {
   };
 }
 
-export function parseWithdraw(info: RawInfo): WithdrawInfo {
+export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
   return Object.entries(info.withdraw).reduce(
     (accum, [assetCode, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
@@ -80,7 +80,7 @@ export function parseWithdraw(info: RawInfo): WithdrawInfo {
   );
 }
 
-export function parseDeposit(info: RawInfo): DepositInfo {
+export function parseDeposit(info: RawInfoResponse): DepositInfo {
   return Object.entries(info.deposit).reduce(
     (accum, [assetCode, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
