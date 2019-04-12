@@ -1,5 +1,3 @@
-export type getKycUrl = (args: GetKycArgs) => string;
-
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeededResponse;
