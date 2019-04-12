@@ -1,49 +1,6 @@
 import { EncryptedKey, KeyType } from "./types";
 
-import { getKeyMetadata, isLedgerKey } from "./KeyHelpers";
-
-describe("isLedgerKey", () => {
-  test("ledger key", () => {
-    expect(
-      isLedgerKey({
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        path: "seraph/sanctuary",
-      }),
-    ).toEqual(true);
-  });
-  test("private key", () => {
-    expect(
-      isLedgerKey({
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      }),
-    ).toEqual(false);
-  });
-  test("encrypted ledger key", () => {
-    expect(
-      isLedgerKey({
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        path: "seraph/sanctuary",
-        encrypterName: "test",
-        salt: "salty salt",
-      }),
-    ).toEqual(true);
-  });
-  test("encrypted private key", () => {
-    expect(
-      isLedgerKey({
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        encrypterName: "test",
-        salt: "salty salt",
-        encryptedPrivateKey: "ARCHANGEL",
-      }),
-    ).toEqual(false);
-  });
-});
+import { getKeyMetadata } from "./KeyHelpers";
 
 describe("getKeyMetadata", () => {
   test("ledger key", () => {

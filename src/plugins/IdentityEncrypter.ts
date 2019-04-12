@@ -1,6 +1,4 @@
-import { isLedgerKey } from "../KeyHelpers";
-
-import { EncryptedKey, Key, PlaintextKey } from "../types";
+import { EncryptedKey, Key } from "../types";
 
 const NAME = "IdentityEncrypter";
 
@@ -10,15 +8,7 @@ const NAME = "IdentityEncrypter";
 export const IdentityEncrypter = {
   name: NAME,
   encryptKey({ key }: { key: Key }) {
-    if (isLedgerKey(key)) {
-      return Promise.resolve({
-        ...key,
-        encrypterName: NAME,
-        salt: "identity",
-      });
-    }
-
-    const { privateKey, ...secretlessKey } = key as PlaintextKey;
+    const { privateKey, ...secretlessKey } = key;
 
     return Promise.resolve({
       ...secretlessKey,

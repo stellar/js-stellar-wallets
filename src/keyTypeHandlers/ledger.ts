@@ -3,7 +3,6 @@ import LedgerTransport from "@ledgerhq/hw-transport-u2f";
 import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
-import { isLedgerKey } from "../KeyHelpers";
 import { Key, KeyType, KeyTypeHandler } from "../types";
 
 export const ledgerHandler: KeyTypeHandler = {
@@ -15,7 +14,7 @@ export const ledgerHandler: KeyTypeHandler = {
     transaction: Transaction;
     key: Key;
   }) {
-    if (!isLedgerKey(key)) {
+    if (key.privateKey !== "") {
       throw new Error(
         `Non-ledger key sent to ledger handler: ${JSON.stringify(
           key.publicKey,
