@@ -1,9 +1,5 @@
 import { Transaction } from "stellar-base";
-
-export enum KeyType {
-  ledger = "ledger",
-  plaintextKey = "plaintextKey",
-}
+import { KeyType } from "../constants/keys";
 
 export interface BaseKey {
   type: KeyType | string;

@@ -1,4 +1,5 @@
-import { EncryptedKey, KeyType } from "./types";
+import { KeyType } from "./constants/keys";
+import { EncryptedKey } from "./types";
 
 import { getKeyMetadata } from "./KeyHelpers";
 

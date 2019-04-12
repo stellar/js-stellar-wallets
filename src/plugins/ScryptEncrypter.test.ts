@@ -2,7 +2,7 @@ import StellarSdk from "stellar-sdk";
 
 import { NONCE_BYTES, ScryptEncrypter } from "./ScryptEncrypter";
 
-import { KeyType } from "../types";
+import { KeyType } from "../constants/keys";
 
 test("encrypts and decrypts a key", async () => {
   const key = {

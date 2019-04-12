@@ -1,4 +1,4 @@
-import { KeyType } from "../types";
+import { KeyType } from "../constants/keys";
 
 import { IdentityEncrypter } from "./IdentityEncrypter";
 

@@ -1,8 +1,8 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-sdk";
 
+import { EffectType } from "./constants/data";
 import { reframeEffect } from "./data";
-import { EffectType } from "./types";
 
 describe("reframeEffect", () => {
   const observerAccount = {

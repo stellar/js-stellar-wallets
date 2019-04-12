@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import StellarBase from "stellar-base";
 
-import { KeyType } from "./types";
+import { KeyType } from "./constants/keys";
 
 import { KeyManager } from "./KeyManager";
 
