@@ -1,5 +1,6 @@
+import { InteractiveKycNeededResponse, KycPromptStatus } from "../types";
+
 import { getKycUrl } from "./getKycUrl";
-import { InteractiveKycNeededResponse, KycPromptStatus } from "./types";
 
 export function fetchKycInBrowser({
   response,

@@ -7,7 +7,7 @@ import {
   RawType,
   SimpleFee,
   WithdrawInfo,
-} from "./types";
+} from "../types";
 
 export function parseInfo(info: RawInfoResponse) {
   const { fee, transactions, transaction } = info;

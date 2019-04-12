@@ -5,7 +5,7 @@ import {
   DepositRequest,
   InteractiveKycNeededResponse,
   WithdrawRequest,
-} from "./types";
+} from "../types";
 
 interface PostMessageArgs {
   response: InteractiveKycNeededResponse;

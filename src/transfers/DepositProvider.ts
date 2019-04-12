@@ -1,14 +1,15 @@
 import queryString from "query-string";
 
-import { Omit } from "../util";
-import { fetchKycInBrowser } from "./fetchKycInBrowser";
-import { TransferProvider } from "./TransferProvider";
 import {
   DepositRequest,
   FeeArgs,
   InteractiveKycNeededResponse,
   TransferResponse,
-} from "./types";
+} from "../types";
+import { OmitProperties } from "../util";
+
+import { fetchKycInBrowser } from "./fetchKycInBrowser";
+import { TransferProvider } from "./TransferProvider";
 
 export class DepositProvider extends TransferProvider {
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
@@ -22,7 +23,7 @@ export class DepositProvider extends TransferProvider {
     return deposit;
   }
 
-  public async fetchFinalFee(args: Omit<FeeArgs, "operation">) {
+  public async fetchFinalFee(args: OmitProperties<FeeArgs, "operation">) {
     return super.fetchFinalFee({
       ...args,
       operation: "deposit",

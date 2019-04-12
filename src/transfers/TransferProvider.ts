@@ -1,13 +1,14 @@
 import queryString from "query-string";
 
-import { parseInfo } from "./parseInfo";
 import {
   DepositInfo,
   FeeArgs,
   Info,
   RawInfoResponse,
   WithdrawInfo,
-} from "./types";
+} from "../types";
+
+import { parseInfo } from "./parseInfo";
 
 export abstract class TransferProvider {
   public transferServer: string;
