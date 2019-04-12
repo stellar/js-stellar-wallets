@@ -60,18 +60,22 @@ export const ScryptEncrypter = {
   async encryptKey({
     key,
     password,
+    salt,
+    nonce,
   }: {
     key: Key;
     password: string;
+    salt?: string;
+    nonce?: Uint8Array;
   }): Promise<EncryptedKey> {
-    const salt = generateSalt();
+    const scryptSalt = salt || generateSalt();
 
     const { privateKey, ...secretlessKey } = key;
 
-    const nonceBytes = nacl.randomBytes(NONCE_BYTES);
-    const scryptedPass = await scryptPass({ password, salt });
+    const scryptNonce = nonce || nacl.randomBytes(NONCE_BYTES);
+    const scryptedPass = await scryptPass({ password, salt: scryptSalt });
     const textBytes = naclutil.decodeUTF8(privateKey);
-    const cipherText = nacl.secretbox(textBytes, nonceBytes, scryptedPass);
+    const cipherText = nacl.secretbox(textBytes, scryptNonce, scryptedPass);
 
     if (!cipherText) {
       throw new Error("Encryption failed");
@@ -79,10 +83,10 @@ export const ScryptEncrypter = {
 
     // merge these into one array
     // (in a somewhat ugly way, since TS doesn't like destructuring Uint8Arrays)
-    const bundle = new Uint8Array(1 + nonceBytes.length + cipherText.length);
+    const bundle = new Uint8Array(1 + scryptNonce.length + cipherText.length);
     bundle.set([CURRENT_CRYPTO_VERSION]);
-    bundle.set(nonceBytes, 1);
-    bundle.set(cipherText, 1 + nonceBytes.length);
+    bundle.set(scryptNonce, 1);
+    bundle.set(cipherText, 1 + scryptNonce.length);
 
     const encryptedPrivateKey = naclutil.encodeBase64(bundle);
 
@@ -90,7 +94,7 @@ export const ScryptEncrypter = {
       ...secretlessKey,
       encryptedPrivateKey,
       encrypterName: NAME,
-      salt,
+      salt: scryptSalt,
     });
   },
   async decryptKey({
