@@ -12,12 +12,22 @@ test("encrypts and decrypts a key", async () => {
   };
 
   const password = "This is a really cool password and is good";
+  const salt = "Also this salt is really key, and good";
+  const nonce = new Uint8Array(NONCE_BYTES).fill(42);
 
-  const encryptedKey = await ScryptEncrypter.encryptKey({ key, password });
+  const encryptedKey = await ScryptEncrypter.encryptKey({
+    key,
+    password,
+    salt,
+    nonce,
+  });
 
   expect(encryptedKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).not.toEqual(key.privateKey);
+  expect(encryptedKey.encryptedPrivateKey).toEqual(
+    "ASoqKioqKioqKioqKioqKioqKioqKioqKghXdTQ4aKmd0WIKwT5YjOCtN95jMeXe1UI=",
+  );
 
   const decryptedKey = await ScryptEncrypter.decryptKey({
     encryptedKey,
@@ -41,9 +51,7 @@ test("encrypts and decrypts a StellarX seed", async () => {
 
   const password = "hello";
   const salt = "salty";
-
-  const nonce = new Uint8Array(NONCE_BYTES);
-  nonce.fill(42);
+  const nonce = new Uint8Array(NONCE_BYTES).fill(42);
 
   const encryptedKey = await ScryptEncrypter.encryptKey({
     key,
