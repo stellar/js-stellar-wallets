@@ -2,15 +2,7 @@ import scrypt from "scrypt-async";
 import nacl from "tweetnacl";
 import naclutil from "tweetnacl-util";
 
-import { isLedgerKey } from "../KeyHelpers";
-
-import {
-  EncryptedKey,
-  EncryptedLedgerKey,
-  EncryptedPlaintextKey,
-  Key,
-  PlaintextKey,
-} from "../types";
+import { EncryptedKey, Key } from "../types";
 
 const NAME = "ScryptEncrypter";
 
@@ -74,15 +66,7 @@ export const ScryptEncrypter = {
   }): Promise<EncryptedKey> {
     const salt = generateSalt();
 
-    if (isLedgerKey(key)) {
-      return Promise.resolve({
-        ...key,
-        encrypterName: NAME,
-        salt,
-      } as EncryptedLedgerKey);
-    }
-
-    const { privateKey, ...secretlessKey } = key as PlaintextKey;
+    const { privateKey, ...secretlessKey } = key;
 
     const nonceBytes = nacl.randomBytes(NONCE_BYTES);
     const scryptedPass = await scryptPass({ password, salt });
@@ -107,7 +91,7 @@ export const ScryptEncrypter = {
       encryptedPrivateKey,
       encrypterName: NAME,
       salt,
-    } as EncryptedPlaintextKey);
+    });
   },
   async decryptKey({
     encryptedKey,
@@ -116,12 +100,7 @@ export const ScryptEncrypter = {
     encryptedKey: EncryptedKey;
     password: string;
   }) {
-    const {
-      encrypterName,
-      salt,
-      encryptedPrivateKey,
-      ...key
-    } = encryptedKey as any;
+    const { encrypterName, salt, encryptedPrivateKey, ...key } = encryptedKey;
 
     const scryptedPass = await scryptPass({ password, salt });
 

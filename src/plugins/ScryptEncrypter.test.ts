@@ -1,6 +1,6 @@
 import { ScryptEncrypter } from "./ScryptEncrypter";
 
-import { EncryptedPlaintextKey, KeyType } from "../types";
+import { KeyType } from "../types";
 
 test("encrypts and decrypts a key", async () => {
   const key = {
@@ -14,12 +14,8 @@ test("encrypts and decrypts a key", async () => {
   const encryptedKey = await ScryptEncrypter.encryptKey({ key, password });
 
   expect(encryptedKey).toBeTruthy();
-  expect(
-    (encryptedKey as EncryptedPlaintextKey).encryptedPrivateKey,
-  ).toBeTruthy();
-  expect(
-    (encryptedKey as EncryptedPlaintextKey).encryptedPrivateKey,
-  ).not.toEqual(key.privateKey);
+  expect(encryptedKey.encryptedPrivateKey).toBeTruthy();
+  expect(encryptedKey.encryptedPrivateKey).not.toEqual(key.privateKey);
 
   const decryptedKey = await ScryptEncrypter.decryptKey({
     encryptedKey,
@@ -27,8 +23,6 @@ test("encrypts and decrypts a key", async () => {
   });
 
   expect(decryptedKey).toBeTruthy();
-  expect(decryptedKey.privateKey).not.toEqual(
-    (encryptedKey as EncryptedPlaintextKey).encryptedPrivateKey,
-  );
+  expect(decryptedKey.privateKey).not.toEqual(encryptedKey.encryptedPrivateKey);
   expect(decryptedKey.privateKey).toEqual(key.privateKey);
 });
