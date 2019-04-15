@@ -74,12 +74,12 @@ export async function encrypt({
   salt,
   nonce,
 }: EncryptParams): Promise<EncryptResponse> {
-  const scryptSalt = salt || generateSalt();
+  const secretboxSalt = salt || generateSalt();
 
-  const secretBoxNonce = nonce || nacl.randomBytes(NONCE_BYTES);
-  const scryptedPass = await scryptPass({ password, salt: scryptSalt });
+  const secretboxNonce = nonce || nacl.randomBytes(NONCE_BYTES);
+  const scryptedPass = await scryptPass({ password, salt: secretboxSalt });
   const textBytes = naclutil.decodeUTF8(phrase);
-  const cipherText = nacl.secretbox(textBytes, secretBoxNonce, scryptedPass);
+  const cipherText = nacl.secretbox(textBytes, secretboxNonce, scryptedPass);
 
   if (!cipherText) {
     throw new Error("Encryption failed");
@@ -87,14 +87,14 @@ export async function encrypt({
 
   // merge these into one array
   // (in a somewhat ugly way, since TS doesn't like destructuring Uint8Arrays)
-  const bundle = new Uint8Array(1 + secretBoxNonce.length + cipherText.length);
+  const bundle = new Uint8Array(1 + secretboxNonce.length + cipherText.length);
   bundle.set([CURRENT_CRYPTO_VERSION]);
-  bundle.set(secretBoxNonce, 1);
-  bundle.set(cipherText, 1 + secretBoxNonce.length);
+  bundle.set(secretboxNonce, 1);
+  bundle.set(cipherText, 1 + secretboxNonce.length);
 
   return {
     encryptedPhrase: naclutil.encodeBase64(bundle),
-    salt: scryptSalt,
+    salt: secretboxSalt,
   };
 }
 
