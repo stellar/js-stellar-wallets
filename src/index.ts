@@ -1,3 +1,11 @@
+import { EffectType } from "./constants/data";
+import { KeyType } from "./constants/keys";
+
+export const Constants = {
+  KeyType,
+  EffectType,
+};
+
 export {
   getTokenIdentifier,
   getBalanceIdentifier,

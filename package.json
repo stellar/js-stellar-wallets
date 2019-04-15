@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
-    "docs": "typedoc src/",
+    "docs": "typedoc --mode modules --exclude '**/*.test.ts' --excludeNotExported --excludePrivate src/",
     "lint": "tslint --fix --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
     "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'",

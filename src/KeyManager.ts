@@ -3,13 +3,14 @@ import { Transaction } from "stellar-base";
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
 
+import { KeyType } from "./constants/keys";
+
 import {
   EncryptedKey,
   Encrypter,
   Key,
   KeyMetadata,
   KeyStore,
-  KeyType,
   KeyTypeHandler,
 } from "./types";
 
@@ -70,8 +71,8 @@ export class KeyManager {
     this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
-  public registerEncrypter(encrypterName: Encrypter) {
-    this.encrypterMap[encrypterName.name] = encrypterName;
+  public registerEncrypter(encrypter: Encrypter) {
+    this.encrypterMap[encrypter.name] = encrypter;
   }
 
   /**

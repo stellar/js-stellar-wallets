@@ -3,7 +3,9 @@ import LedgerTransport from "@ledgerhq/hw-transport-u2f";
 import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
-import { Key, KeyType, KeyTypeHandler } from "../types";
+import { Key, KeyTypeHandler } from "../types";
+
+import { KeyType } from "../constants/keys";
 
 export const ledgerHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,

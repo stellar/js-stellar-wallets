@@ -1,7 +1,9 @@
 import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
-import { Key, KeyType, KeyTypeHandler } from "../types";
+import { Key, KeyTypeHandler } from "../types";
+
+import { KeyType } from "../constants/keys";
 
 export const plaintextKeyHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,

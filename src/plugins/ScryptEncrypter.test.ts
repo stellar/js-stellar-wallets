@@ -1,8 +1,8 @@
 import StellarSdk from "stellar-sdk";
 
-import { NONCE_BYTES, ScryptEncrypter } from "./ScryptEncrypter";
+import { ScryptEncrypter } from "./ScryptEncrypter";
 
-import { KeyType } from "../types";
+import { KeyType } from "../constants/keys";
 
 test("encrypts and decrypts a key", async () => {
   const key = {
@@ -12,22 +12,15 @@ test("encrypts and decrypts a key", async () => {
   };
 
   const password = "This is a really cool password and is good";
-  const salt = "Also this salt is really key, and good";
-  const nonce = new Uint8Array(NONCE_BYTES).fill(42);
 
   const encryptedKey = await ScryptEncrypter.encryptKey({
     key,
     password,
-    salt,
-    nonce,
   });
 
   expect(encryptedKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).not.toEqual(key.privateKey);
-  expect(encryptedKey.encryptedPrivateKey).toEqual(
-    "ASoqKioqKioqKioqKioqKioqKioqKioqKghXdTQ4aKmd0WIKwT5YjOCtN95jMeXe1UI=",
-  );
 
   const decryptedKey = await ScryptEncrypter.decryptKey({
     encryptedKey,
@@ -50,24 +43,15 @@ test("encrypts and decrypts a StellarX seed", async () => {
   };
 
   const password = "hello";
-  const salt = "salty";
-  const nonce = new Uint8Array(NONCE_BYTES).fill(42);
 
   const encryptedKey = await ScryptEncrypter.encryptKey({
     key,
     password,
-    salt,
-    nonce,
   });
 
   expect(encryptedKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).toBeTruthy();
   expect(encryptedKey.encryptedPrivateKey).not.toEqual(key.privateKey);
-
-  expect(encryptedKey.encryptedPrivateKey).toEqual(
-    "ASoqKioqKioqKioqKioqKioqKioqKioqKgjCVz5H3mKHykeuO6GA8KKJSQrTu9D9Gt8nhO" +
-      "R7u3iccJc+jV768SEGOtWnwU6x4o46LxhKI8nQGMahV4JpqruESNW8vwt0OQ==",
-  );
 
   const decryptedKey = await ScryptEncrypter.decryptKey({
     encryptedKey,
