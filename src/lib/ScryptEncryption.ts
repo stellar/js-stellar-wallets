@@ -68,6 +68,15 @@ interface DecryptParams {
   salt: string;
 }
 
+/**
+ * Encrypt a phrase using scrypt.
+ * @async
+ * @param {Object} params Params object
+ * @param {string} params.phrase Phrase to be encrypted
+ * @param {string} params.password A password to encrypt the string with.
+ * @param {string} [params.salt] A static salt. Use only for unit tests.
+ * @param {string} [params.nonce] A static nonce. Use only for unit tests.
+ */
 export async function encrypt({
   phrase,
   password,
