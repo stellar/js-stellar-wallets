@@ -40,7 +40,11 @@ export const ScryptEncrypter = {
 
     return Promise.resolve({
       ...key,
-      privateKey: decrypt({ phrase: encryptedPrivateKey, password, salt }),
+      privateKey: await decrypt({
+        phrase: encryptedPrivateKey,
+        password,
+        salt,
+      }),
     });
   },
 };
