@@ -5,53 +5,43 @@ export enum KeyType {
   plaintextKey = "plaintextKey",
 }
 
-interface BaseKey {
+export interface BaseKey {
   type: KeyType | string;
   publicKey: string;
-  extra?: string;
+  path?: string;
+  extra?: any;
 }
 
-export interface LedgerKey extends BaseKey {
-  path: string;
-}
-
-export interface PlaintextKey extends BaseKey {
+/**
+ * There is one unencrypted key interface, which should work with all key types.
+ * That way, plugins don't have to know what key type there is, they just work
+ * the same on all of them.
+ *
+ * `privateKey` is required, but it should be an empty string if the key type
+ * doesn't have any secrets (like a ledger key).
+ *
+ * `extra` is an arbitrary store of additional metadata, to be used for any and
+ * all future exotic key types.
+ */
+export interface Key extends BaseKey {
   privateKey: string;
 }
 
-interface BaseEncryptedKey extends BaseKey {
+/**
+ * The encrypted key is the exact same shape as the key, except minus secret
+ * information and plus encrypted information.
+ */
+export interface EncryptedKey extends BaseKey {
+  encryptedPrivateKey: string;
   encrypterName: string;
   salt: string;
 }
 
-export interface EncryptedLedgerKey extends BaseEncryptedKey {
-  path: string;
-}
-export interface EncryptedPlaintextKey extends BaseEncryptedKey {
-  encryptedPrivateKey: string;
-}
-
 /**
- * The whole, unencrypted blob. Should be enough information to sign a
- * key alone, or with a library that reaches out to a hardware device.
- * The "extra" property is for miscellaneous notes about the key.
- */
-export type Key = LedgerKey | PlaintextKey;
-
-/**
- * A blob that's similar to, but not completely like, the key. (The difference
- * is that if there's a secret in the key, that property is absent and an
- * encrypted version of that field is present.)
- */
-export type EncryptedKey = EncryptedLedgerKey | EncryptedPlaintextKey;
-
-/**
- * Metadata about the key, without any private information.
+ * Metadata about the key and when it was changed.
  */
 export interface KeyMetadata extends BaseKey {
-  type: KeyType | string;
   encrypterName: string;
-  path?: string;
   creationTime: number;
   modifiedTime: number;
 }

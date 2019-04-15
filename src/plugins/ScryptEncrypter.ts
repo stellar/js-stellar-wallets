@@ -2,15 +2,7 @@ import scrypt from "scrypt-async";
 import nacl from "tweetnacl";
 import naclutil from "tweetnacl-util";
 
-import { isLedgerKey } from "../KeyHelpers";
-
-import {
-  EncryptedKey,
-  EncryptedLedgerKey,
-  EncryptedPlaintextKey,
-  Key,
-  PlaintextKey,
-} from "../types";
+import { EncryptedKey, Key } from "../types";
 
 const NAME = "ScryptEncrypter";
 
@@ -68,26 +60,22 @@ export const ScryptEncrypter = {
   async encryptKey({
     key,
     password,
+    salt,
+    nonce,
   }: {
     key: Key;
     password: string;
+    salt?: string;
+    nonce?: Uint8Array;
   }): Promise<EncryptedKey> {
-    const salt = generateSalt();
+    const scryptSalt = salt || generateSalt();
 
-    if (isLedgerKey(key)) {
-      return Promise.resolve({
-        ...key,
-        encrypterName: NAME,
-        salt,
-      } as EncryptedLedgerKey);
-    }
+    const { privateKey, ...secretlessKey } = key;
 
-    const { privateKey, ...secretlessKey } = key as PlaintextKey;
-
-    const nonceBytes = nacl.randomBytes(NONCE_BYTES);
-    const scryptedPass = await scryptPass({ password, salt });
+    const scryptNonce = nonce || nacl.randomBytes(NONCE_BYTES);
+    const scryptedPass = await scryptPass({ password, salt: scryptSalt });
     const textBytes = naclutil.decodeUTF8(privateKey);
-    const cipherText = nacl.secretbox(textBytes, nonceBytes, scryptedPass);
+    const cipherText = nacl.secretbox(textBytes, scryptNonce, scryptedPass);
 
     if (!cipherText) {
       throw new Error("Encryption failed");
@@ -95,10 +83,10 @@ export const ScryptEncrypter = {
 
     // merge these into one array
     // (in a somewhat ugly way, since TS doesn't like destructuring Uint8Arrays)
-    const bundle = new Uint8Array(1 + nonceBytes.length + cipherText.length);
+    const bundle = new Uint8Array(1 + scryptNonce.length + cipherText.length);
     bundle.set([CURRENT_CRYPTO_VERSION]);
-    bundle.set(nonceBytes, 1);
-    bundle.set(cipherText, 1 + nonceBytes.length);
+    bundle.set(scryptNonce, 1);
+    bundle.set(cipherText, 1 + scryptNonce.length);
 
     const encryptedPrivateKey = naclutil.encodeBase64(bundle);
 
@@ -106,8 +94,8 @@ export const ScryptEncrypter = {
       ...secretlessKey,
       encryptedPrivateKey,
       encrypterName: NAME,
-      salt,
-    } as EncryptedPlaintextKey);
+      salt: scryptSalt,
+    });
   },
   async decryptKey({
     encryptedKey,
@@ -116,12 +104,7 @@ export const ScryptEncrypter = {
     encryptedKey: EncryptedKey;
     password: string;
   }) {
-    const {
-      encrypterName,
-      salt,
-      encryptedPrivateKey,
-      ...key
-    } = encryptedKey as any;
+    const { encrypterName, salt, encryptedPrivateKey, ...key } = encryptedKey;
 
     const scryptedPass = await scryptPass({ password, salt });
 
