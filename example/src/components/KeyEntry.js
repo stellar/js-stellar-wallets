@@ -66,7 +66,7 @@ export default class KeyEntry extends Component {
         }}
       >
         <label>
-          Public key
+          Secret seed
           <input
             type="text"
             value={keyInput}
