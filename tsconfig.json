@@ -35,6 +35,9 @@
   "typedocOptions": {
     "out": "docs",
     "mode": "modules",
-    "excludeNotExported": true
+    "exclude": ["**/*.test.ts"],
+    "excludePrivate": true,
+    "excludeNotExported": true,
+    "includeDeclarations": true
   }
 }
