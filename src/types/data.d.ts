@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { Horizon } from "stellar-sdk";
+import { Horizon, Server } from "stellar-sdk";
 import { EffectType } from "../constants/data";
 
 export type TradeId = string;

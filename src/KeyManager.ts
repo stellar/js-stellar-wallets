@@ -14,24 +14,24 @@ import {
   KeyTypeHandler,
 } from "./types";
 
-interface KeyManagerParams {
+export interface KeyManagerParams {
   keyStore: KeyStore;
   shouldCache?: boolean;
 }
 
-interface AddKeyArgs {
+export interface StoreKeyParams {
   key: Key;
   encrypterName: string;
   password?: string;
 }
 
-interface SignTransactionArgs {
+export interface SignTransactionParams {
   transaction: Transaction;
   publicKey: string;
   password?: string;
 }
 
-interface ChangePasswordArgs {
+export interface ChangePasswordParams {
   oldPassword: string;
   newPassword: string;
 }
@@ -89,7 +89,7 @@ export class KeyManager {
     key,
     password,
     encrypterName,
-  }: AddKeyArgs): Promise<KeyMetadata> {
+  }: StoreKeyParams): Promise<KeyMetadata> {
     // happy path-only code to demonstrate idea
     const encrypterObj = this.encrypterMap[encrypterName];
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
@@ -136,7 +136,7 @@ export class KeyManager {
     transaction,
     publicKey,
     password,
-  }: SignTransactionArgs): Promise<Transaction> {
+  }: SignTransactionParams): Promise<Transaction> {
     let key = this._readFromCache(publicKey);
 
     if (!key) {
@@ -168,7 +168,7 @@ export class KeyManager {
   public async changePassword({
     oldPassword,
     newPassword,
-  }: ChangePasswordArgs): Promise<KeyMetadata[]> {
+  }: ChangePasswordParams): Promise<KeyMetadata[]> {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (encryptedKey: EncryptedKey) => {
