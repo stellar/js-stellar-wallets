@@ -26,15 +26,15 @@ validateURI(uri: string): boolean
 
 /**
  * Given a full URI path, convert it to a `stellar-base`-generated
- * `Tranasaction` class instance.
+ * `Tranasaction` class instance. If account fields are zeroed out, this func
+ * should replace them with the given account info.
  *
  * It's possible we don't want to return the Transaction directly, but instead
  * an object `{ transaction, callback }` (in case there's a callback). We'll
  * need to investigate this further.
  *
- * Also, the SEP mentions allowing the account fields to be zeroed out,
- * indicating that the wallet should fill in the current user's account.
- * So we'll need to support that.
+ * It's the application's reponsibility to solicit the user's signature and
+ * either submit the result to the network, or to the callback.
  */
 getTransactionFromURI({}: { uri: string, account: StellarBase.Account })
 
@@ -53,7 +53,7 @@ getTransactionFromURI({}: { uri: string, account: StellarBase.Account })
  * I'm not sure how to inject and watch a specific memo ID.
  */
 generateTransactionURI({}: {
-  // note that the function is going to append our new memo code to whatever is in here
+  // note that the function is going to append our new memo id to the transaction
   transaction: Transaction;
 
   // Since we're adding a memo to the TX, this function has to sign the URI
