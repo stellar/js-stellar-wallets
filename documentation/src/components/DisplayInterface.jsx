@@ -1,7 +1,7 @@
 import React from "react";
 
 import DisplayItem from "components/DisplayItem";
-import DisplayType from "components/DisplayType";
+import TypePeeker from "components/TypePeeker";
 
 import Block from "basics/Block";
 
@@ -21,7 +21,7 @@ const DisplayInterface = ({
           extendedTypes.map((extendedType) => (
             <>
               {" "}
-              extends <DisplayType {...extendedType} />
+              extends <TypePeeker {...extendedType} />
             </>
           ))}
         {" {"}

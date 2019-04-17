@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import DisplayType from "components/DisplayType";
+import TypePeeker from "components/TypePeeker";
 
 const Highlighted = styled.span`
   background: yellow;
@@ -30,7 +30,7 @@ const DisplayProperty = ({
       {kindString === "Enumeration member" ? (
         <span>{defaultValue}</span>
       ) : (
-        <DisplayType
+        <TypePeeker
           {...type}
           // provide the name here in case the type is a pointer to another obj
           name={type.name || name}

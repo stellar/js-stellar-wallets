@@ -12,7 +12,7 @@ const El = styled(LinkToID)`
   position: relative;
 `;
 
-const DisplayType = ({ name, type, types, id }) => {
+const TypePeeker = ({ name, type, types, id }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
   const [{ itemsById, itemsByName }] = useStateValue();
@@ -74,4 +74,4 @@ const DisplayType = ({ name, type, types, id }) => {
   }
 };
 
-export default DisplayType;
+export default TypePeeker;

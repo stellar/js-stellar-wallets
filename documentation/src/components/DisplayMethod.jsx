@@ -1,6 +1,6 @@
 import React from "react";
 
-import DisplayType from "components/DisplayType";
+import TypePeeker from "components/TypePeeker";
 import LinkToID from "components/LinkToID";
 
 const DisplayMethod = ({
@@ -20,7 +20,7 @@ const DisplayMethod = ({
             {!!parameters.length &&
               parameters.map((parameter, i) => (
                 <>
-                  {parameter.name}: <DisplayType {...parameter.type} />
+                  {parameter.name}: <TypePeeker {...parameter.type} />
                   {i !== parameters.length - 1 && <>, </>}
                 </>
               ))}

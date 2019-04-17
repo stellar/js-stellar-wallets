@@ -46,7 +46,7 @@ const DisplayItem = ({ shouldShowId, ...params }) => {
       break;
 
     // case "Type alias":
-    //   item = <DisplayType {...params} />;
+    //   item = <TypePeeker {...params} />;
     //   break;
 
     default:
