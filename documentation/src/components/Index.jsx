@@ -9,25 +9,23 @@ const ListEl = styled.li`
   }
 `;
 
-const Index = ({ itemsByKind }) => {
-  return (
-    <div>
-      {Object.keys(itemsByKind).map((kind) => (
-        <>
-          <h3>{kind}</h3>
+const Index = ({ itemsByKind }) => (
+  <div>
+    {Object.keys(itemsByKind).map((kind) => (
+      <>
+        <h3>{kind}</h3>
 
-          {itemsByKind[kind] &&
-            itemsByKind[kind]
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((item) => (
-                <ListEl>
-                  <a href={`#item_${item.id}`}>{item.name}</a>
-                </ListEl>
-              ))}
-        </>
-      ))}
-    </div>
-  );
-};
+        {itemsByKind[kind] &&
+          itemsByKind[kind]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((item) => (
+              <ListEl>
+                <a href={`#item_${item.id}`}>{item.name}</a>
+              </ListEl>
+            ))}
+      </>
+    ))}
+  </div>
+);
 
 export default Index;
