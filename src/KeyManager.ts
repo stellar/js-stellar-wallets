@@ -54,7 +54,7 @@ export class KeyManager {
   private keyCache: { [publicKey: string]: Key };
   private shouldCache: boolean;
 
-  constructor({ keyStore, shouldCache = true }: KeyManagerParams) {
+  constructor(params: KeyManagerParams) {
     this.encrypterMap = {};
     this.keyHandlerMap = {
       [KeyType.ledger]: ledgerHandler,
@@ -63,8 +63,8 @@ export class KeyManager {
 
     this.keyCache = {};
 
-    this.keyStore = keyStore;
-    this.shouldCache = shouldCache;
+    this.keyStore = params.keyStore;
+    this.shouldCache = params.shouldCache || false;
   }
 
   public registerKeyHandler(keyHandler: KeyTypeHandler) {

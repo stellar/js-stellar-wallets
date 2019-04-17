@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import DisplayClass from "components/DisplayClass";
 
+import { StateProvider } from "AppState";
+
 import "./App.css";
 
 import docs from "./docs.json";
@@ -71,27 +73,29 @@ class App extends Component {
     );
 
     return (
-      <div className="App">
-        <p>Won't somebody think of the {items.length} children</p>
-        <p>Kinds: {JSON.stringify(countsByKind)}</p>
+      <StateProvider initialState={{ itemsById }}>
+        <div className="App">
+          <p>Won't somebody think of the {items.length} children</p>
+          <p>Kinds: {JSON.stringify(countsByKind)}</p>
 
-        {Object.keys(itemsByKind).map((kind) => (
-          <div>
-            <h2>{kind}</h2>
-
+          {Object.keys(itemsByKind).map((kind) => (
             <div>
-              {itemsByKind[kind].map((item) => (
-                <Item>
-                  {item.kindString === "Class" && <DisplayClass {...item} />}
-                  {item.kindString !== "Class" && (
-                    <pre>{JSON.stringify(item, null, 2)}</pre>
-                  )}
-                </Item>
-              ))}
+              <h2>{kind}</h2>
+
+              <div>
+                {itemsByKind[kind].map((item) => (
+                  <Item>
+                    {item.kindString === "Class" && <DisplayClass {...item} />}
+                    {item.kindString !== "Class" && (
+                      <pre>{JSON.stringify(item, null, 2)}</pre>
+                    )}
+                  </Item>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </StateProvider>
     );
   }
 }

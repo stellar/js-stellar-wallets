@@ -2,13 +2,19 @@ import React from "react";
 
 import DisplayMethod from "components/DisplayMethod";
 
+import Block from "basics/Block";
+
 const DisplayClass = ({ name, children }) => {
   return (
     <div>
-      <h3>{name}</h3>
-      {children.map((child) => (
-        <DisplayMethod {...child} />
-      ))}
+      <h3>
+        class {name} {"{"}
+      </h3>
+      <Block>
+        {children.map((child) => (
+          <DisplayMethod {...child} />
+        ))}
+      </Block>
     </div>
   );
 };
