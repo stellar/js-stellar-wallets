@@ -2,6 +2,8 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 
+import Comment from "basics/Comment";
+
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
 import DisplayProperty from "components/DisplayProperty";
@@ -15,19 +17,14 @@ const ChildEl = styled.div`
 const RootEl = styled.div`
   position: relative;
   margin-bottom: 1.5%;
-  border: 1px solid black;
-  padding: 10px;
-  vertical-align: top;
+  padding: 20px;
+  background: #f3f3f3;
 `;
 
 const LineNoEl = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-`;
-
-const CommentEl = styled.div`
-  margin-right: 300px;
 `;
 
 const DisplayItem = ({ isRootElement, ...params }) => {
@@ -73,10 +70,10 @@ const DisplayItem = ({ isRootElement, ...params }) => {
       )}
 
       {params.comment && (
-        <CommentEl>
+        <Comment>
           <ReactMarkdown source={params.comment.shortText} />
           <ReactMarkdown source={params.comment.text} />
-        </CommentEl>
+        </Comment>
       )}
       {item}
     </El>

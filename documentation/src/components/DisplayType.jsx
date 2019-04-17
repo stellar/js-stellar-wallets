@@ -36,7 +36,7 @@ const DisplayType = ({ name, type, ...rest }) => {
 
   return (
     <div>
-      type {name} = {getType(type)};
+      type <strong>{name}</strong> = {getType(type)}
     </div>
   );
 };

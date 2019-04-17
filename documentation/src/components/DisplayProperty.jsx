@@ -1,12 +1,8 @@
 import React from "react";
-import styled from "styled-components";
+
+import Semibold from "basics/Semibold";
 
 import TypePeeker from "components/TypePeeker";
-
-const Highlighted = styled.span`
-  background: yellow;
-  margin-right: 20px;
-`;
 
 const DisplayProperty = ({
   flags,
@@ -25,7 +21,7 @@ const DisplayProperty = ({
     <div>
       {flags.isPublic && <>public </>}
       {flags.isPrivate && <>private </>}
-      {name}
+      <Semibold>{name}</Semibold>
       {isOptional && "?"}:{" "}
       {kindString === "Enumeration member" ? (
         <span>{defaultValue}</span>

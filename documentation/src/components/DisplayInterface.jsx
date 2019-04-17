@@ -16,7 +16,7 @@ const DisplayInterface = ({
     <div>
       <div>
         {kindString === "Enumeration" ? "enum" : kindString.toLowerCase()}{" "}
-        {name}
+        <strong>{name}</strong>
         {!!implementedTypes.length &&
           implementedTypes.map((implementedType) => (
             <>
@@ -31,7 +31,6 @@ const DisplayInterface = ({
               extends <TypePeeker {...extendedType} />
             </>
           ))}
-        {" {"}
       </div>
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)
@@ -40,7 +39,6 @@ const DisplayInterface = ({
             <DisplayItem {...child} />
           </Block>
         ))}
-      <div>{"}"}</div>
     </div>
   );
 };

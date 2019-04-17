@@ -12,7 +12,7 @@ const El = styled(LinkToID)`
   position: relative;
 `;
 
-const TypePeeker = ({ name, type, types, id }) => {
+const TypePeeker = ({ name, type, types, typeArguments, id }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
   const [{ itemsById, itemsByName }] = useStateValue();
@@ -31,6 +31,19 @@ const TypePeeker = ({ name, type, types, id }) => {
           )
           .join(" | ")}
       </span>
+    );
+  }
+
+  if (type === "reference" && typeArguments) {
+    return (
+      <>
+        {name}
+        {"<"}
+        {typeArguments.map((t) => (
+          <TypePeeker {...t} />
+        ))}
+        {">"}
+      </>
     );
   }
 

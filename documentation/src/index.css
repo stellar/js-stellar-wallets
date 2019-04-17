@@ -21,3 +21,8 @@ p,
 ul {
   margin-top: 0;
 }
+
+p:last-child,
+ul:last-child {
+  margin-bottom: 0;
+}

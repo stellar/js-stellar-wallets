@@ -1,22 +1,21 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
+
+import Comment from "basics/Comment";
+import Semibold from "basics/Semibold";
 
 import TypePeeker from "components/TypePeeker";
 import LinkToID from "components/LinkToID";
 
-const DisplayMethod = ({
-  name,
-  signatures = [],
-  sources = [],
-  implementationOf,
-  flags,
-}) => {
+const DisplayMethod = (params) => {
+  const { name, signatures = [], implementationOf, flags, ...rest } = params;
   return (
     <div>
       {!!signatures.length &&
-        signatures.map(({ parameters = [] }) => (
+        signatures.map(({ comment, parameters = [], type }) => (
           <>
             {flags.isPrivate && <>private </>}
-            {name}(
+            <Semibold>{name}</Semibold>(
             {!!parameters.length &&
               parameters.map((parameter, i) => (
                 <>
@@ -25,6 +24,11 @@ const DisplayMethod = ({
                 </>
               ))}
             )
+            {type && (
+              <>
+                : <TypePeeker {...type} />
+              </>
+            )}
             {implementationOf && (
               <>
                 {" "}
@@ -35,8 +39,16 @@ const DisplayMethod = ({
                 )
               </>
             )}
+            {comment && (
+              <Comment>
+                <ReactMarkdown source={comment.shortText} />
+                <ReactMarkdown source={comment.text} />
+              </Comment>
+            )}
           </>
         ))}
+
+      {/* <pre>{JSON.stringify(params, null, 2)}</pre> */}
     </div>
   );
 };

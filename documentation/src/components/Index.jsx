@@ -8,11 +8,13 @@ const Index = ({ itemsByKind }) => {
           <h3>{kind}</h3>
 
           {itemsByKind[kind] &&
-            itemsByKind[kind].map((item) => (
-              <li>
-                <a href={`#item_${item.id}`}>{item.name}</a>
-              </li>
-            ))}
+            itemsByKind[kind]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((item) => (
+                <li>
+                  <a href={`#item_${item.id}`}>{item.name}</a>
+                </li>
+              ))}
         </>
       ))}
     </div>

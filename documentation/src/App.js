@@ -102,9 +102,11 @@ const App = () => {
               <h2>{kind}</h2>
 
               <div>
-                {itemsByKind[kind].map((item) => (
-                  <DisplayItem isRootElement {...item} />
-                ))}
+                {itemsByKind[kind]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((item) => (
+                    <DisplayItem isRootElement {...item} />
+                  ))}
               </div>
             </div>
           ))}
