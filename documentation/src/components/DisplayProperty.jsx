@@ -8,7 +8,13 @@ const Highlighted = styled.span`
   margin-right: 20px;
 `;
 
-const DisplayProperty = ({ flags, name, type }) => {
+const DisplayProperty = ({
+  flags,
+  kindString,
+  defaultValue,
+  name,
+  type = {},
+}) => {
   // if this type is a union and one of the types is undefined,
   // mark this shit as OPTIONAL
   const isOptional =
@@ -21,14 +27,15 @@ const DisplayProperty = ({ flags, name, type }) => {
       {flags.isPrivate && <>private </>}
       {name}
       {isOptional && "?"}:{" "}
-      <DisplayType
-        {...type}
-        // provide the name here in case the type is a pointer to another obj
-        name={type.name || name}
-      />
-      <p>
-        <Highlighted>{JSON.stringify(type)}</Highlighted>
-      </p>
+      {kindString === "Enumeration member" ? (
+        <span>{defaultValue}</span>
+      ) : (
+        <DisplayType
+          {...type}
+          // provide the name here in case the type is a pointer to another obj
+          name={type.name || name}
+        />
+      )}
     </div>
   );
 };

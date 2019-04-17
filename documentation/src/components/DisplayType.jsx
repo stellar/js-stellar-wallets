@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useStateValue } from "AppState";
 
-import DisplayInterface from "components/DisplayInterface";
+import DisplayItem from "components/DisplayItem";
 import LinkToID from "components/LinkToID";
 
 import Tooltip from "basics/Tooltip";
@@ -49,7 +49,7 @@ const DisplayType = ({ name, type, types, id }) => {
 
         {isVisible && (
           <Tooltip>
-            <DisplayInterface {...itemsById[id]} />
+            <DisplayItem {...itemsById[id]} />
           </Tooltip>
         )}
       </El>
@@ -66,7 +66,7 @@ const DisplayType = ({ name, type, types, id }) => {
         {name}
         {isVisible && (
           <Tooltip>
-            <DisplayInterface {...itemsByName[name]} />
+            <DisplayItem {...itemsByName[name]} />
           </Tooltip>
         )}
       </El>

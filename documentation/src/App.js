@@ -96,7 +96,7 @@ const App = () => {
               <div>
                 {itemsByKind[kind].map((item) => (
                   <Item>
-                    <DisplayItem {...item} />
+                    <DisplayItem shouldShowId {...item} />
                   </Item>
                 ))}
               </div>

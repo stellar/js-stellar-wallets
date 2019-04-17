@@ -21,7 +21,7 @@ const CommentEl = styled.div`
   margin-right: 300px;
 `;
 
-const DisplayItem = (params) => {
+const DisplayItem = ({ shouldShowId, ...params }) => {
   let item;
   let shouldShowLines = false;
 
@@ -34,14 +34,20 @@ const DisplayItem = (params) => {
 
     case "Variable":
     case "Property":
+    case "Enumeration member":
       item = <DisplayProperty {...params} />;
       break;
 
     case "Class":
     case "Interface":
+    case "Enumeration":
     case "Object literal":
       item = <DisplayInterface {...params} />;
       break;
+
+    // case "Type alias":
+    //   item = <DisplayType {...params} />;
+    //   break;
 
     default:
       item = <pre>{JSON.stringify(params, null, 2)}</pre>;
@@ -49,7 +55,7 @@ const DisplayItem = (params) => {
   }
 
   return (
-    <El id={`item_${params.id}`}>
+    <El id={shouldShowId ? `item_${params.id}` : null}>
       {shouldShowLines && params.sources && (
         <LineNoEl>
           <DisplayLineNo {...params.sources[0]} />
