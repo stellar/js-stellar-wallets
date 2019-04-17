@@ -47,7 +47,7 @@ function getItems(entity) {
 const App = () => {
   // make a list of all elements
   const items = docs.children
-    .filter((child) => !child.flags.isExternal)
+    // .filter((child) => !child.flags.isExternal)
     .reduce((memo, child) => {
       if (child.children) {
         return [...memo, ...child.children];

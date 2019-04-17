@@ -6,6 +6,7 @@ import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
 import DisplayProperty from "components/DisplayProperty";
 import DisplayLineNo from "components/DisplayLineNo";
+import DisplayType from "components/DisplayType";
 
 const El = styled.div`
   position: relative;
@@ -45,9 +46,9 @@ const DisplayItem = ({ shouldShowId, ...params }) => {
       item = <DisplayInterface {...params} />;
       break;
 
-    // case "Type alias":
-    //   item = <TypePeeker {...params} />;
-    //   break;
+    case "Type alias":
+      item = <DisplayType {...params} />;
+      break;
 
     default:
       item = <pre>{JSON.stringify(params, null, 2)}</pre>;
