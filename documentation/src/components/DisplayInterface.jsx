@@ -4,6 +4,7 @@ import DisplayItem from "components/DisplayItem";
 import TypePeeker from "components/TypePeeker";
 
 import Block from "basics/Block";
+import BraceLine from "basics/BraceLine";
 
 const DisplayInterface = ({
   kindString,
@@ -15,7 +16,7 @@ const DisplayInterface = ({
 }) => {
   return (
     <div>
-      <h5>
+      <BraceLine>
         {kindString.toLowerCase()} {name}
         {!!extendedTypes.length &&
           extendedTypes.map((extendedType) => (
@@ -25,7 +26,7 @@ const DisplayInterface = ({
             </>
           ))}
         {" {"}
-      </h5>
+      </BraceLine>
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)
         .map((child) => (
@@ -33,7 +34,7 @@ const DisplayInterface = ({
             <DisplayItem {...child} />
           </Block>
         ))}
-      <h5>{"}"}</h5>
+      <BraceLine>{"}"}</BraceLine>
     </div>
   );
 };
