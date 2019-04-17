@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import DisplayClass from "components/DisplayClass";
 import DisplayItem from "components/DisplayItem";
 
 import { StateProvider } from "AppState";

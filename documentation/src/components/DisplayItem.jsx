@@ -2,17 +2,12 @@ import React from "react";
 
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
-import DisplayClass from "components/DisplayClass";
 import DisplayProperty from "components/DisplayProperty";
 
 const DisplayItem = (params) => {
   let item;
 
   switch (params.kindString) {
-    case "Interface":
-      item = <DisplayInterface {...params} />;
-      break;
-
     case "Function":
     case "Method":
     case "Constructor":
@@ -24,7 +19,8 @@ const DisplayItem = (params) => {
       break;
 
     case "Class":
-      item = <DisplayClass {...params} />;
+    case "Interface":
+      item = <DisplayInterface {...params} />;
       break;
 
     default:
@@ -32,7 +28,17 @@ const DisplayItem = (params) => {
       break;
   }
 
-  return <div id={`item_${params.id}`}>{item}</div>;
+  return (
+    <div id={`item_${params.id}`}>
+      {params.comment && (
+        <>
+          <p>{params.comment.shortText}</p>
+          <p>{params.comment.text}</p>
+        </>
+      )}
+      {item}
+    </div>
+  );
 };
 
 export default DisplayItem;
