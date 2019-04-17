@@ -16,6 +16,7 @@ const TypeEl = styled.span`
 `;
 
 const LabelEl = styled.span`
+  cursor: default;
   color: blue;
   text-decoration: underline;
 `;
