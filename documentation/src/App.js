@@ -65,7 +65,7 @@ const App = () => {
     };
   }, {});
 
-  const itemsById = getItems(docs.children).reduce(
+  const itemsById = items.reduce(
     (memo, item) => ({
       ...memo,
       [item.id]: item,
@@ -73,7 +73,7 @@ const App = () => {
     {},
   );
 
-  const itemsByName = getItems(docs.children).reduce(
+  const itemsByName = items.reduce(
     (memo, item) => ({
       ...memo,
       [item.name]: item,

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import DisplayLineNo from "components/DisplayLineNo";
 import DisplayType from "components/DisplayType";
 
 const Highlighted = styled.span`
@@ -9,12 +8,19 @@ const Highlighted = styled.span`
   margin-right: 20px;
 `;
 
-const DisplayProperty = ({ flags, name, type, sources, ...rest }) => {
+const DisplayProperty = ({ flags, name, type }) => {
+  // if this type is a union and one of the types is undefined,
+  // mark this shit as OPTIONAL
+  const isOptional =
+    type.type === "union" &&
+    !!type.types.filter((t) => t.name === "undefined").length;
+
   return (
     <div>
       {flags.isPublic && <>public </>}
       {flags.isPrivate && <>private </>}
-      <DisplayLineNo {...sources[0]}>{name}</DisplayLineNo>:{" "}
+      {name}
+      {isOptional && "?"}:{" "}
       <DisplayType
         {...type}
         // provide the name here in case the type is a pointer to another obj
@@ -22,7 +28,6 @@ const DisplayProperty = ({ flags, name, type, sources, ...rest }) => {
       />
       <p>
         <Highlighted>{JSON.stringify(type)}</Highlighted>
-        <Highlighted>{JSON.stringify(rest)}</Highlighted>
       </p>
     </div>
   );

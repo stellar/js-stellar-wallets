@@ -1,9 +1,7 @@
 import React from "react";
 
-import DisplayLineNo from "components/DisplayLineNo";
 import DisplayType from "components/DisplayType";
-
-import Block from "basics/Block";
+import LinkToID from "components/LinkToID";
 
 const DisplayMethod = ({
   name,
@@ -11,16 +9,14 @@ const DisplayMethod = ({
   sources = [],
   implementationOf,
   flags,
-  ...rest
 }) => {
   return (
     <div>
       {!!signatures.length &&
         signatures.map(({ parameters = [] }) => (
           <>
-            {flags.isPublic && <>public </>}
             {flags.isPrivate && <>private </>}
-            <DisplayLineNo {...sources[0]}>{name}</DisplayLineNo>(
+            {name}(
             {!!parameters.length &&
               parameters.map((parameter, i) => (
                 <>
@@ -31,16 +27,16 @@ const DisplayMethod = ({
             )
             {implementationOf && (
               <>
-                implementationOf{" "}
-                <a href={`#item_${implementationOf.id}`}>
+                {" "}
+                (See also{" "}
+                <LinkToID id={implementationOf.id}>
                   {implementationOf.name}
-                </a>
+                </LinkToID>
+                )
               </>
             )}
           </>
         ))}
-
-      <Block>{JSON.stringify(rest)}</Block>
     </div>
   );
 };

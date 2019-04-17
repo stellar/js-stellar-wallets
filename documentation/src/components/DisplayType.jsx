@@ -4,26 +4,35 @@ import styled from "styled-components";
 import { useStateValue } from "AppState";
 
 import DisplayInterface from "components/DisplayInterface";
+import LinkToID from "components/LinkToID";
 
-const El = styled.a`
+import Tooltip from "basics/Tooltip";
+
+const El = styled(LinkToID)`
   position: relative;
 `;
 
-const InfoEl = styled.div`
-  z-index: 10;
-  position: absolute;
-  top: 20px;
-  left: 50%;
-
-  padding: 10px;
-  background: white;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-`;
-
-const DisplayType = ({ name, type, id }) => {
+const DisplayType = ({ name, type, types, id }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
   const [{ itemsById, itemsByName }] = useStateValue();
+
+  if (type === "union") {
+    // don't show "undefined" types because that's handled
+    // by optionalness of the property
+    return (
+      <span>
+        {types
+          .filter((t) => t.name !== "undefined")
+          .map(
+            (t) =>
+              // show either the name, or a string literal in quotes
+              t.name || `"${t.value}"`,
+          )
+          .join(" | ")}
+      </span>
+    );
+  }
 
   if (!itemsById[id] && !itemsByName[name]) {
     return <span>{name || "any"}</span>;
@@ -32,16 +41,16 @@ const DisplayType = ({ name, type, id }) => {
   if (itemsById[id]) {
     return (
       <El
-        href={`#item_${id}`}
+        id={id}
         onMouseEnter={() => toggleVisibility(true)}
         onMouseLeave={() => toggleVisibility(false)}
       >
         {name || "any"}
 
         {isVisible && (
-          <InfoEl>
+          <Tooltip>
             <DisplayInterface {...itemsById[id]} />
-          </InfoEl>
+          </Tooltip>
         )}
       </El>
     );
@@ -50,15 +59,15 @@ const DisplayType = ({ name, type, id }) => {
   if (itemsByName[name]) {
     return (
       <El
-        href={`#item_${itemsByName[name].id}`}
+        id={itemsByName[name].id}
         onMouseEnter={() => toggleVisibility(true)}
         onMouseLeave={() => toggleVisibility(false)}
       >
         {name}
         {isVisible && (
-          <InfoEl>
+          <Tooltip>
             <DisplayInterface {...itemsByName[name]} />
-          </InfoEl>
+          </Tooltip>
         )}
       </El>
     );

@@ -1,16 +1,29 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-
-import { useStateValue } from "AppState";
+import styled from "styled-components";
 
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
 import DisplayProperty from "components/DisplayProperty";
+import DisplayLineNo from "components/DisplayLineNo";
+
+const El = styled.div`
+  position: relative;
+`;
+
+const LineNoEl = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const CommentEl = styled.div`
+  margin-right: 300px;
+`;
 
 const DisplayItem = (params) => {
-  const [{ itemsById }] = useStateValue();
-
   let item;
+  let shouldShowLines = false;
 
   switch (params.kindString) {
     case "Function":
@@ -36,15 +49,21 @@ const DisplayItem = (params) => {
   }
 
   return (
-    <div id={`item_${params.id}`}>
+    <El id={`item_${params.id}`}>
+      {shouldShowLines && params.sources && (
+        <LineNoEl>
+          <DisplayLineNo {...params.sources[0]} />
+        </LineNoEl>
+      )}
+
       {params.comment && (
-        <>
+        <CommentEl>
           <ReactMarkdown source={params.comment.shortText} />
           <ReactMarkdown source={params.comment.text} />
-        </>
+        </CommentEl>
       )}
       {item}
-    </div>
+    </El>
   );
 };
 

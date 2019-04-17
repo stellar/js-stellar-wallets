@@ -1,6 +1,5 @@
 import React from "react";
 
-import DisplayLineNo from "components/DisplayLineNo";
 import DisplayItem from "components/DisplayItem";
 import DisplayType from "components/DisplayType";
 
@@ -10,7 +9,6 @@ const DisplayInterface = ({
   kindString,
   name,
   children = [],
-  sources,
   extendedTypes = [],
   implementedTypes = [],
   ...rest
@@ -18,8 +16,7 @@ const DisplayInterface = ({
   return (
     <div>
       <h5>
-        {kindString.toLowerCase()}{" "}
-        <DisplayLineNo {...sources[0]}>{name}</DisplayLineNo>
+        {kindString.toLowerCase()} {name}
         {!!extendedTypes.length &&
           extendedTypes.map((extendedType) => (
             <>
@@ -29,11 +26,13 @@ const DisplayInterface = ({
           ))}
         {" {"}
       </h5>
-      <Block>
-        {children.map((child) => (
-          <DisplayItem {...child} />
+      {children
+        .sort((a, b) => a.sources[0].line - b.sources[0].line)
+        .map((child) => (
+          <Block>
+            <DisplayItem {...child} />
+          </Block>
         ))}
-      </Block>
       <h5>{"}"}</h5>
     </div>
   );
