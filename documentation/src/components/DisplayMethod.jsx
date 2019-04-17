@@ -48,7 +48,7 @@ const DisplayMethod = (params) => {
           </>
         ))}
 
-      {/* <pre>{JSON.stringify(params, null, 2)}</pre> */}
+      <pre>{JSON.stringify(params, null, 2)}</pre>
     </div>
   );
 };

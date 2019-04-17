@@ -1,4 +1,13 @@
 import React from "react";
+import styled from "styled-components";
+
+const ListEl = styled.li`
+  font-size: 0.9em;
+
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
+`;
 
 const Index = ({ itemsByKind }) => {
   return (
@@ -11,9 +20,9 @@ const Index = ({ itemsByKind }) => {
             itemsByKind[kind]
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((item) => (
-                <li>
+                <ListEl>
                   <a href={`#item_${item.id}`}>{item.name}</a>
-                </li>
+                </ListEl>
               ))}
         </>
       ))}

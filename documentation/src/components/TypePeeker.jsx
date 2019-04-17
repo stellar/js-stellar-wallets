@@ -24,23 +24,26 @@ const TypePeeker = ({ name, type, types, typeArguments, id }) => {
       <span>
         {types
           .filter((t) => t.name !== "undefined")
-          .map(
-            (t) =>
-              // show either the name, or a string literal in quotes
-              t.name || `"${t.value}"`,
-          )
-          .join(" | ")}
+          .map((t, i) => (
+            <>
+              <TypePeeker {...t} />
+              {i !== types.length - 1 && <> | </>}
+            </>
+          ))}
       </span>
     );
   }
 
-  if (type === "reference" && typeArguments) {
+  if (typeArguments) {
     return (
       <>
         {name}
         {"<"}
-        {typeArguments.map((t) => (
-          <TypePeeker {...t} />
+        {typeArguments.map((t, i) => (
+          <>
+            <TypePeeker {...t} />
+            {i !== typeArguments.length - 1 && <>, </>}
+          </>
         ))}
         {">"}
       </>
