@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import DisplayItem from "components/DisplayItem";
@@ -27,7 +27,6 @@ const Item = styled.div`
   border: 1px solid black;
   padding: 10px;
   vertical-align: top;
-  overflow: scroll;
 `;
 
 function getItems(entity) {
@@ -74,16 +73,16 @@ const App = () => {
     {},
   );
 
-  const countsByKind = Object.keys(itemsByKind).reduce(
-    (memo, kind) => ({
+  const itemsByName = getItems(docs.children).reduce(
+    (memo, item) => ({
       ...memo,
-      [kind]: itemsByKind[kind].length,
+      [item.name]: item,
     }),
     {},
   );
 
   return (
-    <StateProvider initialState={{ itemsById }}>
+    <StateProvider initialState={{ itemsById, itemsByName }}>
       <El>
         <ToCEl>
           <ToC itemsByKind={itemsByKind} />

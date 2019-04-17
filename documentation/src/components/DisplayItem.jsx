@@ -19,6 +19,7 @@ const DisplayItem = (params) => {
       item = <DisplayMethod {...params} />;
       break;
 
+    case "Variable":
     case "Property":
       item = <DisplayProperty {...params} />;
       break;
@@ -27,14 +28,6 @@ const DisplayItem = (params) => {
     case "Interface":
     case "Object literal":
       item = <DisplayInterface {...params} />;
-      break;
-
-    case "Variable":
-      if (params.type.type === "reference") {
-        item = <DisplayItem {...itemsById[params.type.id]} />;
-      } else {
-        item = <pre>{JSON.stringify(params, null, 2)}</pre>;
-      }
       break;
 
     default:
