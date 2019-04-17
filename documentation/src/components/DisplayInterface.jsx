@@ -5,13 +5,16 @@ import TypePeeker from "components/TypePeeker";
 
 import Block from "basics/Block";
 
-const DisplayInterface = ({
-  kindString,
-  name,
-  children = [],
-  extendedTypes = [],
-  implementedTypes = [],
-}) => {
+const DisplayInterface = (params) => {
+  const {
+    kindString,
+    name,
+    children = [],
+    extendedTypes = [],
+    implementedTypes = [],
+    indexSignature = [],
+  } = params;
+
   return (
     <div>
       <div>
@@ -32,6 +35,14 @@ const DisplayInterface = ({
             </>
           ))}
       </div>
+
+      {indexSignature.map(({ parameters, type }) => (
+        <Block>
+          [{parameters[0].name}: <TypePeeker {...parameters[0].type} />
+          ]: <TypePeeker {...type} />;
+        </Block>
+      ))}
+
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)
         .map((child) => (
@@ -39,6 +50,8 @@ const DisplayInterface = ({
             <DisplayItem {...child} />
           </Block>
         ))}
+
+      {/* <pre>{JSON.stringify(params, null, 2)}</pre> */}
     </div>
   );
 };
