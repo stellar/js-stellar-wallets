@@ -5,12 +5,21 @@ import DisplayType from "components/DisplayType";
 
 import Block from "basics/Block";
 
-const DisplayMethod = ({ name, signatures = [], sources = [], ...rest }) => {
+const DisplayMethod = ({
+  name,
+  signatures = [],
+  sources = [],
+  implementationOf,
+  flags,
+  ...rest
+}) => {
   return (
     <div>
       {!!signatures.length &&
         signatures.map(({ parameters = [] }) => (
           <>
+            {flags.isPublic && <>public </>}
+            {flags.isPrivate && <>private </>}
             <DisplayLineNo {...sources[0]}>{name}</DisplayLineNo>(
             {!!parameters.length &&
               parameters.map((parameter, i) => (
@@ -20,6 +29,14 @@ const DisplayMethod = ({ name, signatures = [], sources = [], ...rest }) => {
                 </>
               ))}
             )
+            {implementationOf && (
+              <>
+                implementationOf{" "}
+                <a href={`#item_${implementationOf.id}`}>
+                  {implementationOf.name}
+                </a>
+              </>
+            )}
           </>
         ))}
 

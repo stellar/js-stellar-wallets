@@ -1,11 +1,15 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
+import { useStateValue } from "AppState";
+
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
 import DisplayProperty from "components/DisplayProperty";
 
 const DisplayItem = (params) => {
+  const [{ itemsById }] = useStateValue();
+
   let item;
 
   switch (params.kindString) {
@@ -21,7 +25,16 @@ const DisplayItem = (params) => {
 
     case "Class":
     case "Interface":
+    case "Object literal":
       item = <DisplayInterface {...params} />;
+      break;
+
+    case "Variable":
+      if (params.type.type === "reference") {
+        item = <DisplayItem {...itemsById[params.type.id]} />;
+      } else {
+        item = <pre>{JSON.stringify(params, null, 2)}</pre>;
+      }
       break;
 
     default:

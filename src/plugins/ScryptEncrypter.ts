@@ -4,7 +4,7 @@ import { EncryptedKey, Key } from "../types";
 const NAME = "ScryptEncrypter";
 
 /**
- * "Encrypt" keys in a very basic, naive way.
+ * Encrypt keys with scrypt, as they are on StellarX.com.
  */
 export const ScryptEncrypter = {
   name: NAME,
