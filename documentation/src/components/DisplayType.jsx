@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useStateValue } from "AppState";
 
-const El = styled.button`
+const El = styled.a`
   position: relative;
 `;
 
@@ -30,6 +30,7 @@ const DisplayType = ({ name, type, id }) => {
 
   return (
     <El
+      href={`#item_${id}`}
       onMouseEnter={() => toggleVisibility(true)}
       onMouseLeave={() => toggleVisibility(false)}
     >
