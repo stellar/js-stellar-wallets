@@ -30,8 +30,6 @@ const DisplayInterface = ({
         {" {"}
       </h5>
       <Block>
-        <p>{JSON.stringify(rest)}</p>
-
         {children.map((child) => (
           <DisplayItem {...child} />
         ))}

@@ -3,11 +3,14 @@ import styled from "styled-components";
 
 import { useStateValue } from "AppState";
 
+import DisplayInterface from "components/DisplayInterface";
+
 const El = styled.a`
   position: relative;
 `;
 
 const InfoEl = styled.div`
+  z-index: 10;
   position: absolute;
   top: 20px;
   left: 50%;
@@ -36,7 +39,11 @@ const DisplayType = ({ name, type, id }) => {
     >
       {name || "{}"}
 
-      {isVisible && <InfoEl>{JSON.stringify(itemsById[id])})</InfoEl>}
+      {isVisible && (
+        <InfoEl>
+          <DisplayInterface {...itemsById[id]} />
+        </InfoEl>
+      )}
     </El>
   );
 };
