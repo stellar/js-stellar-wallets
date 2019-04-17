@@ -8,28 +8,17 @@ import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
 import { Offer, Offers, Token, Trade } from "./types";
 
-/*
-export interface Effect {
-  id: string;
-  senderToken: Token;
-  receiverToken: Token;
-  senderAccount: Account;
-  senderAmount: BigNumber;
-  receiverAmount: BigNumber;
-  timestamp: number;
-}
-*/
+export type TradeCollection = Server.TradeRecord[];
 
-type TradeCollection = Server.TradeRecord[];
+export interface DisplayableOffersParams {
+  offers: Server.OfferRecord[];
+  tradeResponses: TradeCollection[];
+}
 
 interface OfferIdMap {
   [offerid: string]: Trade[];
 }
 
-interface DisplayableOffersParams {
-  offers: Server.OfferRecord[];
-  tradeResponses: TradeCollection[];
-}
 export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
   const { offers, tradeResponses } = params;
   const trades = flatten(tradeResponses);

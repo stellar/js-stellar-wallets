@@ -2,6 +2,26 @@ import scrypt from "scrypt-async";
 import nacl from "tweetnacl";
 import naclutil from "tweetnacl-util";
 
+export interface EncryptParams {
+  phrase: string;
+  password: string;
+
+  // these should only be used for testing!
+  salt?: string;
+  nonce?: Uint8Array;
+}
+
+export interface EncryptResponse {
+  encryptedPhrase: string;
+  salt: string;
+}
+
+export interface DecryptParams {
+  phrase: string;
+  password: string;
+  salt: string;
+}
+
 export const RECOVERY_CODE_NBITS = 160;
 export const RECOVERY_CODE_NWORDS = (RECOVERY_CODE_NBITS / 32) * 3;
 export const SALT_BYTES = 32;
@@ -46,26 +66,6 @@ function scryptPass({
 
 function generateSalt(): string {
   return naclutil.encodeBase64(nacl.randomBytes(SALT_BYTES));
-}
-
-interface EncryptParams {
-  phrase: string;
-  password: string;
-
-  // these should only be used for testing!
-  salt?: string;
-  nonce?: Uint8Array;
-}
-
-interface EncryptResponse {
-  encryptedPhrase: string;
-  salt: string;
-}
-
-interface DecryptParams {
-  phrase: string;
-  password: string;
-  salt: string;
 }
 
 /**

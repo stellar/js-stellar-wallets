@@ -30,11 +30,16 @@
     "node_modules",
     "dist",
     "examples/src/js-stellar-wallets",
+    "documentation/src/docs.json",
     "src/fixtures"
   ],
   "typedocOptions": {
     "out": "docs",
     "mode": "modules",
-    "excludeNotExported": true
+    "exclude": ["**/*.test.ts", "**/node_modules/**"],
+    "excludePrivate": true,
+    "excludeNotExported": true,
+    "includeDeclarations": true,
+    "json": "dist/docs.json"
   }
 }

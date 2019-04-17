@@ -7,24 +7,24 @@ import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 import { Account, AccountDetails, Offers, Trades } from "./types";
 
-function isAccount(obj: any): obj is Account {
-  return obj.publicKey !== undefined;
-}
-
-interface DataProviderParams {
+export interface DataProviderParams {
   serverUrl: string;
   accountOrKey: Account | string;
 }
 
-interface WatcherParams {
+export interface WatcherParams {
   onMessage: (accountDetails: AccountDetails) => void;
   onError: (error: any) => void;
 }
 
-interface CollectionParams {
+export interface CollectionParams {
   limit?: number;
   order?: "desc" | "asc";
   cursor?: string;
+}
+
+function isAccount(obj: any): obj is Account {
+  return obj.publicKey !== undefined;
 }
 
 interface CallbacksObject {

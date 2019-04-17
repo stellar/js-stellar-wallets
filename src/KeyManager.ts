@@ -14,24 +14,24 @@ import {
   KeyTypeHandler,
 } from "./types";
 
-interface KeyManagerParams {
+export interface KeyManagerParams {
   keyStore: KeyStore;
   shouldCache?: boolean;
 }
 
-interface AddKeyArgs {
+export interface StoreKeyParams {
   key: Key;
   encrypterName: string;
   password?: string;
 }
 
-interface SignTransactionArgs {
+export interface SignTransactionParams {
   transaction: Transaction;
   publicKey: string;
   password?: string;
 }
 
-interface ChangePasswordArgs {
+export interface ChangePasswordParams {
   oldPassword: string;
   newPassword: string;
 }
@@ -54,7 +54,7 @@ export class KeyManager {
   private keyCache: { [publicKey: string]: Key };
   private shouldCache: boolean;
 
-  constructor({ keyStore, shouldCache = true }: KeyManagerParams) {
+  constructor(params: KeyManagerParams) {
     this.encrypterMap = {};
     this.keyHandlerMap = {
       [KeyType.ledger]: ledgerHandler,
@@ -63,8 +63,8 @@ export class KeyManager {
 
     this.keyCache = {};
 
-    this.keyStore = keyStore;
-    this.shouldCache = shouldCache;
+    this.keyStore = params.keyStore;
+    this.shouldCache = params.shouldCache || false;
   }
 
   public registerKeyHandler(keyHandler: KeyTypeHandler) {
@@ -89,13 +89,13 @@ export class KeyManager {
     key,
     password,
     encrypterName,
-  }: AddKeyArgs): Promise<KeyMetadata> {
+  }: StoreKeyParams): Promise<KeyMetadata> {
     // happy path-only code to demonstrate idea
     const encrypterObj = this.encrypterMap[encrypterName];
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
     const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
-    this._writeToCache(key.publicKey, key);
+    this._writeIndexache(key.publicKey, key);
 
     return keyMetadata[0];
   }
@@ -119,7 +119,7 @@ export class KeyManager {
    */
   public async removeKey(publicKey: string): Promise<KeyMetadata | undefined> {
     const res = await this.keyStore.removeKey(publicKey);
-    this._writeToCache(publicKey, undefined);
+    this._writeIndexache(publicKey, undefined);
     return res;
   }
 
@@ -136,7 +136,7 @@ export class KeyManager {
     transaction,
     publicKey,
     password,
-  }: SignTransactionArgs): Promise<Transaction> {
+  }: SignTransactionParams): Promise<Transaction> {
     let key = this._readFromCache(publicKey);
 
     if (!key) {
@@ -148,7 +148,7 @@ export class KeyManager {
 
       const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
       key = await encrypterObj.decryptKey({ encryptedKey, password });
-      this._writeToCache(publicKey, key);
+      this._writeIndexache(publicKey, key);
     }
 
     const keyHandler = this.keyHandlerMap[key.type];
@@ -168,7 +168,7 @@ export class KeyManager {
   public async changePassword({
     oldPassword,
     newPassword,
-  }: ChangePasswordArgs): Promise<KeyMetadata[]> {
+  }: ChangePasswordParams): Promise<KeyMetadata[]> {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (encryptedKey: EncryptedKey) => {
@@ -178,7 +178,7 @@ export class KeyManager {
           password: oldPassword,
         });
 
-        this._writeToCache(encryptedKey.publicKey, decryptedKey);
+        this._writeIndexache(encryptedKey.publicKey, decryptedKey);
 
         return encrypterName.encryptKey({
           key: decryptedKey,
@@ -198,7 +198,7 @@ export class KeyManager {
     return this.keyCache[publicKey];
   }
 
-  private _writeToCache(publicKey: string, key: Key | undefined) {
+  private _writeIndexache(publicKey: string, key: Key | undefined) {
     if (this.shouldCache && key) {
       this.keyCache[publicKey] = key;
     }
