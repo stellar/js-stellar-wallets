@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 import DisplayClass from "components/DisplayClass";
+import DisplayItem from "components/DisplayItem";
 
 import { StateProvider } from "AppState";
 
@@ -16,7 +17,7 @@ const Item = styled.div`
   border: 1px solid black;
   padding: 10px;
   vertical-align: top;
-  height: 50vh;
+  max-height: 50vh;
   overflow: scroll;
 `;
 
@@ -85,10 +86,7 @@ class App extends Component {
               <div>
                 {itemsByKind[kind].map((item) => (
                   <Item>
-                    {item.kindString === "Class" && <DisplayClass {...item} />}
-                    {item.kindString !== "Class" && (
-                      <pre>{JSON.stringify(item, null, 2)}</pre>
-                    )}
+                    <DisplayItem {...item} />
                   </Item>
                 ))}
               </div>

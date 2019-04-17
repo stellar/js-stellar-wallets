@@ -7,14 +7,14 @@ const DisplayMethod = ({ name, signatures = [], sources = [] }) => {
   return (
     <div>
       {!!signatures.length &&
-        signatures.map(({ parameters = [] }, i) => (
+        signatures.map(({ parameters = [] }) => (
           <p>
             {name}(
             {!!parameters.length &&
-              parameters.map((parameter) => (
+              parameters.map((parameter, i) => (
                 <>
                   {parameter.name}: <DisplayType {...parameter.type} />
-                  {i !== signatures.length - 1 && <>, </>}
+                  {i !== parameters.length - 1 && <>, </>}
                 </>
               ))}
             ) =>
