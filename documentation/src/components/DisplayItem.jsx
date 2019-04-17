@@ -8,8 +8,16 @@ import DisplayProperty from "components/DisplayProperty";
 import DisplayLineNo from "components/DisplayLineNo";
 import DisplayType from "components/DisplayType";
 
-const El = styled.div`
+const ChildEl = styled.div`
   position: relative;
+`;
+
+const RootEl = styled.div`
+  position: relative;
+  margin-bottom: 1.5%;
+  border: 1px solid black;
+  padding: 10px;
+  vertical-align: top;
 `;
 
 const LineNoEl = styled.div`
@@ -22,9 +30,10 @@ const CommentEl = styled.div`
   margin-right: 300px;
 `;
 
-const DisplayItem = ({ shouldShowId, ...params }) => {
+const DisplayItem = ({ isRootElement, ...params }) => {
   let item;
-  let shouldShowLines = false;
+
+  const El = isRootElement ? RootEl : ChildEl;
 
   switch (params.kindString) {
     case "Function":
@@ -56,8 +65,8 @@ const DisplayItem = ({ shouldShowId, ...params }) => {
   }
 
   return (
-    <El id={shouldShowId ? `item_${params.id}` : null}>
-      {shouldShowLines && params.sources && (
+    <El id={isRootElement ? `item_${params.id}` : null}>
+      {isRootElement && params.sources && (
         <LineNoEl>
           <DisplayLineNo {...params.sources[0]} />
         </LineNoEl>

@@ -15,7 +15,15 @@ const DisplayInterface = ({
   return (
     <div>
       <div>
-        {kindString.toLowerCase()} {name}
+        {kindString === "Enumeration" ? "enum" : kindString.toLowerCase()}{" "}
+        {name}
+        {!!implementedTypes.length &&
+          implementedTypes.map((implementedType) => (
+            <>
+              {" "}
+              implements <TypePeeker {...implementedType} />
+            </>
+          ))}
         {!!extendedTypes.length &&
           extendedTypes.map((extendedType) => (
             <>

@@ -2,28 +2,36 @@ import React from "react";
 import styled from "styled-components";
 
 import DisplayItem from "components/DisplayItem";
-import ToC from "components/ToC";
+import Index from "components/Index";
 
 import { StateProvider } from "AppState";
 
 import docs from "./docs.json";
 
+const SIDEBAR_WIDTH = 300;
+
 const El = styled.div`
   position: relative;
-  padding-left: 200px;
+  padding-left: ${SIDEBAR_WIDTH}px;
 `;
 
-const ToCEl = styled.div`
+const IndexEl = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 200px;
+  padding: 20px;
+  width: ${SIDEBAR_WIDTH}px;
+  border-right: 1px solid black;
   overflow: scroll;
 `;
 
+const BodyEl = styled.div`
+  padding: 20px;
+`;
+
 const Item = styled.div`
-  margin: 1.5%;
+  margin-bottom: 1.5%;
   border: 1px solid black;
   padding: 10px;
   vertical-align: top;
@@ -84,25 +92,23 @@ const App = () => {
   return (
     <StateProvider initialState={{ itemsById, itemsByName }}>
       <El>
-        <ToCEl>
-          <ToC itemsByKind={itemsByKind} />
-        </ToCEl>
+        <IndexEl>
+          <Index itemsByKind={itemsByKind} />
+        </IndexEl>
 
-        <div>
+        <BodyEl>
           {Object.keys(itemsByKind).map((kind) => (
             <div>
               <h2>{kind}</h2>
 
               <div>
                 {itemsByKind[kind].map((item) => (
-                  <Item>
-                    <DisplayItem shouldShowId {...item} />
-                  </Item>
+                  <DisplayItem isRootElement {...item} />
                 ))}
               </div>
             </div>
           ))}
-        </div>
+        </BodyEl>
       </El>
     </StateProvider>
   );

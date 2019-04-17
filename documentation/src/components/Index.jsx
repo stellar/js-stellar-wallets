@@ -1,6 +1,6 @@
 import React from "react";
 
-const ToC = ({ itemsByKind }) => {
+const Index = ({ itemsByKind }) => {
   return (
     <div>
       {Object.keys(itemsByKind).map((kind) => (
@@ -10,7 +10,7 @@ const ToC = ({ itemsByKind }) => {
           {itemsByKind[kind] &&
             itemsByKind[kind].map((item) => (
               <li>
-                <a href={`#item_${item.id}`}>{item.name}</a> ({item.id})
+                <a href={`#item_${item.id}`}>{item.name}</a>
               </li>
             ))}
         </>
@@ -19,4 +19,4 @@ const ToC = ({ itemsByKind }) => {
   );
 };
 
-export default ToC;
+export default Index;
