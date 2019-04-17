@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
@@ -32,8 +33,8 @@ const DisplayItem = (params) => {
     <div id={`item_${params.id}`}>
       {params.comment && (
         <>
-          <p>{params.comment.shortText}</p>
-          <p>{params.comment.text}</p>
+          <ReactMarkdown source={params.comment.shortText} />
+          <ReactMarkdown source={params.comment.text} />
         </>
       )}
       {item}
