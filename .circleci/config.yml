@@ -40,8 +40,8 @@ jobs:
       - run: yarn test:ci
 
       - persist_to_workspace:
-        root: ~/repo
-        paths: .
+          root: ~/repo
+          paths: .
 
   build:
     <<: *defaults
@@ -69,8 +69,8 @@ jobs:
       - run: yarn build
 
       - persist_to_workspace:
-        root: ~/repo
-        paths: .
+          root: ~/repo
+          paths: .
 
   deploy:
     <<: *defaults
