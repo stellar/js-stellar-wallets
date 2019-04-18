@@ -1,5 +1,5 @@
 {
-  "name": "stellar-wallet-sdk",
+  "name": "@stellar/wallet-sdk",
   "version": "0.0.1-rc1",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
