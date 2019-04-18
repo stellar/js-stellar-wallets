@@ -37,9 +37,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run:
-        name: Run tests
-        command: yarn test:ci
+      - run: yarn test:ci
 
       - persist_to_workspace:
         root: ~/repo
@@ -65,14 +63,10 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run:
-        name: Run tests
-        command: yarn test:ci
+      - run: yarn test:ci
 
       # build
-      - run:
-        name: Build
-        command: yarn build
+      - run: yarn build
 
       - persist_to_workspace:
         root: ~/repo
