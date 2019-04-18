@@ -17,7 +17,8 @@
     "lint": "tslint --fix --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
     "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "test:ci": "jest"
   },
   "husky": {
     "hooks": {
