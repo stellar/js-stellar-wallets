@@ -1046,20 +1046,12 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/stellar-base@*":
+"@types/stellar-base@^0.10.2":
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@types/stellar-base/-/stellar-base-0.10.2.tgz#8a6bbaabde140971ccab4cf202151de84740fa29"
   integrity sha512-MOilZXnnLqxCa3f2Xr7phqI8mbfz5j1BhWs6XrGwHfNTL9XQPOyLBN9tBWIsDIRZ1VyUZQ2YQLTjSppsB8/iUQ==
   dependencies:
     "@types/node" "*"
-
-"@types/stellar-sdk@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@types/stellar-sdk/-/stellar-sdk-0.11.1.tgz#3487ac99cbc457146ca2bc4c7c707f0c0213a09c"
-  integrity sha512-VHTTf2rs6ZpbWJmTCSLkw+CF7RwlN5DO+/kN3Ieze6RPWe3SA82O2DdsWXw5sM2hFbJ7pcjSyoR76ufNp0Bcvg==
-  dependencies:
-    "@types/node" "*"
-    "@types/stellar-base" "*"
 
 "@types/yargs@^12.0.2":
   version "12.0.12"
@@ -4925,10 +4917,10 @@ stellar-base@^0.13.0:
   optionalDependencies:
     ed25519 "0.0.4"
 
-stellar-sdk@^0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-0.15.0.tgz#599ad41d5afa1db658d87470f37fd3622039ea0c"
-  integrity sha512-YMutg6JNrybbC88XMPRUBrqu4Ma6Gno5ys29hjegujE/lpPzI0KtbxWPP96WYKbS5ANAAtPSH5UBDorkkKe57Q==
+stellar-sdk@^0.15.1:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-0.15.1.tgz#2a2e4e2e35025d94a0363b57080806d80c003290"
+  integrity sha512-w7p+NowIahN5mxv/igcVsduC1CQ9V+DJyG7UWfUHyc0voU4rpStNwA047xzX4l06opZtFd5eeQjJ8xmCQf/ueQ==
   dependencies:
     axios "^0.18.0"
     bignumber.js "^4.0.0"
