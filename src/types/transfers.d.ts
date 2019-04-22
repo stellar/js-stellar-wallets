@@ -5,6 +5,7 @@ export interface GetKycArgs {
 }
 
 export interface FeeArgs {
+  supportedAssets: WithdrawInfo | DepositInfo;
   assetCode: string;
   amount: string;
   operation: "withdraw" | "deposit";

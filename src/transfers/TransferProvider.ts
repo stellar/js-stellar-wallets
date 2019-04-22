@@ -5,6 +5,7 @@ import {
   FeeArgs,
   Info,
   RawInfoResponse,
+  SimpleFee,
   WithdrawInfo,
 } from "../types";
 
@@ -32,10 +33,35 @@ export abstract class TransferProvider {
     | Promise<DepositInfo>;
 
   protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    const response = await fetch(
-      `${this.transferServer}/fee?${queryString.stringify(args)}`,
-    );
-    const { fee } = await response.json();
-    return fee as number;
+    const { supportedAssets, ...rest } = args;
+
+    if (!supportedAssets[rest.assetCode]) {
+      throw new Error(
+        `Can't get fee for an unsupported asset, '${rest.assetCode}`,
+      );
+    }
+    const { fee } = supportedAssets[rest.assetCode];
+    switch (fee.type) {
+      case "none":
+        return 0;
+      case "simple":
+        const simpleFee = fee as SimpleFee;
+        return (
+          (simpleFee.percent / 100) * Number(rest.amount) + simpleFee.fixed
+        );
+      case "complex":
+        const response = await fetch(
+          `${this.transferServer}/fee?${queryString.stringify(rest)}`,
+        );
+        const { fee: feeResponse } = await response.json();
+        return feeResponse as number;
+
+      default:
+        throw new Error(
+          `Invalid fee type found! Got '${
+            fee.type
+          }' but expected one of 'none', 'simple', 'complex'`,
+        );
+    }
   }
 }
