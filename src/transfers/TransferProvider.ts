@@ -10,6 +10,9 @@ import {
 
 import { parseInfo } from "./parseInfo";
 
+/**
+ * TransferProvider is the base class for WithdrawProvider and DepositProvider.
+ */
 export abstract class TransferProvider {
   public transferServer: string;
 
