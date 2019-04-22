@@ -104,7 +104,7 @@ export interface WithdrawRequest {
   dest: string;
   destExtra?: string;
   account?: string;
-  memo: Memo;
+  memo?: Memo;
 }
 
 export interface DepositRequest {

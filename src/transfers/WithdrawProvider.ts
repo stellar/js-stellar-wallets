@@ -73,7 +73,14 @@ import { TransferProvider } from "./TransferProvider";
  */
 export class WithdrawProvider extends TransferProvider {
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
-    const search = queryString.stringify(args);
+    const search = queryString.stringify({
+      type: args.type,
+      asset_code: args.assetCode,
+      dest: args.dest,
+      dest_extra: args.destExtra,
+      account: args.account,
+      memo: args.memo,
+    });
     const response = await fetch(`${this.transferServer}/withdraw?${search}`);
     return response.json();
   }
