@@ -17,3 +17,5 @@ export { DataProvider } from "./DataProvider";
 export { KeyManager } from "./KeyManager";
 
 export { KeyManagerPlugins } from "./KeyManagerPlugins";
+
+export { DepositProvider, WithdrawProvider, getKycUrl } from "./transfers";
