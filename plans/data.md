@@ -22,12 +22,23 @@ const StellarWallets = {
     // this is a class, so you can set the Horizon server
     // we want to hit
     DataProvider: {
-      // functions
-      getOutstandingBuyOffers,
-      watchOfferCounts,
-      watchOffer,
-      getBalances,
-      watchBalances,
+      // non-fetch functions
+      isValidKey,
+      getAccountKey,
+
+      // fetch functions
+      fetchOpenOffers,
+      fetchTrades,
+      fetchTransfers,
+      fetchEffects,
+      fetchAccountDetails,
+
+      // watchers
+      watchOpenOffers,
+      watchTrades,
+      watchTransfers,
+      fetchEffects,
+      watchAccountDetails,
     },
   },
 };
@@ -143,43 +154,40 @@ function reframeEffect(
 ### Get a list of outstanding buy / sell offers for a given token
 
 ```typescript
-function getOutstandingBuyOffers(
-  tokenIdentifier: string,
-): Promise<Array<Offer>>;
+function fetchOpenOffers(tokenIdentifier: string): Promise<Offer[]>;
+
+function watchOpenOffers({
+  onPartialFill: (offers: Offers[]): void,
+
+  /*
+    These two get complicated: if an offer gets removed,
+    it's not an open offer anymore. So we have a couple options:
+    * Return `offers` and `trades` (the latter isn't a complete list)
+    * Return `offers`, some of which may be completed
+  */
+
+  onComplete: (offers: Offers[]): void,
+  onCancel: (offers: Offers[]): void,
+}): void;
+
 ```
 
-Note that this function alone doesn't have a way to watch for updates; the dev
-will have to manually run another function to watch for events.
+### Fetch lists of specific data
 
-### Get a live-updating count of all outstanding offers for an account
+Data types:
 
-```typescript
-function watchOfferCounts(callback: function): void;
-
-// callback functions have this signature
-function callback(count: number): void;
-```
-
-### For a given offer, run callback functions when it’s partially filled / totally filled / canceled
-
-```typescript
-  function watchOffer({
-    onPartialFill: function,
-    onComplete: function,
-    onCancel: function,
-  }): void
-
-  // onPartialFill / onComplete / onCancel functions have this callback signature
-  function callback(count: number): void
-```
+- Trades: Two people exchange tokens
+- Transfers: One person sends a token to another
+- Effects: All operations that change an account (like changing trust, changing
+  inflation destination, etc.)
 
 ### Get a list of tokens you own with total owned, available balance
 
 ```typescript
-  function getBalances(): Promise<Array<Balance>>
+  function fetchAccountDetails(): Promise<Array<Balance>>
 
   // the watcher returns a function that you can run to cancel the watcher
-  function watchBalances({
+  function watchAccountDtails({
     onMessage: (balances) => Array<Balance>,
   }): function
 ```
