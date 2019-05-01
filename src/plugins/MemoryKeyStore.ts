@@ -57,30 +57,30 @@ export class MemoryKeyStore implements KeyStore {
   }
 
   public updateKeys(keys: EncryptedKey[]) {
-    return Promise.all(
-      keys.map((encryptedKey: EncryptedKey) => {
-        const publicKey = encryptedKey.publicKey;
-        if (!this.keyStore[publicKey]) {
-          return Promise.reject(publicKey);
-        }
-
-        const creationTime = this.keyStore[publicKey].creationTime;
-        const modifiedTime = getNow();
-        this.keyStore[publicKey] = {
-          creationTime,
-          modifiedTime,
-          encryptedKey,
-        };
-
-        return Promise.resolve(
-          getMetadataFromMemoryItem({
-            encryptedKey,
-            creationTime,
-            modifiedTime,
-          }),
-        );
-      }),
+    const valid = keys.every(
+      (encryptedKey: EncryptedKey) => !!this.keyStore[encryptedKey.publicKey],
     );
+    if (!valid) {
+      return Promise.reject("some key does not exist");
+    }
+
+    const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
+      const publicKey = encryptedKey.publicKey;
+      const creationTime = this.keyStore[publicKey].creationTime;
+      const modifiedTime = getNow();
+      this.keyStore[publicKey] = {
+        creationTime,
+        modifiedTime,
+        encryptedKey,
+      };
+      return getMetadataFromMemoryItem({
+        encryptedKey,
+        creationTime,
+        modifiedTime,
+      });
+    });
+
+    return Promise.resolve(keysMetadata);
   }
 
   public loadKey(publicKey: string) {
