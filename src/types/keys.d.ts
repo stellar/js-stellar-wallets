@@ -94,7 +94,8 @@ export interface KeyStore {
   configure(data?: any): Promise<void>;
 
   /**
-   * store the given encrypted keys, atomically if possible.
+   * store the given encrypted keys, atomically if possible. If any of the keys
+   * has already been stored, it would throw an error.
    *
    * @param keys already encrypted keys to add to store
    * @returns metadata about the keys once stored
@@ -103,7 +104,8 @@ export interface KeyStore {
   storeKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
-   * update the given encrypted keys, atomically if possible.
+   * update the given encrypted keys, atomically if possible. If any of the
+   * keys hasn't previously been stored, it would throw an error.
    *
    * @param keys already encrypted keys to add to store
    * @returns metadata about the keys once updated
