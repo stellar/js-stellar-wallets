@@ -93,12 +93,7 @@ export class KeyManager {
     // happy path-only code to demonstrate idea
     const encrypterObj = this.encrypterMap[encrypterName];
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
-    let keyMetadata;
-    try {
-      keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
-    } catch (e) {
-      throw e;
-    }
+    const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
     this._writeIndexache(key.publicKey, key);
 
