@@ -33,27 +33,28 @@ export class MemoryKeyStore implements KeyStore {
   }
 
   public storeKeys(keys: EncryptedKey[]) {
-    const metadata: KeyMetadata[] = [];
-    keys.forEach((encryptedKey: EncryptedKey) => {
-      const publicKey = encryptedKey.publicKey;
-      const creationTime = this.keyStore[publicKey]
-        ? this.keyStore[publicKey].creationTime
-        : getNow();
+    const notExist = keys.every(
+      (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
+    );
+    if (!notExist) {
+      return Promise.reject("some key already exists");
+    }
+
+    const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
+      const creationTime = getNow();
       const modifiedTime = getNow();
-      this.keyStore[publicKey] = {
+      this.keyStore[encryptedKey.publicKey] = {
         creationTime,
         modifiedTime,
         encryptedKey,
       };
-      metadata.push(
-        getMetadataFromMemoryItem({
-          encryptedKey,
-          creationTime,
-          modifiedTime,
-        }),
-      );
+      return getMetadataFromMemoryItem({
+        encryptedKey,
+        creationTime,
+        modifiedTime,
+      });
     });
-    return Promise.resolve(metadata);
+    return Promise.resolve(keysMetadata);
   }
 
   public updateKeys(keys: EncryptedKey[]) {
