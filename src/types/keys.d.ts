@@ -103,6 +103,15 @@ export interface KeyStore {
   storeKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
+   * update the given encrypted keys, atomically if possible.
+   *
+   * @param keys already encrypted keys to add to store
+   * @returns metadata about the keys once updated
+   * @throws on any error
+   */
+  updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
+
+  /**
    *  load the key specified by this publicKey.
    *
    * @param publicKey specifies which key to load
