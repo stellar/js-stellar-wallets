@@ -915,6 +915,11 @@
   resolved "https://registry.yarnpkg.com/@stellar/prettier-config/-/prettier-config-1.0.1.tgz#498a66dc13c66859e3787dabdf958233ddbe9253"
   integrity sha512-w9OPycQp1XGfmHC2VUHe5shpZjNFRlmsRBaK7IHvOvVpglzV2QNJsVFh8RdLREWA0mzF59AWvQbyUCCJLPfdWw==
 
+"@stellar/tsconfig@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stellar/tsconfig/-/tsconfig-1.0.1.tgz#71fdb62e9a20a435d4962b906c997ec6927264e6"
+  integrity sha512-dYdEY2chPcD8V2flkG00BTxYUKkIFqTV1n8aIxkdUpSIfnMv8FnixtdLbCb9hRutQgKjIQvHRisUS7yczfjSrw==
+
 "@stellar/tslint-config@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@stellar/tslint-config/-/tslint-config-1.0.0.tgz#9f0a5db93191a899d8abf7869b61e6898cf86a0f"
