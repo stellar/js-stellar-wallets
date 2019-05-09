@@ -910,10 +910,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@stellar/prettier-config@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stellar/prettier-config/-/prettier-config-1.0.0.tgz#273e179944401fa185da1da54802fc4f2f572739"
-  integrity sha512-GRqqmRL25olxdeuW1L/XeXzMD8yd/3d+MwfVDXg1ZjOoxGnHm+0WsmstWTO3mHKz2HoLmVJ3ZexGKhZWXd+NLQ==
+"@stellar/prettier-config@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stellar/prettier-config/-/prettier-config-1.0.1.tgz#498a66dc13c66859e3787dabdf958233ddbe9253"
+  integrity sha512-w9OPycQp1XGfmHC2VUHe5shpZjNFRlmsRBaK7IHvOvVpglzV2QNJsVFh8RdLREWA0mzF59AWvQbyUCCJLPfdWw==
 
 "@types/babel__core@^7.1.0":
   version "7.1.0"
