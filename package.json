@@ -7,6 +7,7 @@
   "repository": "git@github.com:stellar/js-stellar-wallets.git",
   "author": "Stellar Development Foundation <hello@stellar.org>",
   "license": "Apache-2.0",
+  "prettier": "@stellar/prettier-config",
   "peerDependencies": {
     "stellar-sdk": "^0.15.1"
   },
@@ -16,7 +17,7 @@
     "docs": "typedoc",
     "lint": "tslint --fix --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
-    "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'",
+    "prettier": "prettier --write '**/*.{js,ts,md}'",
     "test": "jest --watch",
     "test:ci": "jest"
   },
@@ -27,11 +28,11 @@
   },
   "lint-staged": {
     "**/*.{js,md}": [
-      "prettier --config prettier.config.js --write",
+      "prettier --write",
       "git add"
     ],
     "**/*.ts": [
-      "prettier --config prettier.config.js --write",
+      "prettier --write",
       "tslint --fix",
       "git add"
     ]
@@ -40,13 +41,15 @@
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.1",
     "@babel/preset-typescript": "^7.3.3",
+    "@stellar/prettier-config": "^1.0.1",
+    "@stellar/tslint-config": "^1.0.0",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.1",
     "@types/sinon": "^7.0.11",
     "babel-jest": "^24.5.0",
     "husky": "^1.3.1",
     "jest": "^24.7.1",
     "lint-staged": "^8.1.5",
-    "prettier": "^1.16.4",
+    "prettier": "^1.17.0",
     "regenerator-runtime": "^0.13.2",
     "sinon": "^7.3.1",
     "tsc-watch": "^2.1.2",
