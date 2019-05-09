@@ -7,6 +7,7 @@
   "repository": "git@github.com:stellar/js-stellar-wallets.git",
   "author": "Stellar Development Foundation <hello@stellar.org>",
   "license": "Apache-2.0",
+  "prettier": "@stellar/prettier-config",
   "peerDependencies": {
     "stellar-sdk": "^0.15.1"
   },
@@ -16,7 +17,7 @@
     "docs": "typedoc",
     "lint": "tslint --fix --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
-    "prettier": "prettier --config prettier.config.js --write '**/*.{js,ts,md}'",
+    "prettier": "prettier --write '**/*.{js,ts,md}'",
     "test": "jest --watch",
     "test:ci": "jest"
   },
@@ -27,11 +28,11 @@
   },
   "lint-staged": {
     "**/*.{js,md}": [
-      "prettier --config prettier.config.js --write",
+      "prettier --write",
       "git add"
     ],
     "**/*.ts": [
-      "prettier --config prettier.config.js --write",
+      "prettier --write",
       "tslint --fix",
       "git add"
     ]
@@ -57,6 +58,7 @@
   "dependencies": {
     "@ledgerhq/hw-app-str": "^4.48.0",
     "@ledgerhq/hw-transport-u2f": "^4.48.0",
+    "@stellar/prettier-config": "^1.0.0",
     "@types/jest": "^24.0.11",
     "@types/stellar-base": "^0.10.2",
     "bignumber.js": "^8.1.1",
