@@ -58,11 +58,15 @@ export class MemoryKeyStore implements KeyStore {
   }
 
   public updateKeys(keys: EncryptedKey[]) {
-    const valid = keys.every(
-      (encryptedKey: EncryptedKey) => !!this.keyStore[encryptedKey.publicKey],
+    const invalidKeys: EncryptedKey[] = keys.filter(
+      (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
     );
-    if (!valid) {
-      return Promise.reject("some key does not exist");
+    if (invalidKeys.length) {
+      return Promise.reject(
+        `Some keys couldn't be found in the keystore: ${invalidKeys
+          .map((k) => k.publicKey)
+          .join(", ")}`,
+      );
     }
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {

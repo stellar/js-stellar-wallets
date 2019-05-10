@@ -187,7 +187,7 @@ export class KeyManager {
       }),
     );
 
-    return this.keyStore.storeKeys(newKeys);
+    return this.keyStore.updateKeys(newKeys);
   }
 
   private _readFromCache(publicKey: string): Key | undefined {
