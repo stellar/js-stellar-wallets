@@ -33,11 +33,17 @@ export class MemoryKeyStore implements KeyStore {
   }
 
   public storeKeys(keys: EncryptedKey[]) {
-    const notExist = keys.every(
-      (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
+    // We can't store keys if they're already there
+    const invalidKeys: EncryptedKey[] = keys.filter(
+      (encryptedKey: EncryptedKey) => !!this.keyStore[encryptedKey.publicKey],
     );
-    if (!notExist) {
-      return Promise.reject("some key already exists");
+
+    if (invalidKeys.length) {
+      return Promise.reject(
+        `Some keys were already stored in the keystore: ${invalidKeys
+          .map((k) => k.publicKey)
+          .join(", ")}`,
+      );
     }
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
@@ -58,6 +64,7 @@ export class MemoryKeyStore implements KeyStore {
   }
 
   public updateKeys(keys: EncryptedKey[]) {
+    // we can't update keys if they're already stored
     const invalidKeys: EncryptedKey[] = keys.filter(
       (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
     );
