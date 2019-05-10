@@ -13,8 +13,8 @@ their plugins.
 these handlers, and they might be difficult to generically test.)
 
 My idea is for each plugin type to have a function that runs a gamut of tests on
-the plugins, and outputs either `true` if the plugin is valid, or throws an
-error if the plugin is not.
+the plugins, and resolves a promise if the plugin is valid, or rejects with an
+error object if the plugin is not.
 
 Another option is to output one test function for each plugin function, but that
 seems tedious to implement.
@@ -36,8 +36,8 @@ per plugin it is.
 
 ```javascript
 export const PluginTesting = {
-  testEncrypter(encrypter: Encrypter): boolean {},
+  testEncrypter(encrypter: Encrypter): Promise<void> {},
 
-  testKeyStore(keyStore: KeyStore): boolean {},
+  testKeyStore(keyStore: KeyStore): Promise<void> {},
 };
 ```
