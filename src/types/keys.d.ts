@@ -103,32 +103,36 @@ export interface KeyStore {
    * userid that is needed to properly access the key store for the logged-in
    * user.
    *
-   * Can be called repeatedly to update the KeyStore state when needed (say the
-   * authToken expires)
+   * Can be called repeatedly to update the KeyStore state when needed (for
+   * example, when an authToken expires).
    *
    * @param data any info needed to init the keystore
-   * @returns void on success
-   * @throws on any error
    */
   configure(data?: any): Promise<void>;
 
   /**
-   * Store the given encrypted keys, atomically if possible. If any of the keys
-   * has already been stored, it would throw an error.
+   * Store the given encrypted keys atomically.
    *
-   * @param keys already encrypted keys to add to store
+   * If any keys already exist in the store, this should throw an error object
+   * with user-friendly text that lists the public keys that already exist.
+   *
+   * We have separate storeKeys and updateKeys functions so you don't
+   * accidentally update non-existent keys or re-create a key you haven't
+   * created yet.
+   *
+   * @param encryptedKeys Encrypted keys to add to the store.
    * @returns metadata about the keys once stored
-   * @throws on any error
    */
-  storeKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
+  storeKeys(encryptedKeys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
-   * Update the given encrypted keys, atomically if possible. If any of the
-   * keys hasn't previously been stored, it would throw an error.
+   * Update the given encrypted keys atomically.
+   *
+   * If any keys don't exist in the store, this should throw an error object
+   * with user-friendly text that lists the public keys that already exist.
    *
    * @param keys already encrypted keys to add to store
    * @returns metadata about the keys once updated
-   * @throws on any error
    */
   updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
@@ -137,7 +141,6 @@ export interface KeyStore {
    *
    * @param publicKey specifies which key to load
    * @returns an encrypted key promise, or null
-   * @throws on any error
    */
   loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
 
@@ -146,7 +149,6 @@ export interface KeyStore {
    *
    * @param publicKey specifies which key to remove
    * @returns void on success
-   * @throws on any error
    */
   removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
 
@@ -154,7 +156,6 @@ export interface KeyStore {
    *  List information about stored keys.
    *
    * @returns a list of metadata about all stored keys
-   * @throws on any error
    */
   listKeys(): Promise<KeyMetadata[]>;
 
@@ -162,7 +163,6 @@ export interface KeyStore {
    *  Load all encrypted keys.
    *
    * @returns a list of all stored keys
-   * @throws on any error
    */
   loadAllKeys(): Promise<EncryptedKey[]>;
 }
