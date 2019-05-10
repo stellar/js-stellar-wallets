@@ -53,6 +53,14 @@ export interface KeyMetadata extends BaseKey {
  */
 export interface Encrypter {
   name: string;
+
+  /**
+   * Encrypt a raw, unencrypted key.
+   * @param {object} params Params object
+   * @param {Key} params.key The unencrypted key
+   * @param {string} password What we should encrypt the key with
+   * @return {Promise<EncryptedKey>}
+   */
   encryptKey({
     key,
     password,
@@ -60,6 +68,17 @@ export interface Encrypter {
     key: Key;
     password?: string;
   }): Promise<EncryptedKey>;
+
+  /**
+   * Decrypt an encrypted key. If the password doesn't properly encrypt the key,
+   * it should throw an error. Please make sure the error message is descriptive
+   * and user-friendly.
+   *
+   * @param {object} params Params object
+   * @param {EncryptedKey} params.encryptedKey
+   * @param {string} password The password to decrypt with
+   * @return {Promise<EncryptedKey>}
+   */
   decryptKey({
     encryptedKey,
     password,
@@ -94,7 +113,7 @@ export interface KeyStore {
   configure(data?: any): Promise<void>;
 
   /**
-   * store the given encrypted keys, atomically if possible. If any of the keys
+   * Store the given encrypted keys, atomically if possible. If any of the keys
    * has already been stored, it would throw an error.
    *
    * @param keys already encrypted keys to add to store
@@ -104,7 +123,7 @@ export interface KeyStore {
   storeKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
-   * update the given encrypted keys, atomically if possible. If any of the
+   * Update the given encrypted keys, atomically if possible. If any of the
    * keys hasn't previously been stored, it would throw an error.
    *
    * @param keys already encrypted keys to add to store
@@ -114,7 +133,7 @@ export interface KeyStore {
   updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
-   *  load the key specified by this publicKey.
+   *  Load the key specified by this publicKey.
    *
    * @param publicKey specifies which key to load
    * @returns an encrypted key promise, or null
@@ -123,7 +142,7 @@ export interface KeyStore {
   loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
 
   /**
-   *  remove the key specified by this publicKey.
+   *  Remove the key specified by this publicKey.
    *
    * @param publicKey specifies which key to remove
    * @returns void on success
@@ -132,7 +151,7 @@ export interface KeyStore {
   removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
 
   /**
-   *  List information about stored keys
+   *  List information about stored keys.
    *
    * @returns a list of metadata about all stored keys
    * @throws on any error
@@ -140,7 +159,7 @@ export interface KeyStore {
   listKeys(): Promise<KeyMetadata[]>;
 
   /**
-   *  Load all encrypted keys
+   *  Load all encrypted keys.
    *
    * @returns a list of all stored keys
    * @throws on any error
