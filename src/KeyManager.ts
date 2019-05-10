@@ -37,15 +37,36 @@ export interface ChangePasswordParams {
 }
 
 /**
- * KeyManager is the main class that is constructed to use the keystore API. It
- * optionally caches keys internally so a user doesn't have to re-decrypt
- * passwords so long as the KeyManager object is around in memory.
  *
- *  It requires the following to function:
- * - KeyStore (passed into constructor)
- * - Encrypter (one or more passed in via registerEncrypter)
- * - KeyTypeHandler (one or more passed in via registerKeyHandler. a ledger and
- * plaintext key handler are provided automatically.)
+ * ## `KeyManager`
+ *
+ * The `KeyManager` class is your primary gateway API for storing and securing
+ * your users' Stellar keys. You should make an instance of this and call that
+ * instance's functions whenever you need to CRUD keys for your users.
+ *
+ * Note that it does not generate keys, nor does it provide UI for accepting
+ * it from a user. You'll have to add that functionality.
+ *
+ * `KeyManager` operates using a plugin system. You have to implement three
+ * types of interfaces and add them to the `KeyManager`:
+ *
+ * - A `Encrypter` handles encrypting and decrypting a key.
+ * - A `KeyStore` handles storing, updating, loading, and removing your keys
+ * after they've been encrypted.
+ * - A `KeyTypeHandler` encodes how to handle keytypes. For example, Ledger keys
+ * sign transactions differently than raw Stellar secret seeds. Normally, you
+ * won't have to write `KeyTypeHandler` interfaces; the SDK provides handlers for
+ * these key types:
+ *  - Ledgers
+ *  - Plaintext secrets
+ *
+ * ## Names
+ *
+ * Each interface you pass to `KeyManager` will have a `name` property, which
+ * should be unique to that particular interface and to the `KeyManager`. So if
+ * you make an `Encrypter` named "YourUniqueEncrypter", we'll save all your
+ * user's keys with that encrypter name, and we'll look for an `Encrypter` of
+ * that name to decrypt those keys until the end of time!
  */
 export class KeyManager {
   private encrypterMap: { [key: string]: Encrypter };
