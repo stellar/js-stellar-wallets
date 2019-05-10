@@ -116,7 +116,7 @@ export class KeyManager {
     const encryptedKey = await encrypterObj.encryptKey({ key, password });
     const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
-    this._writeIndexache(key.publicKey, key);
+    this._writeIndexCache(key.publicKey, key);
 
     return keyMetadata[0];
   }
@@ -140,7 +140,7 @@ export class KeyManager {
    */
   public async removeKey(publicKey: string): Promise<KeyMetadata | undefined> {
     const res = await this.keyStore.removeKey(publicKey);
-    this._writeIndexache(publicKey, undefined);
+    this._writeIndexCache(publicKey, undefined);
     return res;
   }
 
@@ -169,7 +169,7 @@ export class KeyManager {
 
       const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
       key = await encrypterObj.decryptKey({ encryptedKey, password });
-      this._writeIndexache(publicKey, key);
+      this._writeIndexCache(publicKey, key);
     }
 
     const keyHandler = this.keyHandlerMap[key.type];
@@ -199,7 +199,7 @@ export class KeyManager {
           password: oldPassword,
         });
 
-        this._writeIndexache(encryptedKey.publicKey, decryptedKey);
+        this._writeIndexCache(encryptedKey.publicKey, decryptedKey);
 
         return encrypterName.encryptKey({
           key: decryptedKey,
@@ -208,7 +208,7 @@ export class KeyManager {
       }),
     );
 
-    return this.keyStore.storeKeys(newKeys);
+    return this.keyStore.updateKeys(newKeys);
   }
 
   private _readFromCache(publicKey: string): Key | undefined {
@@ -219,7 +219,7 @@ export class KeyManager {
     return this.keyCache[publicKey];
   }
 
-  private _writeIndexache(publicKey: string, key: Key | undefined) {
+  private _writeIndexCache(publicKey: string, key: Key | undefined) {
     if (this.shouldCache && key) {
       this.keyCache[publicKey] = key;
     }
