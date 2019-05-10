@@ -18,4 +18,6 @@ export { KeyManager } from "./KeyManager";
 
 export { KeyManagerPlugins } from "./KeyManagerPlugins";
 
+export { PluginTesting } from "./PluginTesting";
+
 export { DepositProvider, WithdrawProvider, getKycUrl } from "./transfers";
