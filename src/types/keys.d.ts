@@ -121,7 +121,7 @@ export interface KeyStore {
    * created yet.
    *
    * @param encryptedKeys Encrypted keys to add to the store.
-   * @returns metadata about the keys once stored
+   * @returns The newly-stored keys' metadata
    */
   storeKeys(encryptedKeys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
@@ -131,38 +131,38 @@ export interface KeyStore {
    * If any keys don't exist in the store, this should throw an error object
    * with user-friendly text that lists the public keys that already exist.
    *
-   * @param keys already encrypted keys to add to store
-   * @returns metadata about the keys once updated
+   * @param keys Already encrypted keys to add to store
+   * @returns The updated keys' metadata
    */
   updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
    *  Load the key specified by this publicKey.
    *
-   * @param publicKey specifies which key to load
-   * @returns an encrypted key promise, or null
+   * @param publicKey The public key of the key to load
+   * @returns An encrypted key, or undefined if none was found
    */
   loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
 
   /**
    *  Remove the key specified by this publicKey.
    *
-   * @param publicKey specifies which key to remove
-   * @returns void on success
+   * @param publicKey The public key of the key to remove
+   * @returns The metadata of the removed key, or undefined if none was found
    */
   removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
 
   /**
    *  List information about stored keys.
    *
-   * @returns a list of metadata about all stored keys
+   * @returns A list of metadata about all stored keys
    */
-  listKeys(): Promise<KeyMetadata[]>;
+  loadAllKeyMetadata(): Promise<KeyMetadata[]>;
 
   /**
    *  Load all encrypted keys.
    *
-   * @returns a list of all stored keys
+   * @returns A list of all stored keys
    */
   loadAllKeys(): Promise<EncryptedKey[]>;
 }
