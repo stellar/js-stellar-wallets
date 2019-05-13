@@ -1,12 +1,5 @@
 import sinon from "sinon";
 
-import {
-  generateEncryptedKey,
-  generateKeyMetadata,
-  generateLedgerKey,
-  generatePlaintextKey,
-} from "./fixtures/keys";
-import { getKeyMetadata } from "./KeyHelpers";
 import { testEncrypter, testKeyStore } from "./PluginTesting";
 import { EncryptedKey } from "./types";
 
@@ -67,7 +60,7 @@ describe("testEncrypter", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch("Name not defined");
         done();
       });
@@ -84,7 +77,7 @@ describe("testEncrypter", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch("Encrypted key not valid");
         done();
       });
@@ -101,7 +94,7 @@ describe("testEncrypter", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch("Decrypted key not valid");
         done();
       });
@@ -118,7 +111,7 @@ describe("testEncrypter", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch(
           "Decrypted key doesn't match original key",
         );
@@ -216,7 +209,7 @@ describe("testKeyStore", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch("No KeyStore defined");
         done();
       });
@@ -236,7 +229,7 @@ describe("testKeyStore", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch(
           "Doesn't error when storing a stored key",
         );
@@ -250,7 +243,7 @@ describe("testKeyStore", () => {
       .then(() => {
         done("Succeeded but should have failed");
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         expect(err.toString()).toMatch(
           "Doesn't error when updating a nonexistent key",
         );

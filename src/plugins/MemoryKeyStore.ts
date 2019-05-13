@@ -116,7 +116,7 @@ export class MemoryKeyStore implements KeyStore {
     return Promise.resolve(metadata);
   }
 
-  public listKeys() {
+  public loadAllKeyMetadata() {
     return Promise.resolve(
       Object.values(this.keyStore).map(getMetadataFromMemoryItem),
     );

@@ -1,6 +1,6 @@
 import StellarSdk from "stellar-sdk";
 import { KeyType } from "./constants/keys";
-import { EncryptedKey, Encrypter, Key, KeyStore } from "./types";
+import { EncryptedKey, Encrypter, Key } from "./types";
 
 function isKey(obj: any): obj is Key {
   return obj.privateKey !== undefined;
@@ -77,7 +77,11 @@ export async function testEncrypter(encrypter: any): Promise<boolean> {
   return Promise.resolve(true);
 }
 
-export async function testKeyStore(keyStore: KeyStore): Promise<void> {
-  console.log(keyStore);
+export async function testKeyStore(keyStoreCandidate: any): Promise<void> {
+  if (!keyStoreCandidate) {
+    return Promise.reject(new Error("[KeyStore] No KeyStore defined"));
+  }
+
+  console.log(keyStoreCandidate);
   return Promise.resolve();
 }

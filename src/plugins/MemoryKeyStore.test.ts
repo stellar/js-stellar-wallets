@@ -39,7 +39,7 @@ describe("MemoryKeyStore", function() {
 
     expect(testMetadata).toEqual([keyMetadata]);
 
-    const keys = await testStore.listKeys();
+    const keys = await testStore.loadAllKeyMetadata();
 
     expect(keys).toEqual([keyMetadata]);
 

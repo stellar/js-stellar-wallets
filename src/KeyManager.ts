@@ -127,8 +127,8 @@ export class KeyManager {
    * @returns a list of metadata about all stored keys
    * @throws on any error
    */
-  public listKeys(): Promise<KeyMetadata[]> {
-    return this.keyStore.listKeys();
+  public loadAllKeyMetadata(): Promise<KeyMetadata[]> {
+    return this.keyStore.loadAllKeyMetadata();
   }
 
   /**
