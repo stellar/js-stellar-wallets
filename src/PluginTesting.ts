@@ -1,78 +1,96 @@
 import StellarSdk from "stellar-sdk";
 import { KeyType } from "./constants/keys";
-import { Encrypter, KeyStore } from "./types";
+import { EncryptedKey, Encrypter, Key, KeyStore } from "./types";
 
-export const PluginTesting = {
-  async testEncrypter(encrypter: Encrypter): Promise<void> {
-    const account = StellarSdk.Keypair.random();
+function isKey(obj: any): obj is Key {
+  return obj.privateKey !== undefined;
+}
 
-    const key = {
-      type: KeyType.plaintextKey,
-      publicKey: account.publicKey(),
-      privateKey: account.secret(),
-    };
+function isEncryptedKey(obj: any): obj is EncryptedKey {
+  return obj.encryptedPrivateKey !== undefined;
+}
 
-    const password = "kh2fu0b939uvdkj";
+export async function testEncrypter(encrypter: any): Promise<void> {
+  const account = StellarSdk.Keypair.random();
 
-    const encryptedKey = await encrypter.encryptKey({
-      key,
-      password,
-    });
+  if (!encrypter) {
+    return Promise.reject(new Error("[Encrypter] Encrypter not defined"));
+  }
 
-    if (!encryptedKey) {
-      return Promise.reject(
-        new Error("[Encrypter.encryptKey] No encrypted key returned"),
-      );
-    }
+  if (typeof encrypter.name !== "string") {
+    return Promise.reject(new Error("[Encrypter.name] Name not defined"));
+  }
 
-    if (!encryptedKey.encryptedPrivateKey) {
-      return Promise.reject(
-        new Error(
-          "[Encrypter.encryptKey] Encrypter didn't return encrypted key",
-        ),
-      );
-    }
+  if (typeof encrypter.encryptKey !== "function") {
+    return Promise.reject(
+      new Error("[Encrypter.encryptKey] Function not found"),
+    );
+  }
 
-    if (encryptedKey.encryptedPrivateKey === key.privateKey) {
-      return Promise.reject(
-        new Error(
-          "[Encrypter.encryptKey] Encrypted key is the same as the private key",
-        ),
-      );
-    }
+  if (typeof encrypter.decryptKey !== "function") {
+    return Promise.reject(
+      new Error("[Encrypter.decryptKey] Function not found"),
+    );
+  }
 
-    const decryptedKey = await encrypter.decryptKey({
-      encryptedKey,
-      password,
-    });
+  const key = {
+    type: KeyType.plaintextKey,
+    publicKey: account.publicKey(),
+    privateKey: account.secret(),
+  };
 
-    if (!decryptedKey) {
-      return Promise.reject(
-        new Error("[Encrypter.decryptKey] No decrypted key returned"),
-      );
-    }
+  const password = "kh2fu0b939uvdkj";
 
-    if (decryptedKey.privateKey === encryptedKey.encryptedPrivateKey) {
-      return Promise.reject(
-        new Error(
-          "[Encrypter.decryptKey] Decrypted key is the same as the encrypted key",
-        ),
-      );
-    }
+  const encryptedKey = await (encrypter as Encrypter).encryptKey({
+    key,
+    password,
+  });
 
-    if (decryptedKey.privateKey !== key.privateKey) {
-      return Promise.reject(
-        new Error(
-          "[Encrypter.decryptKey] Decrypted key doesn't match original key",
-        ),
-      );
-    }
+  if (!isEncryptedKey(encryptedKey)) {
+    return Promise.reject(
+      new Error("[Encrypter.encryptKey] Encrypted key not valid"),
+    );
+  }
 
-    return Promise.resolve();
-  },
+  if (encryptedKey.encryptedPrivateKey === key.privateKey) {
+    return Promise.reject(
+      new Error(
+        "[Encrypter.encryptKey] Encrypted key is the same as the private key",
+      ),
+    );
+  }
 
-  async testKeyStore(keyStore: KeyStore): Promise<void> {
-    console.log(keyStore);
-    return Promise.resolve();
-  },
-};
+  const decryptedKey = await (encrypter as Encrypter).decryptKey({
+    encryptedKey,
+    password,
+  });
+
+  if (!isKey(decryptedKey)) {
+    return Promise.reject(
+      new Error("[Encrypter.decryptKey] Decrypted key not valid"),
+    );
+  }
+
+  if (decryptedKey.privateKey === encryptedKey.encryptedPrivateKey) {
+    return Promise.reject(
+      new Error(
+        "[Encrypter.decryptKey] Decrypted key is the same as the encrypted key",
+      ),
+    );
+  }
+
+  if (decryptedKey.privateKey !== key.privateKey) {
+    return Promise.reject(
+      new Error(
+        "[Encrypter.decryptKey] Decrypted key doesn't match original key",
+      ),
+    );
+  }
+
+  return Promise.resolve();
+}
+
+export async function testKeyStore(keyStore: KeyStore): Promise<void> {
+  console.log(keyStore);
+  return Promise.resolve();
+}
