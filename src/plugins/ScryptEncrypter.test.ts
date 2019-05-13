@@ -3,6 +3,7 @@ import StellarSdk from "stellar-sdk";
 import { ScryptEncrypter } from "./ScryptEncrypter";
 
 import { KeyType } from "../constants/keys";
+import { testEncrypter } from "../PluginTesting";
 
 test("encrypts and decrypts a key", async () => {
   const key = {
@@ -61,4 +62,8 @@ test("encrypts and decrypts a StellarX seed", async () => {
   expect(decryptedKey).toBeTruthy();
   expect(decryptedKey.privateKey).not.toEqual(encryptedKey.encryptedPrivateKey);
   expect(decryptedKey.privateKey).toEqual(key.privateKey);
+});
+
+it("passes PluginTesting", async () => {
+  expect(await testEncrypter(ScryptEncrypter)).toEqual(true);
 });

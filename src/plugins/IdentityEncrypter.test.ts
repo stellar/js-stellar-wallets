@@ -26,6 +26,6 @@ it("decrypts to itself", async () => {
   expect(await IdentityEncrypter.decryptKey({ encryptedKey })).toEqual(key);
 });
 
-it("passes the Plugin tester", async () => {
+it("passes PluginTesting", async () => {
   expect(await testEncrypter(IdentityEncrypter)).toEqual(true);
 });
