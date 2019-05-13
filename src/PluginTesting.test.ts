@@ -18,12 +18,22 @@ function decryptKeyGood({ encryptedKey, password }: any) {
   });
 }
 
-function encryptKeyBad({ key, password }: any) {
+function encryptKeyInvalid({ key, password }: any) {
   return Promise.resolve({ key, password });
 }
 
-function decryptKeyBad({ encryptedKey, password }: any) {
+function decryptKeyInvalid({ encryptedKey, password }: any) {
   return Promise.resolve({ encryptedKey, password });
+}
+
+function decryptKeyIncorrect({ encryptedKey }: any) {
+  return Promise.resolve({
+    ...encryptedKey,
+    encryptedPrivateKey: undefined,
+    encrypterName: undefined,
+    salt: undefined,
+    privateKey: encryptedKey.encryptedPrivateKey,
+  });
 }
 
 describe("testEncrypter", () => {
@@ -56,7 +66,7 @@ describe("testEncrypter", () => {
   test("encryptKey should actually encrypt a key", (done) => {
     const badEncrypter = {
       name: "badEncrypter",
-      encryptKey: encryptKeyBad,
+      encryptKey: encryptKeyInvalid,
       decryptKey: decryptKeyGood,
     };
 
@@ -74,7 +84,7 @@ describe("testEncrypter", () => {
     const badEncrypter = {
       name: "badEncrypter",
       encryptKey: encryptKeyGood,
-      decryptKey: decryptKeyBad,
+      decryptKey: decryptKeyInvalid,
     };
 
     testEncrypter(badEncrypter)
@@ -83,6 +93,25 @@ describe("testEncrypter", () => {
       })
       .catch((err) => {
         expect(err.toString()).toMatch("Decrypted key not valid");
+        done();
+      });
+  });
+
+  test("decryptKey should be the same as the original", (done) => {
+    const badEncrypter = {
+      name: "badEncrypter",
+      encryptKey: encryptKeyGood,
+      decryptKey: decryptKeyIncorrect,
+    };
+
+    testEncrypter(badEncrypter)
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err) => {
+        expect(err.toString()).toMatch(
+          "Decrypted key doesn't match original key",
+        );
         done();
       });
   });

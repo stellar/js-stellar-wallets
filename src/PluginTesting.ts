@@ -52,14 +52,6 @@ export async function testEncrypter(encrypter: any): Promise<void> {
     );
   }
 
-  if (encryptedKey.encryptedPrivateKey === key.privateKey) {
-    return Promise.reject(
-      new Error(
-        "[Encrypter.encryptKey] Encrypted key is the same as the private key",
-      ),
-    );
-  }
-
   const decryptedKey = await (encrypter as Encrypter).decryptKey({
     encryptedKey,
     password,
@@ -68,14 +60,6 @@ export async function testEncrypter(encrypter: any): Promise<void> {
   if (!isKey(decryptedKey)) {
     return Promise.reject(
       new Error("[Encrypter.decryptKey] Decrypted key not valid"),
-    );
-  }
-
-  if (decryptedKey.privateKey === encryptedKey.encryptedPrivateKey) {
-    return Promise.reject(
-      new Error(
-        "[Encrypter.decryptKey] Decrypted key is the same as the encrypted key",
-      ),
     );
   }
 
