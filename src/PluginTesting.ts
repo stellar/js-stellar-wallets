@@ -10,7 +10,10 @@ function isEncryptedKey(obj: any): obj is EncryptedKey {
   return obj.encryptedPrivateKey !== undefined;
 }
 
-export async function testEncrypter(encrypter: any): Promise<void> {
+/**
+ * Validates an `Encrypter` object. Resolves to true if valid.
+ */
+export async function testEncrypter(encrypter: any): Promise<boolean> {
   const account = StellarSdk.Keypair.random();
 
   if (!encrypter) {
@@ -71,7 +74,7 @@ export async function testEncrypter(encrypter: any): Promise<void> {
     );
   }
 
-  return Promise.resolve();
+  return Promise.resolve(true);
 }
 
 export async function testKeyStore(keyStore: KeyStore): Promise<void> {
