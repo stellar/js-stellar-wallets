@@ -1,5 +1,6 @@
 import sinon from "sinon";
 
+import { getKeyMetadata } from "./KeyHelpers";
 import { testEncrypter, testKeyStore } from "./PluginTesting";
 import { EncryptedKey } from "./types";
 
@@ -39,6 +40,17 @@ describe("testEncrypter", () => {
       privateKey: encryptedKey.encryptedPrivateKey,
     });
   }
+
+  test("error if passed nothing", (done) => {
+    testEncrypter()
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Encrypter not defined");
+        done();
+      });
+  });
 
   test("Validates good Encrypter", (done) => {
     const goodEncrypter = {
@@ -122,11 +134,11 @@ describe("testEncrypter", () => {
 
 describe("testKeyStore", () => {
   function makeKeyMetadata(encryptedKey: any) {
-    return {
+    return getKeyMetadata({
       encryptedKey,
       creationTime: Math.floor(Date.now() / 1000),
       modifiedTime: Math.floor(Date.now() / 1000),
-    };
+    });
   }
 
   let storage: any = {};
@@ -134,7 +146,10 @@ describe("testKeyStore", () => {
   let skipUpdateChecks: boolean = false;
 
   const goodKeyStore = {
-    name: "badKeyStore",
+    name: "goodKeyStore",
+    configure() {
+      return Promise.resolve();
+    },
     storeKeys(keys: EncryptedKey[]) {
       // kill anything already in storage
       if (!skipStorageChecks) {
@@ -179,6 +194,8 @@ describe("testKeyStore", () => {
         return Promise.resolve(undefined);
       }
 
+      delete storage[publicKey];
+
       return Promise.resolve(makeKeyMetadata(key));
     },
     loadAllKeyMetadata() {
@@ -205,12 +222,107 @@ describe("testKeyStore", () => {
   });
 
   test("error if passed nothing", (done) => {
-    testKeyStore({})
+    testKeyStore()
       .then(() => {
         done("Succeeded but should have failed");
       })
       .catch((err: Error) => {
-        expect(err.toString()).toMatch("No KeyStore defined");
+        expect(err.toString()).toMatch("KeyStore not defined");
+        done();
+      });
+  });
+
+  test("error if bad name", (done) => {
+    testKeyStore({ ...goodKeyStore, name: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Name not defined");
+        done();
+      });
+  });
+
+  test("error if bad configure", (done) => {
+    testKeyStore({ ...goodKeyStore, configure: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.configure]");
+        done();
+      });
+  });
+
+  test("error if bad storeKeys", (done) => {
+    testKeyStore({ ...goodKeyStore, storeKeys: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.storeKeys]");
+        done();
+      });
+  });
+
+  test("error if bad updateKeys", (done) => {
+    testKeyStore({ ...goodKeyStore, updateKeys: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.updateKeys]");
+        done();
+      });
+  });
+
+  test("error if bad loadKey", (done) => {
+    testKeyStore({ ...goodKeyStore, loadKey: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.loadKey]");
+        done();
+      });
+  });
+
+  test("error if bad removeKey", (done) => {
+    testKeyStore({ ...goodKeyStore, removeKey: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.removeKey]");
+        done();
+      });
+  });
+
+  test("error if bad loadAllKeyMetadata", (done) => {
+    testKeyStore({ ...goodKeyStore, loadAllKeyMetadata: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.loadAllKeyMetadata]");
+        done();
+      });
+  });
+
+  test("error if bad loadAllKeys", (done) => {
+    testKeyStore({ ...goodKeyStore, loadAllKeys: undefined })
+      .then(() => {
+        done("Succeeded but should have failed");
+      })
+      .catch((err: Error) => {
+        expect(err.toString()).toMatch("Invalid function");
+        expect(err.toString()).toMatch("[KeyStore.loadAllKeys]");
         done();
       });
   });
