@@ -46,7 +46,7 @@ describe("KeyManager", function() {
       modifiedTime: 666,
     });
 
-    expect(await testKeyManager.listKeys()).toEqual([
+    expect(await testKeyManager.loadAllKeyMetadata()).toEqual([
       {
         type: KeyType.plaintextKey,
         encrypterName: "IdentityEncrypter",
@@ -58,7 +58,7 @@ describe("KeyManager", function() {
 
     await testKeyManager.removeKey("AVACYN");
 
-    expect(await testKeyManager.listKeys()).toEqual([]);
+    expect(await testKeyManager.loadAllKeyMetadata()).toEqual([]);
   });
 
   test("Sign transactions", async () => {

@@ -68,6 +68,7 @@ export class MemoryKeyStore implements KeyStore {
     const invalidKeys: EncryptedKey[] = keys.filter(
       (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
     );
+
     if (invalidKeys.length) {
       return Promise.reject(
         `Some keys couldn't be found in the keystore: ${invalidKeys
@@ -116,7 +117,7 @@ export class MemoryKeyStore implements KeyStore {
     return Promise.resolve(metadata);
   }
 
-  public listKeys() {
+  public loadAllKeyMetadata() {
     return Promise.resolve(
       Object.values(this.keyStore).map(getMetadataFromMemoryItem),
     );

@@ -2,6 +2,8 @@ import { KeyType } from "../constants/keys";
 
 import { IdentityEncrypter } from "./IdentityEncrypter";
 
+import { testEncrypter } from "../PluginTesting";
+
 const key = {
   type: KeyType.plaintextKey,
   publicKey: "AVACYN",
@@ -22,4 +24,8 @@ it("encrypts to itself", async () => {
 
 it("decrypts to itself", async () => {
   expect(await IdentityEncrypter.decryptKey({ encryptedKey })).toEqual(key);
+});
+
+it("passes PluginTesting", async () => {
+  expect(await testEncrypter(IdentityEncrypter)).toEqual(true);
 });

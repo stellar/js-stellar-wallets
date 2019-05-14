@@ -1,6 +1,7 @@
 import sinon from "sinon";
 
 import { KeyType } from "../constants/keys";
+import { testKeyStore } from "../PluginTesting";
 import { EncryptedKey } from "../types";
 import { MemoryKeyStore } from "./MemoryKeyStore";
 
@@ -39,7 +40,7 @@ describe("MemoryKeyStore", function() {
 
     expect(testMetadata).toEqual([keyMetadata]);
 
-    const keys = await testStore.listKeys();
+    const keys = await testStore.loadAllKeyMetadata();
 
     expect(keys).toEqual([keyMetadata]);
 
@@ -80,5 +81,13 @@ describe("MemoryKeyStore", function() {
     const noKeys = await testStore.loadAllKeys();
 
     expect(noKeys).toEqual([]);
+  });
+
+  it("passes PluginTesting", (done) => {
+    testKeyStore(new MemoryKeyStore())
+      .then(() => {
+        done();
+      })
+      .catch(done);
   });
 });
