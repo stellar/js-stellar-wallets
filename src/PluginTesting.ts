@@ -124,7 +124,7 @@ export async function testKeyStore(
 
   // make sure we can't update a key that doesn't exist
   try {
-    keyStore.updateKeys([encryptedKey]);
+    await keyStore.updateKeys([encryptedKey]);
 
     return Promise.reject(
       new Error(
@@ -151,7 +151,7 @@ export async function testKeyStore(
   }
 
   try {
-    keyStore.storeKeys([encryptedKey]);
+    await keyStore.storeKeys([encryptedKey]);
 
     return Promise.reject(
       new Error(

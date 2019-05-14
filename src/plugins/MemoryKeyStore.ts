@@ -68,6 +68,7 @@ export class MemoryKeyStore implements KeyStore {
     const invalidKeys: EncryptedKey[] = keys.filter(
       (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
     );
+
     if (invalidKeys.length) {
       return Promise.reject(
         `Some keys couldn't be found in the keystore: ${invalidKeys
