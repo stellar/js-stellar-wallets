@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import DisplayItem from "components/DisplayItem";
-import Index from "components/Index";
+import TableOfContents from "components/TableOfContents";
 
 import { StateProvider } from "AppState";
 
@@ -15,7 +15,7 @@ const El = styled.div`
   padding-left: ${SIDEBAR_WIDTH}px;
 `;
 
-const IndexEl = styled.div`
+const TableOfContentsEl = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -115,9 +115,9 @@ const App = () => {
   return (
     <StateProvider initialState={{ itemsById, itemsByName }}>
       <El>
-        <IndexEl>
-          <Index itemsByKind={libraryExports} />
-        </IndexEl>
+        <TableOfContentsEl>
+          <TableOfContents itemsByKind={libraryExports} />
+        </TableOfContentsEl>
 
         <BodyEl>
           {Object.keys(itemsByKind).map((kind) => (
