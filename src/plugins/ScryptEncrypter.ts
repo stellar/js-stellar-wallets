@@ -1,12 +1,12 @@
 import { decrypt, encrypt } from "../lib/ScryptEncryption";
-import { EncryptedKey, Key } from "../types";
+import { EncryptedKey, Encrypter, Key } from "../types";
 
 const NAME = "ScryptEncrypter";
 
 /**
  * Encrypt keys with scrypt, as they are on StellarX.com.
  */
-export const ScryptEncrypter = {
+export const ScryptEncrypter: Encrypter = {
   name: NAME,
   async encryptKey({
     key,
