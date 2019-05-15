@@ -116,10 +116,7 @@ const App = () => {
     <StateProvider initialState={{ itemsById, itemsByName }}>
       <El>
         <IndexEl>
-          <h2>Library Exports</h2>
           <Index itemsByKind={libraryExports} />
-          <h2>Type Definitions</h2>
-          <Index itemsByKind={importantTypes} />
         </IndexEl>
 
         <BodyEl>

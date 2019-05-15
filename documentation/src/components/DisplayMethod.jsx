@@ -14,6 +14,12 @@ const DisplayMethod = (params) => {
       {!!signatures.length &&
         signatures.map(({ comment, parameters = [], type }) => (
           <>
+            {comment && (
+              <Comment>
+                <ReactMarkdown source={comment.shortText} />
+                <ReactMarkdown source={comment.text} />
+              </Comment>
+            )}
             {flags.isPrivate && <>private </>}
             <Semibold>{name}</Semibold>(
             {!!parameters.length &&
@@ -40,12 +46,6 @@ const DisplayMethod = (params) => {
                 </LinkToID>
                 )
               </>
-            )}
-            {comment && (
-              <Comment>
-                <ReactMarkdown source={comment.shortText} />
-                <ReactMarkdown source={comment.text} />
-              </Comment>
             )}
           </>
         ))}

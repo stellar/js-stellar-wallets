@@ -10,6 +10,19 @@ import DisplayProperty from "components/DisplayProperty";
 import DisplayLineNo from "components/DisplayLineNo";
 import DisplayType from "components/DisplayType";
 
+const HeaderEl = styled.div`
+  background: #dfdfdf;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+`;
+
+const NameEl = styled.h2`
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+`;
+
 const ChildEl = styled.div`
   position: relative;
 `;
@@ -19,12 +32,6 @@ const RootEl = styled.div`
   margin-bottom: 1.5%;
   padding: 20px;
   background: #f3f3f3;
-`;
-
-const LineNoEl = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
 `;
 
 const DisplayItem = ({ isRootElement, ...params }) => {
@@ -62,21 +69,26 @@ const DisplayItem = ({ isRootElement, ...params }) => {
   }
 
   return (
-    <El id={isRootElement ? `item_${params.id}` : null}>
-      {params.comment && (
-        <Comment>
-          <ReactMarkdown source={params.comment.shortText} />
-          <ReactMarkdown source={params.comment.text} />
-        </Comment>
+    <>
+      {isRootElement && (
+        <HeaderEl id={`item_${params.id}`}>
+          <NameEl>{params.name}</NameEl>
+
+          {params.sources && <DisplayLineNo {...params.sources[0]} />}
+        </HeaderEl>
       )}
 
-      {isRootElement && params.sources && (
-        <LineNoEl>
-          <DisplayLineNo {...params.sources[0]} />
-        </LineNoEl>
-      )}
-      {item}
-    </El>
+      <El>
+        {params.comment && (
+          <Comment>
+            <ReactMarkdown source={params.comment.shortText} />
+            <ReactMarkdown source={params.comment.text} />
+          </Comment>
+        )}
+
+        {item}
+      </El>
+    </>
   );
 };
 
