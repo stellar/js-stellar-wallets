@@ -9,22 +9,22 @@ export interface BaseKey {
 }
 
 /**
- * There is one unencrypted key interface, which should work with all key types.
+ * All key types (ledgers, plaintext keys, etc.) should use the same Key shape.
  * That way, plugins don't have to know what key type there is, they just work
  * the same on all of them.
  *
- * `privateKey` is required, but it should be an empty string if the key type
- * doesn't have any secrets (like a ledger key).
+ * `privateKey` is always required regardless of key types. If the key type
+ * doesn't have any secrets (like a ledger key), this should be an empty string.
  *
- * `extra` is an arbitrary store of additional metadata, to be used for any and
- * all future exotic key types.
+ * `extra` is an arbitrary store of additional metadata, to be used as an escape
+ * hatch to support any exotic key type in the future.
  */
 export interface Key extends BaseKey {
   privateKey: string;
 }
 
 /**
- * The encrypted key is the exact same shape as the key, except minus secret
+ * The encrypted key is the exact same shape as the key, minus secret
  * information and plus encrypted information.
  */
 export interface EncryptedKey extends BaseKey {

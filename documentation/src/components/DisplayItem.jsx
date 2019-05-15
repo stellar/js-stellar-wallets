@@ -63,16 +63,17 @@ const DisplayItem = ({ isRootElement, ...params }) => {
 
   return (
     <El id={isRootElement ? `item_${params.id}` : null}>
-      {isRootElement && params.sources && (
-        <LineNoEl>
-          <DisplayLineNo {...params.sources[0]} />
-        </LineNoEl>
-      )}
       {params.comment && (
         <Comment>
           <ReactMarkdown source={params.comment.shortText} />
           <ReactMarkdown source={params.comment.text} />
         </Comment>
+      )}
+
+      {isRootElement && params.sources && (
+        <LineNoEl>
+          <DisplayLineNo {...params.sources[0]} />
+        </LineNoEl>
       )}
       {item}
     </El>

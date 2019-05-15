@@ -19,7 +19,9 @@ const DisplayMethod = (params) => {
             {!!parameters.length &&
               parameters.map((parameter, i) => (
                 <>
-                  {parameter.name}: <TypePeeker {...parameter.type} />
+                  {parameter.name}
+                  {parameter.flags.isOptional && <>?</>}:{" "}
+                  <TypePeeker {...parameter.type} />
                   {i !== parameters.length - 1 && <>, </>}
                 </>
               ))}

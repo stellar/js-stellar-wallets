@@ -21,7 +21,15 @@ const LabelEl = styled.span`
   text-decoration: underline;
 `;
 
-const TypePeeker = ({ name, type, types, typeArguments, id, value }) => {
+const TypePeeker = ({
+  name,
+  type,
+  elementType,
+  types,
+  typeArguments,
+  id,
+  value,
+}) => {
   const [isVisible, toggleVisibility] = useState(false);
 
   const [{ itemsById, itemsByName }] = useStateValue();
@@ -43,6 +51,17 @@ const TypePeeker = ({ name, type, types, typeArguments, id, value }) => {
               {i !== arr.length - 1 && <> | </>}
             </>
           ))}
+      </span>
+    );
+  }
+
+  if (type === "array") {
+    // don't show "undefined" types because that's handled
+    // by optionalness of the property
+    return (
+      <span>
+        <TypePeeker {...elementType} />
+        []
       </span>
     );
   }
