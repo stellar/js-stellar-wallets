@@ -10,6 +10,7 @@ const El = styled.div`
   padding: 20px;
   background: white;
   margin-top: 30px;
+  word-break: break-word;
 
   code {
     background: #eee;
