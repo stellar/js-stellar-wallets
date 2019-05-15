@@ -1,9 +1,7 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 
-import Comment from "basics/Comment";
-
+import Comment from "components/Comment";
 import DisplayInterface from "components/DisplayInterface";
 import DisplayMethod from "components/DisplayMethod";
 import DisplayProperty from "components/DisplayProperty";
@@ -79,12 +77,7 @@ const DisplayItem = ({ isRootElement, ...params }) => {
       )}
 
       <El>
-        {params.comment && (
-          <Comment>
-            <ReactMarkdown source={params.comment.shortText} />
-            <ReactMarkdown source={params.comment.text} />
-          </Comment>
-        )}
+        {params.comment && <Comment {...params.comment} />}
 
         {item}
       </El>
