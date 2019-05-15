@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import { getLink } from "helpers/getLink";
+
 const ListEl = styled.li`
   font-size: 0.9em;
 
@@ -20,7 +22,7 @@ const Index = ({ itemsByKind }) => (
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((item) => (
               <ListEl>
-                <a href={`#item_${item.id}`}>{item.name}</a>
+                <a href={getLink(item.id)}>{item.name}</a>
               </ListEl>
             ))}
       </>

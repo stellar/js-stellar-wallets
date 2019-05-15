@@ -120,21 +120,19 @@ const App = () => {
         </IndexEl>
 
         <BodyEl>
-          {[...Object.keys(libraryExports), ...Object.keys(importantTypes)].map(
-            (kind) => (
-              <div>
-                <h2>{kind}</h2>
+          {Object.keys(itemsByKind).map((kind) => (
+            <div>
+              <h2>{kind}</h2>
 
-                <div>
-                  {itemsByKind[kind]
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((item) => (
-                      <DisplayItem isRootElement {...item} />
-                    ))}
-                </div>
+              <div>
+                {itemsByKind[kind]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((item) => (
+                    <DisplayItem isRootElement {...item} />
+                  ))}
               </div>
-            ),
-          )}
+            </div>
+          ))}
         </BodyEl>
       </El>
     </StateProvider>

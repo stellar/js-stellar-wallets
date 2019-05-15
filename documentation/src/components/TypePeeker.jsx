@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import { useStateValue } from "AppState";
 
+import { getLink } from "helpers/getLink";
+
 import DisplayItem from "components/DisplayItem";
 
 import Tooltip from "basics/Tooltip";
@@ -15,11 +17,7 @@ const TypeEl = styled.span`
   color: darkBlue;
 `;
 
-const LabelEl = styled.span`
-  cursor: default;
-  color: blue;
-  text-decoration: underline;
-`;
+const LabelEl = styled.a``;
 
 const TypePeeker = ({
   name,
@@ -92,7 +90,7 @@ const TypePeeker = ({
         onMouseEnter={() => toggleVisibility(true)}
         onMouseLeave={() => toggleVisibility(false)}
       >
-        <LabelEl>{name || "any"}</LabelEl>
+        <LabelEl href={getLink(id)}>{name || "any"}</LabelEl>
 
         {isVisible && (
           <Tooltip>
