@@ -68,7 +68,6 @@ const DisplayItem = ({ isRootElement, ...params }) => {
           <DisplayLineNo {...params.sources[0]} />
         </LineNoEl>
       )}
-
       {params.comment && (
         <Comment>
           <ReactMarkdown source={params.comment.shortText} />

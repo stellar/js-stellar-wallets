@@ -21,10 +21,14 @@ const LabelEl = styled.span`
   text-decoration: underline;
 `;
 
-const TypePeeker = ({ name, type, types, typeArguments, id }) => {
+const TypePeeker = ({ name, type, types, typeArguments, id, value }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
   const [{ itemsById, itemsByName }] = useStateValue();
+
+  if (type === "stringLiteral") {
+    return <span>"{value}"</span>;
+  }
 
   if (type === "union") {
     // don't show "undefined" types because that's handled
