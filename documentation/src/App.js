@@ -120,15 +120,19 @@ const App = () => {
         </TableOfContentsEl>
 
         <BodyEl>
-          {Object.keys(itemsByKind).map((kind) => (
-            <div>
+          {Object.keys(itemsByKind).map((kind, i) => (
+            <div key={`${kind}_${i}`}>
               <h2>{kind}</h2>
 
               <div>
                 {itemsByKind[kind]
                   .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((item) => (
-                    <DisplayItem isRootElement {...item} />
+                  .map((item, i) => (
+                    <DisplayItem
+                      key={`${i}_${item.id}`}
+                      isRootElement
+                      {...item}
+                    />
                   ))}
               </div>
             </div>

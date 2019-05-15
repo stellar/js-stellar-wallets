@@ -44,10 +44,10 @@ const TypePeeker = ({
         {types
           .filter((t) => t.name !== "undefined")
           .map((t, i, arr) => (
-            <>
+            <React.Fragment key={i}>
               <TypePeeker {...t} />
               {i !== arr.length - 1 && <> | </>}
-            </>
+            </React.Fragment>
           ))}
       </span>
     );
@@ -70,10 +70,10 @@ const TypePeeker = ({
         <TypeEl>{name}</TypeEl>
         {"<"}
         {typeArguments.map((t, i, arr) => (
-          <>
+          <React.Fragment key={i}>
             <TypePeeker {...t} />
             {i !== arr.length - 1 && <>, </>}
-          </>
+          </React.Fragment>
         ))}
         {">"}
       </El>

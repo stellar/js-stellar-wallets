@@ -1,5 +1,4 @@
 import React from "react";
-import { type } from "os";
 
 import TypePeeker from "components/TypePeeker";
 
@@ -7,10 +6,10 @@ function getType(type) {
   switch (type.type) {
     case "array": {
       return (
-        <>
+        <React.Fragment key={type.elementType.id}>
           <TypePeeker {...type.elementType} />
           []
-        </>
+        </React.Fragment>
       );
     }
 
@@ -20,9 +19,12 @@ function getType(type) {
           return [...memo, getType(t)];
         }
 
-        return [...memo, getType(t), <> | </>];
+        return [
+          ...memo,
+          <React.Fragment key={`type_${i}`}>{getType(t)}</React.Fragment>,
+          <React.Fragment key={`sep_${i}`}> | </React.Fragment>,
+        ];
       }, []);
-      // return <pre>{JSON.stringify(type, null, 2)}</pre>;
     }
 
     default: {
@@ -31,14 +33,10 @@ function getType(type) {
   }
 }
 
-const DisplayType = ({ name, type, ...rest }) => {
-  let value;
-
-  return (
-    <div>
-      type <strong>{name}</strong> = {getType(type)}
-    </div>
-  );
-};
+const DisplayType = ({ name, type }) => (
+  <div>
+    type <strong>{name}</strong> = {getType(type)}
+  </div>
+);
 
 export default DisplayType;
