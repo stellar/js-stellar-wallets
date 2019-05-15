@@ -10,6 +10,11 @@ const El = styled.div`
   padding: 20px;
   background: white;
   margin-top: 30px;
+
+  code {
+    background: #eee;
+    color: #111;
+  }
 `;
 
 const CodeBlock = ({ language, value }) => (

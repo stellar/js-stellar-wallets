@@ -37,9 +37,6 @@ export interface ChangePasswordParams {
 }
 
 /**
- *
- * ## `KeyManager`
- *
  * The `KeyManager` class is your primary gateway API for encrypting and storing
  * your users' Stellar keys. Make an instance of this and use that
  * instance to create, read, update, and delete secret keys.
@@ -48,7 +45,7 @@ export interface ChangePasswordParams {
  * provide UI for accepting it from a user. You're app will have to implement
  * those features and pass the resulting keys to this class.
  *
- * `KeyManager` Employs a plugin system. You may implement three types of
+ * `KeyManager` employs a plugin system. You may implement three types of
  * interfaces and add them to the `KeyManager` (or use our reference
  * plugins):
  *
@@ -64,7 +61,7 @@ export interface ChangePasswordParams {
  *  - Ledgers
  *  - Plaintext secrets
  *
- * ## Plugin names
+ * ### Plugin names
  *
  * Each plugin you pass to `KeyManager` will have a `name` property, which
  * should be unique to that particular interface and to the `KeyManager`. So if
