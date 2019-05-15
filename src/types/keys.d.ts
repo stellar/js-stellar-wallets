@@ -42,6 +42,16 @@ export interface KeyMetadata extends BaseKey {
   modifiedTime: number;
 }
 
+export interface EncryptKeyParams {
+  key: Key;
+  password?: string;
+}
+
+export interface DecryptKeyParams {
+  encryptedKey: EncryptedKey;
+  password?: string;
+}
+
 /**
  * This is the export interface that an encryption plugin must implement.
  *
@@ -56,36 +66,15 @@ export interface Encrypter {
 
   /**
    * Encrypt a raw, unencrypted key.
-   * @param {object} params Params object
-   * @param {Key} params.key The unencrypted key
-   * @param {string} password What we should encrypt the key with
-   * @return {Promise<EncryptedKey>}
    */
-  encryptKey({
-    key,
-    password,
-  }: {
-    key: Key;
-    password?: string;
-  }): Promise<EncryptedKey>;
+  encryptKey(params: EncryptKeyParams): Promise<EncryptedKey>;
 
   /**
    * Decrypt an encrypted key. If the password doesn't properly encrypt the key,
    * it should throw an error. Please make sure the error message is descriptive
    * and user-friendly.
-   *
-   * @param {object} params Params object
-   * @param {EncryptedKey} params.encryptedKey
-   * @param {string} password The password to decrypt with
-   * @return {Promise<EncryptedKey>}
    */
-  decryptKey({
-    encryptedKey,
-    password,
-  }: {
-    encryptedKey: EncryptedKey;
-    password?: string;
-  }): Promise<Key>;
+  decryptKey(params: DecryptKeyParams): Promise<Key>;
 }
 
 /**
@@ -105,8 +94,6 @@ export interface KeyStore {
    *
    * Can be called repeatedly to update the KeyStore state when needed (for
    * example, when an authToken expires).
-   *
-   * @param data any info needed to init the keystore
    */
   configure(data?: any): Promise<void>;
 
@@ -119,9 +106,6 @@ export interface KeyStore {
    * We have separate storeKeys and updateKeys functions so you don't
    * accidentally update non-existent keys or re-create a key you haven't
    * created yet.
-   *
-   * @param encryptedKeys Encrypted keys to add to the store.
-   * @returns The newly-stored keys' metadata
    */
   storeKeys(encryptedKeys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
@@ -130,39 +114,26 @@ export interface KeyStore {
    *
    * If any keys don't exist in the store, this should throw an error object
    * with user-friendly text that lists the public keys that already exist.
-   *
-   * @param keys Already encrypted keys to add to store
-   * @returns The updated keys' metadata
    */
   updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
    *  Load the key specified by this publicKey.
-   *
-   * @param publicKey The public key of the key to load
-   * @returns An encrypted key, or undefined if none was found
    */
   loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
 
   /**
    *  Remove the key specified by this publicKey.
-   *
-   * @param publicKey The public key of the key to remove
-   * @returns The metadata of the removed key, or undefined if none was found
    */
   removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
 
   /**
    *  List information about stored keys.
-   *
-   * @returns A list of metadata about all stored keys
    */
   loadAllKeyMetadata(): Promise<KeyMetadata[]>;
 
   /**
    *  Load all encrypted keys.
-   *
-   * @returns A list of all stored keys
    */
   loadAllKeys(): Promise<EncryptedKey[]>;
 }
