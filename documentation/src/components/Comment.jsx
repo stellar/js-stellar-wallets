@@ -11,11 +11,6 @@ const El = styled.div`
   background: white;
   margin-top: 30px;
   word-break: break-word;
-
-  code {
-    background: #eee;
-    color: #111;
-  }
 `;
 
 const CodeBlock = ({ language, value }) => (
