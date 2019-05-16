@@ -1,8 +1,8 @@
 import BigNumber from "bignumber.js";
 
-import { parseResponse } from "./testUtils";
+import { parseResponse } from "../testUtils";
 
-import { TradesResponsePartialFill } from "./fixtures/TradesResponse";
+import { TradesResponsePartialFill } from "../fixtures/TradesResponse";
 
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 

@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
 import { Server } from "stellar-sdk";
 
-import { Token, Trade, Trades } from "./types";
+import { Token, Trade, Trades } from "../types";
 
 /*
   {

@@ -3,10 +3,10 @@ import flatten from "lodash/flatten";
 import { AssetType } from "stellar-base";
 import { Server } from "stellar-sdk";
 
-import { getTokenIdentifier } from "./data";
+import { getTokenIdentifier } from "./";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
-import { Offer, Offers, Token, Trade } from "./types";
+import { Offer, Offers, Token, Trade } from "../types";
 
 export type TradeCollection = Server.TradeRecord[];
 

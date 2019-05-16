@@ -8,7 +8,7 @@ export {
   reframeEffect,
 } from "./data";
 
-export { DataProvider } from "./DataProvider";
+export { DataProvider } from "./data/DataProvider";
 
 export { KeyManager } from "./KeyManager";
 

@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 
-import { AccountResponse } from "./fixtures/AccountResponse";
-import { parseResponse } from "./testUtils";
+import { AccountResponse } from "../fixtures/AccountResponse";
+import { parseResponse } from "../testUtils";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 

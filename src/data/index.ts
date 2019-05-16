@@ -1,6 +1,6 @@
 import { Horizon } from "stellar-sdk";
 
-import { Account, AssetToken, Effect, ReframedEffect, Token } from "./types";
+import { Account, AssetToken, Effect, ReframedEffect, Token } from "../types";
 
 /**
  * Get the string identifier for a token.

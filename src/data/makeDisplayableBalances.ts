@@ -1,11 +1,11 @@
 import BigNumber from "bignumber.js";
 import { Horizon, Server } from "stellar-sdk";
 
-import { BalanceMap } from "./types";
+import { BalanceMap } from "../types";
 
-import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "./constants/stellar";
+import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "../constants/stellar";
 
-import { getBalanceIdentifier } from "./data";
+import { getBalanceIdentifier } from "../";
 
 export function makeDisplayableBalances(
   accountDetails: Server.AccountRecord,
