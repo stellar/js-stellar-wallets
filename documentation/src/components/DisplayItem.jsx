@@ -81,7 +81,9 @@ const DisplayItem = ({ isRootElement, ...params }) => {
     <>
       {isRootElement && (
         <HeaderEl id={`item_${id}`}>
-          <NameEl>{name}</NameEl>
+          <NameEl>
+            {name} ({params.kindString})
+          </NameEl>
 
           {sources && (
             <LineEl>
