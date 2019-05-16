@@ -4,6 +4,8 @@ import styled from "styled-components";
 import DisplayItem from "components/DisplayItem";
 import TableOfContents from "components/TableOfContents";
 
+import { getArmName } from "helpers/getArmName";
+
 import { StateProvider } from "AppState";
 
 import docs from "./docs.json";
@@ -50,22 +52,27 @@ const KINDS_TO_DISPLAY = ["Interface", "Type alias"];
 
 const App = () => {
   const items = docs.children.reduce((memo, child) => {
-    if (child.originalName.indexOf("js-stellar-wallets/src/index.ts") !== -1) {
-      memo.push(child);
-    }
     if (child.children) {
       return [...memo, ...child.children];
     }
     return [...memo, child];
   }, []);
 
-  // sort them all by kind string
   const itemsByKind = items.reduce((memo, item) => {
     const kind = item.kindString;
 
     return {
       ...memo,
       [kind]: [...(memo[kind] || []), item],
+    };
+  }, {});
+
+  const itemsByFilename = items.reduce((memo, item) => {
+    const fileName = getArmName(item.sources[0].fileName);
+
+    return {
+      ...memo,
+      [fileName]: [...(memo[fileName] || []), item],
     };
   }, {});
 
@@ -104,11 +111,11 @@ const App = () => {
       console.log("no item for ", name);
       return memo;
     }
-    const kind = item.kindString;
+    const fileName = getArmName(item.sources[0].fileName);
 
     return {
       ...memo,
-      [kind]: [...(memo[kind] || []), item],
+      [fileName]: [...(memo[fileName] || []), item],
     };
   }, []);
 
@@ -120,13 +127,15 @@ const App = () => {
         </TableOfContentsEl>
 
         <BodyEl>
-          {Object.keys(itemsByKind).map((kind, i) => (
+          {Object.keys(itemsByFilename).map((kind, i) => (
             <div key={`${kind}_${i}`}>
               <h2>{kind}</h2>
 
               <div>
-                {itemsByKind[kind]
-                  .sort((a, b) => a.name.localeCompare(b.name))
+                {itemsByFilename[kind]
+                  .sort((a, b) =>
+                    a.sources[0].fileName.localeCompare(b.sources[0].fileName),
+                  )
                   .map((item, i) => (
                     <DisplayItem
                       key={`${i}_${item.id}`}
