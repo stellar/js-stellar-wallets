@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
+import README from "README.md";
+
 import DisplayItem from "components/DisplayItem";
+import Markdown from "components/Markdown";
 import TableOfContents from "components/TableOfContents";
 
 import { getArmName } from "helpers/getArmName";
@@ -33,7 +36,7 @@ const BodyEl = styled.div`
   padding: 20px;
 `;
 
-const HeadEl = styled.h2`
+const HeadEl = styled.h3`
   cursor: pointer;
   color: ${(props) => (props.isCollapsed ? "#666" : "#111")};
   display: flex;
@@ -144,18 +147,39 @@ const App = () => {
 
   const [collapseMap, setCollapsed] = useState({});
 
+  // it's not pretty but... fetch the README for view
+  const [readme, setReadme] = useState("Loading README...");
+
+  useEffect(() => {
+    // only do if mounted
+    let isMounted = true;
+
+    fetch(README)
+      .then((res) => res.text())
+      .then((text) => isMounted && setReadme(text))
+      .catch(
+        (e) => isMounted && setReadme(`Couldn't load README: ${e.toString()}`),
+      );
+
+    return () => {
+      isMounted = false;
+    };
+  });
+
   return (
     <StateProvider initialState={{ itemsById }}>
       <El>
         <TableOfContentsEl>
-          <h2>Library exports</h2>
+          <h3>Library exports</h3>
           <TableOfContents itemsByKind={libraryExports} />
-          <h2>Types</h2>
+          <h3>Types</h3>
           <TableOfContents itemsByKind={interfacesAndTypes} />
         </TableOfContentsEl>
 
         <BodyEl>
-          <h1>Library exports</h1>
+          <Markdown>{readme}</Markdown>
+
+          <h2>Library exports</h2>
 
           {Object.keys(libraryExports).map((arm, i) => (
             <div key={`exports_${arm}_${i}`}>
@@ -191,7 +215,7 @@ const App = () => {
             </div>
           ))}
 
-          <h1>Internal file exports</h1>
+          <h2>Internal file exports</h2>
           {Object.keys(privateItemsByArm).map((arm, i) => (
             <div key={`else_${arm}_${i}`}>
               <HeadEl
