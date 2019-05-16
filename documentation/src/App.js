@@ -175,6 +175,12 @@ const App = () => {
     <StateProvider initialState={{ itemsById }}>
       <El>
         <TableOfContentsEl>
+          <TocHeaderEl>About</TocHeaderEl>
+          <ul>
+            <li>
+              <a href="#readme">README</a>
+            </li>
+          </ul>
           <TocHeaderEl>Library exports</TocHeaderEl>
           <TableOfContents itemsByKind={libraryExports} />
           <TocHeaderEl>Types</TocHeaderEl>
@@ -182,7 +188,9 @@ const App = () => {
         </TableOfContentsEl>
 
         <BodyEl>
-          <Markdown>{readme}</Markdown>
+          <div id="readme">
+            <Markdown>{readme}</Markdown>
+          </div>
 
           <h2>Library exports</h2>
 
