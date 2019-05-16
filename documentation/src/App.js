@@ -23,6 +23,7 @@ const TableOfContentsEl = styled.div`
   left: 0;
   bottom: 0;
   padding: 20px;
+  padding-bottom: 100px;
   width: ${SIDEBAR_WIDTH}px;
   border-right: 1px solid black;
   overflow: scroll;
@@ -39,7 +40,7 @@ const HeadEl = styled.h2`
   justify-content: space-between;
 
   &:hover {
-    color: ${(props) => (props.isCollapsed ? "#00A" : "#00F")};
+    color: ${(props) => (props.isCollapsed ? "rgba(0, 0, 255, .5)" : "#00F")};
 
     &:after {
       opacity: 0.8;
@@ -127,17 +128,19 @@ const App = () => {
     };
   }, {});
 
-  const interfacesAndTypes = ["Interface", "Type alias"].reduce(
-    (memo, kindString) => {
-      const item = itemsByKind[kindString];
-
+  const interfacesAndTypes = items
+    .filter((item) => !LIBRARY_EXPORTS[item.name])
+    .filter(
+      (item) =>
+        item.kindString === "Interface" || item.kindString === "Type alias",
+    )
+    .reduce((memo, item) => {
+      const arm = getArmName(item.sources[0].fileName);
       return {
         ...memo,
-        [kindString]: [...(memo[kindString] || []), item],
+        [arm]: [...(memo[arm] || []), item],
       };
-    },
-    {},
-  );
+    }, {});
 
   const [collapseMap, setCollapsed] = useState({});
 
@@ -147,7 +150,7 @@ const App = () => {
         <TableOfContentsEl>
           <h2>Library exports</h2>
           <TableOfContents itemsByKind={libraryExports} />
-          <h2>Interfaces and types</h2>
+          <h2>Types</h2>
           <TableOfContents itemsByKind={interfacesAndTypes} />
         </TableOfContentsEl>
 
