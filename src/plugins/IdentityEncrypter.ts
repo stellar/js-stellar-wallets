@@ -1,11 +1,11 @@
-import { EncryptedKey, Key } from "../types";
+import { EncryptedKey, Encrypter, Key } from "../types";
 
 const NAME = "IdentityEncrypter";
 
 /**
  * "Encrypt" keys in a very basic, naive way.
  */
-export const IdentityEncrypter = {
+export const IdentityEncrypter: Encrypter = {
   name: NAME,
   encryptKey({ key }: { key: Key }) {
     const { privateKey, ...secretlessKey } = key;

@@ -22,22 +22,22 @@ const DisplayInterface = (params) => {
         <strong>{name}</strong>
         {!!implementedTypes.length &&
           implementedTypes.map((implementedType) => (
-            <>
+            <React.Fragment key={implementedType.id}>
               {" "}
               implements <TypePeeker {...implementedType} />
-            </>
+            </React.Fragment>
           ))}
         {!!extendedTypes.length &&
           extendedTypes.map((extendedType) => (
-            <>
+            <React.Fragment key={extendedType.id}>
               {" "}
               extends <TypePeeker {...extendedType} />
-            </>
+            </React.Fragment>
           ))}
       </div>
 
       {indexSignature.map(({ parameters, type }) => (
-        <Block>
+        <Block key={parameters[0].id}>
           [{parameters[0].name}: <TypePeeker {...parameters[0].type} />
           ]: <TypePeeker {...type} />;
         </Block>
@@ -46,12 +46,10 @@ const DisplayInterface = (params) => {
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)
         .map((child) => (
-          <Block>
+          <Block key={child.id}>
             <DisplayItem {...child} />
           </Block>
         ))}
-
-      {/* <pre>{JSON.stringify(params, null, 2)}</pre> */}
     </div>
   );
 };

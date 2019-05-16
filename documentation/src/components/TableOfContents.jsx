@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import { getLink } from "helpers/getLink";
+
 const ListEl = styled.li`
   font-size: 0.9em;
 
@@ -9,23 +11,23 @@ const ListEl = styled.li`
   }
 `;
 
-const Index = ({ itemsByKind }) => (
+const TableOfContents = ({ itemsByKind }) => (
   <div>
     {Object.keys(itemsByKind).map((kind) => (
-      <>
+      <React.Fragment key={kind}>
         <h3>{kind}</h3>
 
         {itemsByKind[kind] &&
           itemsByKind[kind]
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((item) => (
-              <ListEl>
-                <a href={`#item_${item.id}`}>{item.name}</a>
+              <ListEl key={item.id}>
+                <a href={getLink(item.id)}>{item.name}</a>
               </ListEl>
             ))}
-      </>
+      </React.Fragment>
     ))}
   </div>
 );
 
-export default Index;
+export default TableOfContents;

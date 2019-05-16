@@ -1,27 +1,29 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
 
-import Comment from "basics/Comment";
 import Semibold from "basics/Semibold";
 
+import Comment from "components/Comment";
 import TypePeeker from "components/TypePeeker";
 import LinkToID from "components/LinkToID";
 
 const DisplayMethod = (params) => {
-  const { name, signatures = [], implementationOf, flags, ...rest } = params;
+  const { name, signatures = [], implementationOf, flags } = params;
   return (
     <div>
       {!!signatures.length &&
-        signatures.map(({ comment, parameters = [], type }) => (
-          <>
+        signatures.map(({ id, comment, parameters = [], type }) => (
+          <React.Fragment key={`${name}_${id}`}>
+            {comment && <Comment {...comment} />}
             {flags.isPrivate && <>private </>}
             <Semibold>{name}</Semibold>(
             {!!parameters.length &&
               parameters.map((parameter, i) => (
-                <>
-                  {parameter.name}: <TypePeeker {...parameter.type} />
+                <React.Fragment key={parameter.id}>
+                  {parameter.name}
+                  {parameter.flags.isOptional && <>?</>}:{" "}
+                  <TypePeeker {...parameter.type} />
                   {i !== parameters.length - 1 && <>, </>}
-                </>
+                </React.Fragment>
               ))}
             )
             {type && (
@@ -39,16 +41,8 @@ const DisplayMethod = (params) => {
                 )
               </>
             )}
-            {comment && (
-              <Comment>
-                <ReactMarkdown source={comment.shortText} />
-                <ReactMarkdown source={comment.text} />
-              </Comment>
-            )}
-          </>
+          </React.Fragment>
         ))}
-
-      {/* <pre>{JSON.stringify(params, null, 2)}</pre> */}
     </div>
   );
 };

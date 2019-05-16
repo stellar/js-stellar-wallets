@@ -1,13 +1,6 @@
-import { EffectType } from "./constants/data";
-import { KeyType } from "./constants/keys";
-import * as PluginTesting from "./PluginTesting";
-
-export const Constants = {
-  KeyType,
-  EffectType,
-};
-
-export { PluginTesting };
+export { EffectType } from "./constants/data";
+export { KeyType } from "./constants/keys";
+export { testEncrypter, testKeyStore } from "./PluginTesting";
 
 export {
   getTokenIdentifier,

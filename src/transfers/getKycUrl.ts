@@ -16,7 +16,7 @@ interface CallbackUrlArgs {
   callbackUrl: string;
   request: DepositRequest | WithdrawRequest;
 }
-type KycUrlArgs = PostMessageArgs | CallbackUrlArgs;
+export type KycUrlArgs = PostMessageArgs | CallbackUrlArgs;
 
 const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
   args.callbackUrl === "postMessage";
