@@ -18,13 +18,14 @@ import {
   reframeEffect,
 } from "./data";
 
+import { DataProvider } from "./data/DataProvider";
+
 export const Data = {
   getTokenIdentifier,
   getBalanceIdentifier,
   reframeEffect,
+  DataProvider,
 };
-
-export { DataProvider } from "./data/DataProvider";
 
 /**
  * Key Management
@@ -33,7 +34,16 @@ export { KeyManager } from "./KeyManager";
 
 export { KeyManagerPlugins } from "./KeyManagerPlugins";
 
-export { testEncrypter, testKeyStore } from "./PluginTesting";
+/**
+ * Plugin Testing
+ */
+
+import { testEncrypter, testKeyStore } from "./PluginTesting";
+
+export const PluginTesting = {
+  testEncrypter,
+  testKeyStore,
+};
 
 /**
  * Transfers
