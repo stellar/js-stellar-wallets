@@ -1,7 +1,12 @@
+/**
+ * Constants
+ */
 export { EffectType } from "./constants/data";
 export { KeyType } from "./constants/keys";
-export { testEncrypter, testKeyStore } from "./PluginTesting";
 
+/**
+ * Data
+ */
 export {
   getTokenIdentifier,
   getBalanceIdentifier,
@@ -10,8 +15,16 @@ export {
 
 export { DataProvider } from "./data/DataProvider";
 
+/**
+ * Key Management
+ */
 export { KeyManager } from "./KeyManager";
 
 export { KeyManagerPlugins } from "./KeyManagerPlugins";
 
+export { testEncrypter, testKeyStore } from "./PluginTesting";
+
+/**
+ * Transfers
+ */
 export { DepositProvider, WithdrawProvider, getKycUrl } from "./transfers";
