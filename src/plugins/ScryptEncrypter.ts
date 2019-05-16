@@ -1,4 +1,4 @@
-import { decrypt, encrypt } from "../lib/ScryptEncryption";
+import { decrypt, encrypt } from "../helpers/ScryptEncryption";
 import { EncryptedKey, Encrypter, Key } from "../types";
 
 const NAME = "ScryptEncrypter";
