@@ -1,6 +1,6 @@
 import sinon from "sinon";
 
-import { getKeyMetadata } from "./KeyHelpers";
+import { getKeyMetadata } from "./helpers/getKeyMetadata";
 import { testEncrypter, testKeyStore } from "./PluginTesting";
 import { EncryptedKey } from "./types";
 

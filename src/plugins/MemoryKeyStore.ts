@@ -1,4 +1,4 @@
-import { getKeyMetadata } from "../KeyHelpers";
+import { getKeyMetadata } from "../helpers/getKeyMetadata";
 import { EncryptedKey, KeyMetadata, KeyStore } from "../types";
 
 interface MemoryItem {

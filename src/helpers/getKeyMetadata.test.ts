@@ -1,7 +1,7 @@
-import { KeyType } from "./constants/keys";
-import { EncryptedKey } from "./types";
+import { KeyType } from "../constants/keys";
+import { EncryptedKey } from "../types";
 
-import { getKeyMetadata } from "./KeyHelpers";
+import { getKeyMetadata } from "./getKeyMetadata";
 
 describe("getKeyMetadata", () => {
   test("ledger key", () => {
