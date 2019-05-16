@@ -32,6 +32,11 @@ const TableOfContentsEl = styled.div`
   overflow: scroll;
 `;
 
+const TocHeaderEl = styled.h3`
+  background-color: #eee;
+  padding: 5px 10px;
+`;
+
 const BodyEl = styled.div`
   padding: 20px;
 `;
@@ -170,9 +175,9 @@ const App = () => {
     <StateProvider initialState={{ itemsById }}>
       <El>
         <TableOfContentsEl>
-          <h3>Library exports</h3>
+          <TocHeaderEl>Library exports</TocHeaderEl>
           <TableOfContents itemsByKind={libraryExports} />
-          <h3>Types</h3>
+          <TocHeaderEl>Types</TocHeaderEl>
           <TableOfContents itemsByKind={interfacesAndTypes} />
         </TableOfContentsEl>
 

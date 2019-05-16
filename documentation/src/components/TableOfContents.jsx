@@ -15,7 +15,7 @@ const TableOfContents = ({ itemsByKind }) => (
   <div>
     {Object.keys(itemsByKind).map((kind) => (
       <React.Fragment key={kind}>
-        <h3>{kind}</h3>
+        <h4>{kind}</h4>
 
         {itemsByKind[kind] &&
           itemsByKind[kind]
