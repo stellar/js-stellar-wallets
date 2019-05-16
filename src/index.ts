@@ -1,17 +1,28 @@
 /**
  * Constants
  */
-export { EffectType } from "./constants/data";
-export { KeyType } from "./constants/keys";
+import { EffectType } from "./constants/data";
+import { KeyType } from "./constants/keys";
+
+export const Constants = {
+  EffectType,
+  KeyType,
+};
 
 /**
  * Data
  */
-export {
+import {
+  getBalanceIdentifier,
+  getTokenIdentifier,
+  reframeEffect,
+} from "./data";
+
+export const Data = {
   getTokenIdentifier,
   getBalanceIdentifier,
   reframeEffect,
-} from "./data";
+};
 
 export { DataProvider } from "./data/DataProvider";
 
@@ -27,4 +38,10 @@ export { testEncrypter, testKeyStore } from "./PluginTesting";
 /**
  * Transfers
  */
-export { DepositProvider, WithdrawProvider, getKycUrl } from "./transfers";
+import { DepositProvider, getKycUrl, WithdrawProvider } from "./transfers";
+
+export const Transfers = {
+  DepositProvider,
+  WithdrawProvider,
+  getKycUrl,
+};
