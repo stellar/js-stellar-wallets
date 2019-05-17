@@ -1,12 +1,12 @@
 import React from "react";
 
-import Semibold from "basics/Semibold";
+import { Semibold } from "basics/Semibold";
 
-import Comment from "components/Comment";
-import TypePeeker from "components/TypePeeker";
-import LinkToID from "components/LinkToID";
+import { Comment } from "components/Comment";
+import { TypePeeker } from "components/TypePeeker";
+import { LinkToID } from "components/LinkToID";
 
-const DisplayMethod = (params) => {
+export const DisplayMethod = (params) => {
   const { name, signatures = [], implementationOf, flags } = params;
   return (
     <div>
@@ -46,5 +46,3 @@ const DisplayMethod = (params) => {
     </div>
   );
 };
-
-export default DisplayMethod;

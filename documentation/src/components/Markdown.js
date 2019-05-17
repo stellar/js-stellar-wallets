@@ -9,8 +9,6 @@ const CodeBlock = ({ language, value }) => (
   </SyntaxHighlighter>
 );
 
-const Markdown = ({ children }) => (
+export const Markdown = ({ children }) => (
   <ReactMarkdown source={children} renderers={{ code: CodeBlock }} />
 );
-
-export default Markdown;

@@ -2,7 +2,7 @@ import React from "react";
 
 import { getLink } from "helpers/getLink";
 
-const LinkToID = ({ children, id, ...rest }) => (
+export const LinkToID = ({ children, id, ...rest }) => (
   <a
     href={getLink(id)
       .split("#")
@@ -12,5 +12,3 @@ const LinkToID = ({ children, id, ...rest }) => (
     {children}
   </a>
 );
-
-export default LinkToID;

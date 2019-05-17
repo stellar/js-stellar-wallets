@@ -5,9 +5,9 @@ import { useStateValue } from "AppState";
 
 import { getLink } from "helpers/getLink";
 
-import DisplayItem from "components/DisplayItem";
+import { DisplayItem } from "components/DisplayItem";
 
-import Tooltip from "basics/Tooltip";
+import { Tooltip } from "basics/Tooltip";
 
 const El = styled.span`
   position: relative;
@@ -19,7 +19,7 @@ const TypeEl = styled.span`
 
 const LabelEl = styled.a``;
 
-const TypePeeker = ({
+export const TypePeeker = ({
   name,
   type,
   elementType,
@@ -99,5 +99,3 @@ const TypePeeker = ({
     </El>
   );
 };
-
-export default TypePeeker;

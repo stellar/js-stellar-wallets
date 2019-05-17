@@ -3,9 +3,9 @@ import styled from "styled-components";
 
 import README from "README.md";
 
-import DisplayItem from "components/DisplayItem";
-import Markdown from "components/Markdown";
-import TableOfContents from "components/TableOfContents";
+import { DisplayItem } from "components/DisplayItem";
+import { Markdown } from "components/Markdown";
+import { TableOfContents } from "components/TableOfContents";
 
 import { getArmName } from "helpers/getArmName";
 
@@ -76,7 +76,7 @@ const LIBRARY_EXPORTS = {
   getKycUrl: 1,
 };
 
-const App = () => {
+export const App = () => {
   const items = docs.children.reduce((memo, child) => {
     if (child.children) {
       return [...memo, ...child.children];
@@ -248,5 +248,3 @@ const App = () => {
     </StateProvider>
   );
 };
-
-export default App;

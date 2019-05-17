@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import Comment from "components/Comment";
-import DisplayInterface from "components/DisplayInterface";
-import DisplayMethod from "components/DisplayMethod";
-import DisplayProperty from "components/DisplayProperty";
-import DisplayType from "components/DisplayType";
+import { Comment } from "components/Comment";
+import { DisplayInterface } from "components/DisplayInterface";
+import { DisplayMethod } from "components/DisplayMethod";
+import { DisplayProperty } from "components/DisplayProperty";
+import { DisplayType } from "components/DisplayType";
 
 const HeaderEl = styled.div`
   background: #dfdfdf;
@@ -41,7 +41,7 @@ const RootEl = styled.div`
   background: #f3f3f3;
 `;
 
-const DisplayItem = ({ isRootElement, ...params }) => {
+export const DisplayItem = ({ isRootElement, ...params }) => {
   let item;
 
   const El = isRootElement ? RootEl : ChildEl;
@@ -109,5 +109,3 @@ const DisplayItem = ({ isRootElement, ...params }) => {
     </>
   );
 };
-
-export default DisplayItem;
