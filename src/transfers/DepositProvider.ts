@@ -42,20 +42,20 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // We've gotten a result, but it might be one of several types.
  * switch (depositResult.type) {
- *   case RESPONSE_TYPES.ok:
+ *   case TransferResponseType.ok:
  *     // The deposit request succeeded, so show it to the user.
  *     // showUser(depositResult);
  *     break;
  *
- *   case RESPONSE_TYPES.interactiveKyc:
+ *   case TransferResponseType.interactiveKyc:
  *     // See `fetchKycInBrowser` for additional example code
  *   break;
  *
- *   case RESPONSE_TYPES.nonInteractiveKyc:
+ *   case TransferResponseType.nonInteractiveKyc:
  *     // TODO: SEP-12 data submission
  *     break;
  *
- *   case RESPONSE_TYPES.kycStatus:
+ *   case TransferResponseType.kycStatus:
  *     // The KYC information was previously submitted, but hasn't been approved
  *     // yet. Should show the user the pending status and any supplemental
  *     // information returned
@@ -108,7 +108,7 @@ export class DepositProvider extends TransferProvider {
    * function.
    *
    * ```js
-   * if (depositResponse === RESPONSE_TYPES.interactiveKyc) {
+   * if (depositResponse === TransferResponseType.interactiveKyc) {
    *   // To avoid popup blockers, the new window has to be opened directly in
    *   // response to a user click event, so we need consumers to provide us a
    *   // window instance that they created previously. This could also be done

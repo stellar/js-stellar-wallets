@@ -195,7 +195,11 @@ interface Memo {
 ### Usage
 
 ```js
-import { startWithdrawal, startDeposit, RESPONSE_TYPES } from "wallet-sdk";
+import {
+  startWithdrawal,
+  startDeposit,
+  TransferResponseType,
+} from "wallet-sdk";
 
 const withdrawProvider = new WithdrawProvider(transferServerUrl);
 const depositProvider = new DepositProvider(transferServerUrl);
@@ -234,7 +238,7 @@ const withdrawResult = await withdrawProvider.withdraw({
 });
 
 switch (depositResult.type /* or withdrawResult */) {
-  case RESPONSE_TYPES.ok:
+  case TransferResponseType.ok:
     // if deposit
     showUser(depositResult);
 
@@ -246,7 +250,7 @@ switch (depositResult.type /* or withdrawResult */) {
       amount,
     });
     break;
-  case RESPONSE_TYPES.interactiveKyc:
+  case TransferResponseType.interactiveKyc:
     if (isBrowser) {
       // To avoid popup blockers, the new window has to be opened directly in
       // response to a user click event, so we need consumers to provide us a
@@ -286,10 +290,10 @@ switch (depositResult.type /* or withdrawResult */) {
        */
     }
     break;
-  case RESPONSE_TYPES.nonInteractiveKyc:
+  case TransferResponseType.nonInteractiveKyc:
     // TODO: SEP-12 data submission
     break;
-  case RESPONSE_TYPES.kycStatus:
+  case TransferResponseType.kycStatus:
     showUser(whateverResult);
     break;
 }

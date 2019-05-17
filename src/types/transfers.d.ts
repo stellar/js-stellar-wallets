@@ -1,3 +1,5 @@
+import { TransferResponseType } from "../constants/transfers";
+
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeededResponse;
@@ -117,11 +119,11 @@ export interface DepositRequest {
 
 export interface TransferResponse {
   type:
-    | "ok"
-    | "non_interactive_customer_info_needed"
-    | "interactive_customer_info_needed"
-    | "customer_info_status"
-    | "error";
+    | TransferResponseType.ok
+    | TransferResponseType.non_interactive_customer_info_needed
+    | TransferResponseType.interactive_customer_info_needed
+    | TransferResponseType.customer_info_status
+    | TransferResponseType.error;
 }
 
 export interface WithdrawOk extends TransferResponse {
