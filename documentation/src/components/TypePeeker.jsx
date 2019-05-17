@@ -30,7 +30,7 @@ const TypePeeker = ({
 }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
-  const [{ itemsById, itemsByName }] = useStateValue();
+  const [{ itemsById }] = useStateValue();
 
   if (type === "stringLiteral") {
     return <span>"{value}"</span>;
@@ -80,42 +80,24 @@ const TypePeeker = ({
     );
   }
 
-  if (!itemsById[id] && !itemsByName[name]) {
+  if (!itemsById[id]) {
     return <TypeEl>{name || "any"}</TypeEl>;
   }
 
-  if (itemsById[id]) {
-    return (
-      <El
-        onMouseEnter={() => toggleVisibility(true)}
-        onMouseLeave={() => toggleVisibility(false)}
-      >
-        <LabelEl href={getLink(id)}>{name || "any"}</LabelEl>
+  return (
+    <El
+      onMouseEnter={() => toggleVisibility(true)}
+      onMouseLeave={() => toggleVisibility(false)}
+    >
+      <LabelEl href={getLink(id)}>{name || "any"}</LabelEl>
 
-        {isVisible && (
-          <Tooltip>
-            <DisplayItem {...itemsById[id]} />
-          </Tooltip>
-        )}
-      </El>
-    );
-  }
-
-  if (itemsByName[name]) {
-    return (
-      <El
-        onMouseEnter={() => toggleVisibility(true)}
-        onMouseLeave={() => toggleVisibility(false)}
-      >
-        <LabelEl>{name}</LabelEl>
-        {isVisible && (
-          <Tooltip>
-            <DisplayItem {...itemsByName[name]} />
-          </Tooltip>
-        )}
-      </El>
-    );
-  }
+      {isVisible && (
+        <Tooltip>
+          <DisplayItem {...itemsById[id]} />
+        </Tooltip>
+      )}
+    </El>
+  );
 };
 
 export default TypePeeker;

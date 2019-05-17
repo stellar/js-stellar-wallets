@@ -15,16 +15,18 @@ const TableOfContents = ({ itemsByKind }) => (
   <div>
     {Object.keys(itemsByKind).map((kind) => (
       <React.Fragment key={kind}>
-        <h3>{kind}</h3>
+        <h4>{kind}</h4>
 
-        {itemsByKind[kind] &&
-          itemsByKind[kind]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((item) => (
-              <ListEl key={item.id}>
-                <a href={getLink(item.id)}>{item.name}</a>
-              </ListEl>
-            ))}
+        <ul>
+          {itemsByKind[kind] &&
+            itemsByKind[kind]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((item) => (
+                <ListEl key={item.id}>
+                  <a href={getLink(item.id)}>{item.name}</a>
+                </ListEl>
+              ))}
+        </ul>
       </React.Fragment>
     ))}
   </div>

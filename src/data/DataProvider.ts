@@ -2,10 +2,10 @@
 import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
+import { Account, AccountDetails, Offers, Trades } from "../types";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
-import { Account, AccountDetails, Offers, Trades } from "./types";
 
 export interface DataProviderParams {
   serverUrl: string;

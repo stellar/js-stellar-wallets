@@ -1,4 +1,4 @@
-import { EncryptedKey, KeyMetadata } from "./types";
+import { EncryptedKey, KeyMetadata } from "../types";
 
 export function getKeyMetadata({
   encryptedKey,

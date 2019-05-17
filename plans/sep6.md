@@ -222,7 +222,7 @@ fee = await depositProvider.fetchFinalFee({
  * their own, but withdraw needs to actually submit a transaction, so the code
  * paths are a little bit different.
  */
-const depositResult = await depositProvider.withdraw({
+const depositResult = await depositProvider.deposit({
   asset,
   destination,
   etc,

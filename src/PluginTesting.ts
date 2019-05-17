@@ -2,7 +2,7 @@ import StellarSdk from "stellar-sdk";
 
 import { KeyType } from "./constants/keys";
 import { generateEncryptedKey } from "./fixtures/keys";
-import { getKeyMetadata } from "./KeyHelpers";
+import { getKeyMetadata } from "./helpers/getKeyMetadata";
 import { EncryptedKey, Encrypter, Key, KeyMetadata, KeyStore } from "./types";
 
 function isKey(obj: any): obj is Key {
