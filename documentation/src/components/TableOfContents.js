@@ -11,7 +11,7 @@ const ListEl = styled.li`
   }
 `;
 
-const TableOfContents = ({ itemsByKind }) => (
+export const TableOfContents = ({ itemsByKind }) => (
   <div>
     {Object.keys(itemsByKind).map((kind) => (
       <React.Fragment key={kind}>
@@ -31,5 +31,3 @@ const TableOfContents = ({ itemsByKind }) => (
     ))}
   </div>
 );
-
-export default TableOfContents;

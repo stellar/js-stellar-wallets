@@ -1,10 +1,10 @@
 import React from "react";
 
-import Semibold from "basics/Semibold";
+import { Semibold } from "basics/Semibold";
 
-import TypePeeker from "components/TypePeeker";
+import { TypePeeker } from "components/TypePeeker";
 
-const DisplayProperty = ({
+export const DisplayProperty = ({
   flags,
   kindString,
   defaultValue,
@@ -35,5 +35,3 @@ const DisplayProperty = ({
     </div>
   );
 };
-
-export default DisplayProperty;

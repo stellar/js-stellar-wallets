@@ -1,11 +1,11 @@
 import React from "react";
 
-import DisplayItem from "components/DisplayItem";
-import TypePeeker from "components/TypePeeker";
+import { DisplayItem } from "components/DisplayItem";
+import { TypePeeker } from "components/TypePeeker";
 
-import Block from "basics/Block";
+import { Block } from "basics/Block";
 
-const DisplayInterface = (params) => {
+export const DisplayInterface = (params) => {
   const {
     kindString,
     name,
@@ -53,5 +53,3 @@ const DisplayInterface = (params) => {
     </div>
   );
 };
-
-export default DisplayInterface;

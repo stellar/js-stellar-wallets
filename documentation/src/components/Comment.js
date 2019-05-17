@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import Markdown from "./Markdown";
+import { Markdown } from "./Markdown";
 
 const El = styled.div`
   max-width: 800px;
@@ -12,11 +12,9 @@ const El = styled.div`
   word-break: break-word;
 `;
 
-const Comment = ({ shortText, text }) => (
+export const Comment = ({ shortText, text }) => (
   <El>
     <Markdown>{shortText}</Markdown>
     <Markdown>{text}</Markdown>
   </El>
 );
-
-export default Comment;

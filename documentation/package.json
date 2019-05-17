@@ -26,6 +26,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "raw-loader": "^2.0.0",
     "react-app-rewire-styled-components": "^3.0.2",
     "react-app-rewired": "^2.1.3"
   }

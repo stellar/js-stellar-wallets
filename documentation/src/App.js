@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import README from "README.md";
 
-import DisplayItem from "components/DisplayItem";
-import Markdown from "components/Markdown";
-import TableOfContents from "components/TableOfContents";
+import { DisplayItem } from "components/DisplayItem";
+import { Markdown } from "components/Markdown";
+import { TableOfContents } from "components/TableOfContents";
 
 import { getArmName } from "helpers/getArmName";
 
@@ -76,7 +76,7 @@ const LIBRARY_EXPORTS = {
   getKycUrl: 1,
 };
 
-const App = () => {
+export const App = () => {
   const items = docs.children.reduce((memo, child) => {
     if (child.children) {
       return [...memo, ...child.children];
@@ -152,25 +152,6 @@ const App = () => {
 
   const [collapseMap, setCollapsed] = useState({});
 
-  // it's not pretty but... fetch the README for view
-  const [readme, setReadme] = useState("Loading README...");
-
-  useEffect(() => {
-    // only do if mounted
-    let isMounted = true;
-
-    fetch(README)
-      .then((res) => res.text())
-      .then((text) => isMounted && setReadme(text))
-      .catch(
-        (e) => isMounted && setReadme(`Couldn't load README: ${e.toString()}`),
-      );
-
-    return () => {
-      isMounted = false;
-    };
-  });
-
   return (
     <StateProvider initialState={{ itemsById }}>
       <El>
@@ -189,7 +170,7 @@ const App = () => {
 
         <BodyEl>
           <div id="readme">
-            <Markdown>{readme}</Markdown>
+            <Markdown>{README}</Markdown>
           </div>
 
           <h2>Library exports</h2>
@@ -267,5 +248,3 @@ const App = () => {
     </StateProvider>
   );
 };
-
-export default App;

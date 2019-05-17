@@ -1,6 +1,6 @@
 import React from "react";
 
-import TypePeeker from "components/TypePeeker";
+import { TypePeeker } from "components/TypePeeker";
 
 function getType(type) {
   switch (type.type) {
@@ -33,10 +33,8 @@ function getType(type) {
   }
 }
 
-const DisplayType = ({ name, type }) => (
+export const DisplayType = ({ name, type }) => (
   <div>
     type <strong>{name}</strong> = {getType(type)}
   </div>
 );
-
-export default DisplayType;
