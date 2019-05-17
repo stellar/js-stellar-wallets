@@ -157,11 +157,11 @@ switch (withdrawResult.type) {
       });
 
       // if deposit
-      showUser(kycResult);
+      MyApp.showMessage(kycResult);
 
       // if withdraw, need to sign/submit transaction
       // (submitPayment is a placeholder function)
-      submitPayment({
+      MyApp.submitPayment({
         memo: kycResult.memo,
         destination: kycResult.accountId,
         amount,

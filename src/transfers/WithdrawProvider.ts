@@ -45,7 +45,7 @@ import { TransferProvider } from "./TransferProvider";
  * switch (withdrawResult.type) {
  *   case TransferResponseType.ok:
  *     // The withdraw request succeeded, so submit a payment to the network.
- *     // makePayment(withdrawResult);
+ *     MyApp.makePayment(withdrawResult);
  *     break;
  *
  *   case TransferResponseType.interactiveKyc:

@@ -44,7 +44,7 @@ import { TransferProvider } from "./TransferProvider";
  * switch (depositResult.type) {
  *   case TransferResponseType.ok:
  *     // The deposit request succeeded, so show it to the user.
- *     // showUser(depositResult);
+ *     MyApp.showMessage(depositResult);
  *     break;
  *
  *   case TransferResponseType.interactiveKyc:
