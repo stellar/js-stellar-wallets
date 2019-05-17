@@ -8,6 +8,17 @@ It provides straightforward APIs for handling these tasks:
 - Encrypting and storing secret keys
 - Transferring funds to and from the Stellar network
 
+Some things the library will try to do well:
+
+- Useful type definitions
+- Consistent, descriptive names
+- Do rote tasks automatically for the user
+- Provide one obvious, streamlined way of accomplishing each task
+
+This is not an attempt to replace `stellar-sdk`, it's meant to provide a better
+API in some areas (data-fetching, transfers) and new functionality in others
+(key management).
+
 ## Fetching and formatting data
 
 Our library's goal is to provide typed, consistently-named Stellar data through
@@ -53,9 +64,9 @@ dataProvider.watchAccountDetails({
 
 ## Encrypting and storing secret keys
 
-Our KeyManager class allows you to encrypt keys client-side so you're never
-sending sensitive information (the user's key or password) over the wire in a
-raw state.
+Our KeyManager class allows you to securely encrypt keys client-side so you're
+never sending sensitive information (the user's key or password) over the wire
+in a raw state.
 
 ```js
 import { KeyManager, KeyManagerPlugins, Constants } from "@stellar/wallet-sdk";
