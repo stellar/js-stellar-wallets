@@ -10,6 +10,14 @@ It provides straightforward APIs for handling these tasks:
 
 ## Fetching and formatting data
 
+Our library's goal is to provide typed, consistently-named Stellar data through
+a consistent, predictable API.
+
+Note that our goal was to name data properties to be _consistent_ and intuitive,
+_not_ to be perfectly consistent with Horizon's responses. In some cases
+(particularly around offer / trade history), properties were renamed for
+clarity.
+
 ```js
 import { Data } from "@stellar/wallet-sdk";
 
@@ -45,22 +53,38 @@ dataProvider.watchAccountDetails({
 
 ## Encrypting and storing secret keys
 
+Our KeyManager class allows you to encrypt keys client-side so you're never
+sending sensitive information (the user's key or password) over the wire in a
+raw state.
+
 ```js
 import { KeyManager, KeyManagerPlugins, Constants } from "@stellar/wallet-sdk";
 
+// To instantiate a keyManager instance, pass it an object that conforms to
+// the KeyStore interface.
 const keyManager = new KeyManager({
+  // The library comes with a sample KeyStore that stores keys in memory.
   keyStore: new KeyManagerPlugins.MemoryKeyStore(),
 });
 
+// Then, you need to register an encrypter to handle encrypting / decrypting keys.
+// The library comes with two samples. (Don't use the Identity Encrypter in prod!)
 keyManager.registerEncrypter(KeyManagerPlugins.ScryptEncrypter);
+
+// If you're writing a production wallet, you'll probably want to write your own
+// KeyStore and/or Encrypter. Make sure they conform to the `KeyStore` and
+// `Encrypter` interfaces defined in these docs. You can use the `PluginTesting`
+// functions to make sure that your plugins meet spec!
 
 this.state.keyManager
   .storeKeys({
+    // The KeyManager takes keys that conform to our Key interface.
     key: {
       type: Constants.KeyType.plaintextKey,
       publicKey: "<<Insert public key>>",
       privateKey: "<<Insert private key>>",
     },
+
     password: "hunter2",
     encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
   })
@@ -73,6 +97,9 @@ this.state.keyManager
 ```
 
 ## Transferring funds
+
+Like the rest of the `@steller/wallet-sdk`, the `Transfers` API is meant to
+provide a predictable, easy-to-use interface.
 
 ```js
 import { Transfers, Constants } from "@stellar/wallet-sdk";
