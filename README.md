@@ -24,9 +24,9 @@ API in some areas (data-fetching, transfers) and new functionality in others
 Our library's goal is to provide typed, consistently-named Stellar data through
 a consistent, predictable API.
 
-Note that our goal was to name data properties to be _consistent_ and intuitive,
-_not_ to be perfectly consistent with Horizon's responses. In some cases
-(particularly around offer / trade history), properties were renamed for
+Note that our goal was to name data properties to be _internally consistent_ and
+intuitive, _not_ to be perfectly consistent with Horizon's responses. In some
+cases (particularly around offer / trade history), properties were renamed for
 clarity.
 
 ```js
