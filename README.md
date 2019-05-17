@@ -20,11 +20,19 @@ const {
   DataProvider,
 } = Data;
 
+// You'll use your DataProvider instance to ask for data from Stellar.
 const dataProvider = new DataProvider({
   serverUrl: "https://horizon.stellar.org",
   accountOrKey: "<<Insert public key>>",
 });
 
+// Some class functions will fetch data directly.
+const offers = await dataProvider.fetchOpenOffers({
+  limit: 20,
+  order: "desc",
+});
+
+// Others will watch the network for changes and invoke callback when it happens.
 dataProvider.watchAccountDetails({
   onMessage: (accountDetails) => {
     console.log("Latest account details: ", accountDetails);
