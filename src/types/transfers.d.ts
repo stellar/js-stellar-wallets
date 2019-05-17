@@ -153,19 +153,19 @@ export interface DepositOk extends TransferResponse {
 }
 
 export interface NonInteractiveKycNeededResponse extends TransferResponse {
-  type: "non_interactive_customer_info_needed";
+  type: TransferResponseType.non_interactive_customer_info_needed;
   fields: string[]; // This can be restricted to the list of strings in SEP-9
   // https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0009.md#kyc--aml-fields
 }
 
 export interface InteractiveKycNeededResponse extends TransferResponse {
-  type: "interactive_customer_info_needed";
+  type: TransferResponseType.interactive_customer_info_needed;
   url: string;
   interactiveDeposit?: boolean;
 }
 
 export interface KycStatus extends TransferResponse {
-  type: "customer_info_status";
+  type: TransferResponseType.customer_info_status;
   more_info_url?: string;
   eta?: number;
 }
