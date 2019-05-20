@@ -43,20 +43,20 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // We've gotten a result, but it might be one of several types.
  * switch (withdrawResult.type) {
- *   case RESPONSE_TYPES.ok:
+ *   case TransferResponseType.ok:
  *     // The withdraw request succeeded, so submit a payment to the network.
- *     // makePayment(withdrawResult);
+ *     MyApp.makePayment(withdrawResult);
  *     break;
  *
- *   case RESPONSE_TYPES.interactiveKyc:
+ *   case TransferResponseType.interactiveKyc:
  *     // See `fetchKycInBrowser` for additional example code
  *   break;
  *
- *   case RESPONSE_TYPES.nonInteractiveKyc:
+ *   case TransferResponseType.nonInteractiveKyc:
  *     // TODO: SEP-12 data submission
  *     break;
  *
- *   case RESPONSE_TYPES.kycStatus:
+ *   case TransferResponseType.kycStatus:
  *     // The KYC information was previously submitted, but hasn't been approved
  *     // yet. Should show the user the pending status and any supplemental
  *     // information returned
@@ -110,7 +110,7 @@ export class WithdrawProvider extends TransferProvider {
    * function.
    *
    * ```js
-   * if (withdrawResponse === RESPONSE_TYPES.interactiveKyc) {
+   * if (withdrawResponse === TransferResponseType.interactiveKyc) {
    *   // To avoid popup blockers, the new window has to be opened directly in
    *   // response to a user click event, so we need consumers to provide us a
    *   // window instance that they created previously. This could also be done

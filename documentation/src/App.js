@@ -61,6 +61,7 @@ const HeadEl = styled.h3`
 `;
 
 const LIBRARY_EXPORTS = {
+  TransferResponseType: 1,
   EffectType: 1,
   KeyType: 1,
   testEncrypter: 1,

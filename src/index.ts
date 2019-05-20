@@ -3,10 +3,12 @@
  */
 import { EffectType } from "./constants/data";
 import { KeyType } from "./constants/keys";
+import { TransferResponseType } from "./constants/transfers";
 
 export const Constants = {
   EffectType,
   KeyType,
+  TransferResponseType,
 };
 
 /**

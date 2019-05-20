@@ -31,7 +31,7 @@ const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
  * approved.
  *
  * ```js
- * if (depositResponse === RESPONSE_TYPES.interactiveKyc) {
+ * if (depositResponse === TransferResponseType.interactiveKyc) {
  *   const kycRedirect = getKycUrl({
  *     result: withdrawResult,
  *     callbackUrl,
