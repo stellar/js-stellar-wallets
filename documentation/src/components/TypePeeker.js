@@ -6,6 +6,7 @@ import { useStateValue } from "AppState";
 import { getLink } from "helpers/getLink";
 
 import { DisplayItem } from "components/DisplayItem";
+import { DisplayParameters } from "components/DisplayParameters";
 
 import { Tooltip } from "basics/Tooltip";
 
@@ -27,6 +28,7 @@ export const TypePeeker = ({
   typeArguments,
   id,
   value,
+  declaration,
 }) => {
   const [isVisible, toggleVisibility] = useState(false);
 
@@ -34,6 +36,17 @@ export const TypePeeker = ({
 
   if (type === "stringLiteral") {
     return <span>"{value}"</span>;
+  }
+
+  if (type === "reflection" && declaration && declaration.signatures) {
+    const { signatures } = declaration;
+
+    return (
+      <>
+        (<DisplayParameters parameters={signatures[0].parameters} />) =>{" "}
+        <TypePeeker {...signatures[0].type} />
+      </>
+    );
   }
 
   if (type === "union") {
