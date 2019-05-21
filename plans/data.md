@@ -1,5 +1,15 @@
 # Data API
 
+The Data API is meant to return readable, understandable processed Stellar data
+from the network.
+
+Some things we did to make the data more understandable:
+
+- Trade data is from the point of view of the account you use to initiate the
+  `DataProvider`. That means instead of indicating "sender" and "receiver",
+  either of which could be your account, trades indicate a "payment token" (what
+  you send) and an "incoming token" (what you receive).
+
 ## API surface
 
 ```typescript
@@ -95,16 +105,6 @@ interface Offer extends Effect {}
 
 interface Transfer extends Effect {
   transferType: string; // or enum? basically, is this the "create account" transfer
-}
-
-interface ReframedEffect {
-  id: string;
-  baseToken: Token;
-  token: Token;
-  amount: Big;
-  price: Token;
-  sender: Account;
-  timestamp: number;
 }
 
 interface Balance {
