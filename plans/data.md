@@ -17,7 +17,6 @@ const StellarWallets = {
 
     // stateless functions
     getTokenIdentifier,
-    reframeEffect,
 
     // this is a class, so you can set the Horizon server
     // we want to hit
@@ -134,19 +133,6 @@ This is useful for people to test token equality, create indices, etc.
 function getTokenIdentifier(token: Token): string {
   return `#{token.code}:#{token.issuer.key}`;
 }
-```
-
-### Reframe an effect from the point of view of an account
-
-Effect-like objects by default have a "sender" and "receiver", but most of the
-time, wallets only care about showing "what did YOU send/receive." So this is a
-way of turning "senderAmount // receiverAmount" into "amount // price".
-
-```typescript
-function reframeEffect(
-  observerAccount: Account,
-  effect: Effect,
-): ReframedEffect;
 ```
 
 ## Getters and watchers
