@@ -9,12 +9,15 @@ import { makeDisplayableOffers } from "./makeDisplayableOffers";
 
 it("makes offers from partial fill", () => {
   const tradeResponse = parseResponse(TradesResponsePartialFill);
-  const offers = makeDisplayableOffers({
-    // @ts-ignore
-    offers: parseResponse(OffersResponse).records,
-    // @ts-ignore
-    tradeResponses: [tradeResponse.records],
-  });
+  const offers = makeDisplayableOffers(
+    { publicKey: "PHYREXIA" },
+    {
+      // @ts-ignore
+      offers: parseResponse(OffersResponse).records,
+      // @ts-ignore
+      tradeResponses: [tradeResponse.records],
+    },
+  );
 
   expect(offers[0]).toEqual({
     id: 76884793,

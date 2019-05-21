@@ -65,15 +65,15 @@ export interface ReframedEffect {
 
 export interface Trade {
   id: string;
-  senderToken: Token;
-  senderAccount: Account;
-  senderAmount: BigNumber;
-  senderOfferId?: OfferId;
 
-  receiverToken: Token;
-  receiverAccount: Account;
-  receiverAmount: BigNumber;
-  receiverOfferId?: OfferId;
+  paymentToken: Token;
+  paymentAmount: BigNumber;
+  paymentOfferId?: OfferId;
+
+  incomingToken: Token;
+  incomingAccount: Account;
+  incomingAmount: BigNumber;
+  incomingOfferId?: OfferId;
 
   timestamp: number;
 }
