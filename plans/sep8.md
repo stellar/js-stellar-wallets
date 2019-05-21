@@ -105,11 +105,10 @@ import {
 } from "wallet-sdk";
 
 // approvalServerUrl and regulatedAssets fetched from stellar.toml
-// regulatedAsset is a map of asset.id to 'stellar-base' Asset
+// regulatedAssets is a map of `${asset.code}-${asset.issuer}` to 'stellar-base' Asset
 const approvalProvider = new ApprovalProvider(approvalServerUrl, regulatedAssets);
 
-// Parse transaction to check if involves regulated assets. Used to display approval
-// things like simple fees, asset codes, and withdrawal types.
+// Parse transaction to check if involves regulated assets
 const needsApproval = approvalProvider.needsApproval(transaction);
 if (!needsApproval) {
   // No approval needed so submit to the network
@@ -121,6 +120,7 @@ if (!needsApproval) {
 showUser(needsApproval);
 
 // Deconstruct to transaction envelope then submit to approval server
+// TODO: Maybe provider helper for deconstruct/reconstruct of tx <-> Transaction?
 const tx = transaction.toEnvelope().toXDR().toString('base64');
 const approvalResponse = await approvalProvider.approve({ tx });
 
@@ -149,7 +149,7 @@ switch (approvalResponse.status) {
       // an iframe or something.
       const popup = window.open("", "name", "dimensions etc");
 
-      const actionResult = await withdrawProvider.fetchActionInBrowser({
+      const actionResult = await approvalProvider.fetchActionInBrowser({
         response: approvalResult,
         window: popup,
       });
@@ -157,8 +157,10 @@ switch (approvalResponse.status) {
       showUser(actionResult);
 
       // if action succeeded, submit transaction
-      transaction = new Transaction(actionResult.tx);
-      submitPayment(transaction);
+      if (actionResult.status === "success") {
+        transaction = new Transaction(actionResult.tx);
+        submitPayment(transaction);  
+      }
     } else if (isServerEnv || isNativeEnv) {
       const actionRedirect = getActionUrl({
         result: approvalResult,
@@ -172,7 +174,7 @@ switch (approvalResponse.status) {
       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
       * Include the original request so it can be provided as a querystring to
       * the callback URL. Simplifies re-submission dramatically after receiving
-      * KYC results.
+      * action required results.
       */
    }
    break;
