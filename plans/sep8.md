@@ -173,8 +173,7 @@ switch (approvalResponse.status) {
       * to e.g. OAuth flows.
       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
       * Include the original request so it can be provided as a querystring to
-      * the callback URL. Simplifies re-submission dramatically after receiving
-      * action required results.
+      * the callback URL.
       */
    }
    break;
