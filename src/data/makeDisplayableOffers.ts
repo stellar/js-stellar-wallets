@@ -60,7 +60,7 @@ export function makeDisplayableOffers(
           selling.asset_type === "native"
             ? undefined
             : {
-                publicKey: selling.asset_issuer,
+                key: selling.asset_issuer,
               },
       };
 
@@ -71,7 +71,7 @@ export function makeDisplayableOffers(
           buying.asset_type === "native"
             ? undefined
             : {
-                publicKey: buying.asset_issuer,
+                key: buying.asset_issuer,
               },
       };
 

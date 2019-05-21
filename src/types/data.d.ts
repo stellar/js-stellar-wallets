@@ -16,9 +16,9 @@ export interface Account {
 
 export interface Issuer {
   key: string;
-  name: string;
-  url: string;
-  hostName: string;
+  name?: string;
+  url?: string;
+  hostName?: string;
 }
 
 export interface NativeToken {

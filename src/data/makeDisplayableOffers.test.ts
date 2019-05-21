@@ -32,7 +32,7 @@ it("makes offers from partial fill", () => {
       type: "credit_alphanum4",
       code: "USD",
       issuer: {
-        publicKey: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
+        key: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
       },
     },
     incomingAmount: new BigNumber(2),
