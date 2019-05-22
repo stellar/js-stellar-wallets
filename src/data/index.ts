@@ -1,6 +1,6 @@
 import { Horizon } from "stellar-sdk";
 
-import { Account, AssetToken, Effect, ReframedEffect, Token } from "../types";
+import { AssetToken, Token } from "../types";
 
 /**
  * Get the string identifier for a token.
@@ -26,61 +26,4 @@ export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
   }
 
   return `${balance.asset_code}:${balance.asset_issuer}`;
-}
-
-function isReframedEffect(obj: any): obj is ReframedEffect {
-  return obj.baseToken !== undefined;
-}
-
-/**
- * Reframe a normal effect from a specific observer account's
- * perspective.
- */
-export function reframeEffect(
-  observerAccount: Account,
-  effect: Effect | ReframedEffect,
-): ReframedEffect {
-  // if the effect has already been reframed, we're done!
-  if (isReframedEffect(effect)) {
-    return effect;
-  }
-
-  const {
-    id,
-    senderToken,
-    receiverToken,
-    senderAccount,
-    receiverAccount,
-    senderAmount,
-    receiverAmount,
-    timestamp,
-    type,
-  } = effect;
-
-  const isObserverSender =
-    senderAccount.publicKey === observerAccount.publicKey;
-
-  if (isObserverSender) {
-    return {
-      id,
-      baseToken: senderToken,
-      token: receiverToken,
-      amount: receiverAmount,
-      price: senderAmount,
-      sender: receiverAccount,
-      timestamp,
-      type,
-    };
-  }
-
-  return {
-    id,
-    baseToken: receiverToken,
-    token: senderToken,
-    amount: senderAmount,
-    price: receiverAmount,
-    sender: senderAccount,
-    timestamp,
-    type,
-  };
 }

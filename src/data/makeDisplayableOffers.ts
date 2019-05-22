@@ -3,10 +3,9 @@ import flatten from "lodash/flatten";
 import { AssetType } from "stellar-base";
 import { Server } from "stellar-sdk";
 
-import { getTokenIdentifier } from "./";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
-import { Offer, Offers, Token, Trade } from "../types";
+import { Account, Offer, Token, Trade } from "../types";
 
 export type TradeCollection = Server.TradeRecord[];
 
@@ -19,31 +18,28 @@ interface OfferIdMap {
   [offerid: string]: Trade[];
 }
 
-export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
+export function makeDisplayableOffers(
+  subjectAccount: Account,
+  params: DisplayableOffersParams,
+): Offer[] {
   const { offers, tradeResponses } = params;
   const trades = flatten(tradeResponses);
 
   // make a map of offerids to the trades involved with them
   // (reminder that each trade has two offerids, one for each side)
-  const offeridsToTradesMap: OfferIdMap = makeDisplayableTrades(trades).reduce(
-    (memo: any, trade: Trade) => {
-      if (trade.senderOfferId) {
-        memo[trade.senderOfferId] = [
-          ...(memo[trade.senderOfferId] || []),
-          trade,
-        ];
-      }
-      if (trade.receiverOfferId) {
-        memo[trade.receiverOfferId] = [
-          ...(memo[trade.receiverOfferId] || []),
-          trade,
-        ];
-      }
+  const offeridsToTradesMap: OfferIdMap = makeDisplayableTrades(
+    subjectAccount,
+    trades,
+  ).reduce((memo: any, trade: Trade) => {
+    if (trade.paymentOfferId) {
+      memo[trade.paymentOfferId] = [
+        ...(memo[trade.paymentOfferId] || []),
+        trade,
+      ];
+    }
 
-      return memo;
-    },
-    {},
-  );
+    return memo;
+  }, {});
 
   return offers.map(
     (offer: Server.OfferRecord): Offer => {
@@ -64,11 +60,9 @@ export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
           selling.asset_type === "native"
             ? undefined
             : {
-                publicKey: selling.asset_issuer,
+                key: selling.asset_issuer,
               },
       };
-
-      const paymentTokenId: string = getTokenIdentifier(paymentToken);
 
       const incomingToken: Token = {
         type: buying.asset_type as AssetType,
@@ -77,19 +71,14 @@ export function makeDisplayableOffers(params: DisplayableOffersParams): Offers {
           buying.asset_type === "native"
             ? undefined
             : {
-                publicKey: buying.asset_issuer,
+                key: buying.asset_issuer,
               },
       };
 
       const tradePaymentAmount: BigNumber = (
         offeridsToTradesMap[id] || []
       ).reduce((memo: BigNumber, trade: Trade): BigNumber => {
-        const senderTokenId = getTokenIdentifier(trade.senderToken);
-        return memo.plus(
-          senderTokenId === paymentTokenId
-            ? trade.senderAmount
-            : trade.receiverAmount,
-        );
+        return memo.plus(trade.paymentAmount);
       }, new BigNumber(0));
 
       return {

@@ -2,10 +2,11 @@
 import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
-import { Account, AccountDetails, Offers, Trades } from "../types";
+import { Account, AccountDetails, Offer, Trade, Transfer } from "../types";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
+import { makeDisplayableTransfers } from "./makeDisplayableTransfers";
 
 export interface DataProviderParams {
   serverUrl: string;
@@ -64,7 +65,9 @@ export class DataProvider {
   /**
    * Fetch outstanding offers.
    */
-  public async fetchOpenOffers(params: CollectionParams = {}): Promise<Offers> {
+  public async fetchOpenOffers(
+    params: CollectionParams = {},
+  ): Promise<Offer[]> {
     // first, fetch all offers
     const offers = await this.server
       .offers("accounts", this.accountKey)
@@ -91,7 +94,7 @@ export class DataProvider {
   /**
    * Fetch recent trades.
    */
-  public async fetchTrades(params: CollectionParams = {}): Promise<Trades> {
+  public async fetchTrades(params: CollectionParams = {}): Promise<Trade[]> {
     const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
@@ -101,7 +104,25 @@ export class DataProvider {
       .call()
       .then((data) => data.records);
 
-    return makeDisplayableTrades(trades);
+    return makeDisplayableTrades({ publicKey: this.accountKey }, trades);
+  }
+
+  /**
+   * Fetch transfers (direct and path payments).
+   */
+  public async fetchTransfers(
+    params: CollectionParams = {},
+  ): Promise<Transfer[]> {
+    const transfers = await this.server
+      .payments()
+      .forAccount(this.accountKey)
+      .limit(params.limit || 10)
+      .order(params.order || "desc")
+      .cursor(params.cursor || "")
+      .call()
+      .then((data) => data.records);
+
+    return makeDisplayableTransfers({ publicKey: this.accountKey }, transfers);
   }
 
   /**

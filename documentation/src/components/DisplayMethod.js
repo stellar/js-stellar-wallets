@@ -3,6 +3,7 @@ import React from "react";
 import { Semibold } from "basics/Semibold";
 
 import { Comment } from "components/Comment";
+import { DisplayParameters } from "components/DisplayParameters";
 import { TypePeeker } from "components/TypePeeker";
 import { LinkToID } from "components/LinkToID";
 
@@ -16,16 +17,7 @@ export const DisplayMethod = (params) => {
             {comment && <Comment {...comment} />}
             {flags.isPrivate && <>private </>}
             <Semibold>{name}</Semibold>(
-            {!!parameters.length &&
-              parameters.map((parameter, i) => (
-                <React.Fragment key={parameter.id}>
-                  {parameter.name}
-                  {parameter.flags.isOptional && <>?</>}:{" "}
-                  <TypePeeker {...parameter.type} />
-                  {i !== parameters.length - 1 && <>, </>}
-                </React.Fragment>
-              ))}
-            )
+            <DisplayParameters parameters={parameters} />)
             {type && (
               <>
                 : <TypePeeker {...type} />

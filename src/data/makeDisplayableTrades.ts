@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
 import { Server } from "stellar-sdk";
 
-import { Token, Trade, Trades } from "../types";
+import { Account, Token, Trade } from "../types";
 
 /*
   {
@@ -44,7 +44,10 @@ import { Token, Trade, Trades } from "../types";
 
 */
 
-export function makeDisplayableTrades(trades: Server.TradeRecord[]): Trades {
+export function makeDisplayableTrades(
+  subjectAccount: Account,
+  trades: Server.TradeRecord[],
+): Trade[] {
   // make a map of trades to their original offerids
   return trades.map(
     (trade: Server.TradeRecord): Trade => {
@@ -55,6 +58,9 @@ export function makeDisplayableTrades(trades: Server.TradeRecord[]): Trades {
       const counter = {
         publicKey: trade.counter_account,
       };
+
+      const isSubjectBase: boolean =
+        base.publicKey === subjectAccount.publicKey;
 
       const baseToken: Token = {
         type: trade.base_asset_type as AssetType,
@@ -84,23 +90,22 @@ export function makeDisplayableTrades(trades: Server.TradeRecord[]): Trades {
           new Date(trade.ledger_close_time).getTime() / 1000,
         ),
 
-        senderAccount: trade.base_is_seller ? base : counter,
-        senderToken: trade.base_is_seller ? baseToken : counterToken,
-        senderOfferId: trade.base_is_seller
-          ? trade.base_offer_id
-          : trade.counter_offer_id,
-        senderAmount: trade.base_is_seller
+        paymentToken: isSubjectBase ? baseToken : counterToken,
+        paymentAmount: isSubjectBase
           ? new BigNumber(trade.base_amount)
           : new BigNumber(trade.counter_amount),
+        paymentOfferId: isSubjectBase
+          ? trade.base_offer_id
+          : trade.counter_offer_id,
 
-        receiverAccount: !trade.base_is_seller ? base : counter,
-        receiverToken: !trade.base_is_seller ? baseToken : counterToken,
-        receiverOfferId: !trade.base_is_seller
-          ? trade.base_offer_id
-          : trade.counter_offer_id,
-        receiverAmount: !trade.base_is_seller
-          ? new BigNumber(trade.base_amount)
-          : new BigNumber(trade.counter_amount),
+        incomingToken: isSubjectBase ? counterToken : baseToken,
+        incomingAmount: isSubjectBase
+          ? new BigNumber(trade.counter_amount)
+          : new BigNumber(trade.base_amount),
+        incomingAccount: isSubjectBase ? counter : base,
+        incomingOfferId: isSubjectBase
+          ? trade.counter_offer_id
+          : trade.base_offer_id,
       };
     },
   );
