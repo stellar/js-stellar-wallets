@@ -98,6 +98,20 @@ export interface Offer {
   resultingTrades: TradeId[];
 }
 
+export interface Transfer {
+  id: string;
+  isInitialFunding: boolean;
+  isRecipient: boolean;
+
+  token: Token;
+  amount: BigNumber;
+  timestamp: number;
+  otherAccount: Account;
+
+  sourceToken?: Token;
+  sourceAmount?: BigNumber;
+}
+
 export interface Balance {
   token: Token;
 
@@ -132,7 +146,3 @@ export interface AccountDetails {
   flags: Horizon.Flags;
   balances: BalanceMap;
 }
-
-export type Offers = Offer[];
-
-export type Trades = Trade[];

@@ -5,7 +5,7 @@ import { Server } from "stellar-sdk";
 
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
-import { Account, Offer, Offers, Token, Trade } from "../types";
+import { Account, Offer, Token, Trade } from "../types";
 
 export type TradeCollection = Server.TradeRecord[];
 
@@ -21,7 +21,7 @@ interface OfferIdMap {
 export function makeDisplayableOffers(
   subjectAccount: Account,
   params: DisplayableOffersParams,
-): Offers {
+): Offer[] {
   const { offers, tradeResponses } = params;
   const trades = flatten(tradeResponses);
 
