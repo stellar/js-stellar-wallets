@@ -16,9 +16,9 @@ export interface Account {
 
 export interface Issuer {
   key: string;
-  name: string;
-  url: string;
-  hostName: string;
+  name?: string;
+  url?: string;
+  hostName?: string;
 }
 
 export interface NativeToken {
@@ -63,17 +63,23 @@ export interface ReframedEffect {
   timestamp: number;
 }
 
+/**
+ * Trades are framed in terms of the account you used to initiate DataProvider.
+ * That means that a trade object will say which token was your "payment" in
+ * the exchange (the token and amount you sent to someone else) and what was
+ * "incoming".
+ */
 export interface Trade {
   id: string;
-  senderToken: Token;
-  senderAccount: Account;
-  senderAmount: BigNumber;
-  senderOfferId?: OfferId;
 
-  receiverToken: Token;
-  receiverAccount: Account;
-  receiverAmount: BigNumber;
-  receiverOfferId?: OfferId;
+  paymentToken: Token;
+  paymentAmount: BigNumber;
+  paymentOfferId?: OfferId;
+
+  incomingToken: Token;
+  incomingAccount: Account;
+  incomingAmount: BigNumber;
+  incomingOfferId?: OfferId;
 
   timestamp: number;
 }

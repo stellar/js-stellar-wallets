@@ -14,18 +14,13 @@ export const Constants = {
 /**
  * Data
  */
-import {
-  getBalanceIdentifier,
-  getTokenIdentifier,
-  reframeEffect,
-} from "./data";
+import { getBalanceIdentifier, getTokenIdentifier } from "./data";
 
 import { DataProvider } from "./data/DataProvider";
 
 export const Data = {
   getTokenIdentifier,
   getBalanceIdentifier,
-  reframeEffect,
   DataProvider,
 };
 

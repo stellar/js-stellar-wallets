@@ -32,12 +32,7 @@ clarity.
 ```js
 import { Data } from "@stellar/wallet-sdk";
 
-const {
-  getTokenIdentifier,
-  getBalanceIdentifier,
-  reframeEffect,
-  DataProvider,
-} = Data;
+const { getTokenIdentifier, getBalanceIdentifier, DataProvider } = Data;
 
 // You'll use your DataProvider instance to ask for data from Stellar.
 const dataProvider = new DataProvider({

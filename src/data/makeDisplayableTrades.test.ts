@@ -8,6 +8,7 @@ import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
 it("makes trades from real-world examples", () => {
   const trades = makeDisplayableTrades(
+    { publicKey: "PHYREXIA" },
     // @ts-ignore
     parseResponse(TradesResponsePartialFill).records,
   );
@@ -16,29 +17,25 @@ it("makes trades from real-world examples", () => {
     {
       id: "99777639383887873-0",
 
-      senderToken: {
+      paymentToken: {
+        code: "XLM",
+        type: "native",
+      },
+      paymentAmount: new BigNumber("363.0644948"),
+      paymentOfferId: "78448448",
+
+      incomingToken: {
         code: "BAT",
         type: "credit_alphanum4",
         issuer: {
           publicKey: "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
         },
       },
-
-      senderAccount: {
+      incomingAmount: new BigNumber("139.5761839"),
+      incomingAccount: {
         publicKey: "SERRA",
       },
-      senderAmount: new BigNumber("139.5761839"),
-      senderOfferId: "78448401",
-
-      receiverToken: {
-        code: "XLM",
-        type: "native",
-      },
-      receiverAccount: {
-        publicKey: "PHYREXIA",
-      },
-      receiverAmount: new BigNumber("363.0644948"),
-      receiverOfferId: "78448448",
+      incomingOfferId: "78448401",
 
       timestamp: 1554236520,
     },

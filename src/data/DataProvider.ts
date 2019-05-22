@@ -101,7 +101,7 @@ export class DataProvider {
       .call()
       .then((data) => data.records);
 
-    return makeDisplayableTrades(trades);
+    return makeDisplayableTrades({ publicKey: this.accountKey }, trades);
   }
 
   /**

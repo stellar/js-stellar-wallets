@@ -1,5 +1,15 @@
 # Data API
 
+The Data API is meant to return readable, understandable processed Stellar data
+from the network.
+
+Some things we did to make the data more understandable:
+
+- Trade data is from the point of view of the account you use to initiate the
+  `DataProvider`. That means instead of indicating "sender" and "receiver",
+  either of which could be your account, trades indicate a "payment token" (what
+  you send) and an "incoming token" (what you receive).
+
 ## API surface
 
 ```typescript
@@ -17,7 +27,6 @@ const StellarWallets = {
 
     // stateless functions
     getTokenIdentifier,
-    reframeEffect,
 
     // this is a class, so you can set the Horizon server
     // we want to hit
@@ -98,16 +107,6 @@ interface Transfer extends Effect {
   transferType: string; // or enum? basically, is this the "create account" transfer
 }
 
-interface ReframedEffect {
-  id: string;
-  baseToken: Token;
-  token: Token;
-  amount: Big;
-  price: Token;
-  sender: Account;
-  timestamp: number;
-}
-
 interface Balance {
   token: Token;
   sellingLiabilities: Big;
@@ -134,19 +133,6 @@ This is useful for people to test token equality, create indices, etc.
 function getTokenIdentifier(token: Token): string {
   return `#{token.code}:#{token.issuer.key}`;
 }
-```
-
-### Reframe an effect from the point of view of an account
-
-Effect-like objects by default have a "sender" and "receiver", but most of the
-time, wallets only care about showing "what did YOU send/receive." So this is a
-way of turning "senderAmount // receiverAmount" into "amount // price".
-
-```typescript
-function reframeEffect(
-  observerAccount: Account,
-  effect: Effect,
-): ReframedEffect;
 ```
 
 ## Getters and watchers
