@@ -2,7 +2,15 @@
 import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
-import { Account, AccountDetails, Offer, Trade, Transfer } from "../types";
+import {
+  Account,
+  AccountDetails,
+  Collection,
+  CollectionParams,
+  Offer,
+  Trade,
+  Transfer,
+} from "../types";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
@@ -16,12 +24,6 @@ export interface DataProviderParams {
 export interface WatcherParams {
   onMessage: (accountDetails: AccountDetails) => void;
   onError: (error: any) => void;
-}
-
-export interface CollectionParams {
-  limit?: number;
-  order?: "desc" | "asc";
-  cursor?: string;
 }
 
 function isAccount(obj: any): obj is Account {
@@ -67,44 +69,32 @@ export class DataProvider {
    */
   public async fetchOpenOffers(
     params: CollectionParams = {},
-  ): Promise<Offer[]> {
+  ): Promise<Collection<Offer>> {
     // first, fetch all offers
     const offers = await this.server
       .offers("accounts", this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then((data) => data.records);
+      .call();
 
-    // find all offerids and check for trades of each
-    const tradeRequests = offers.map(({ id }) =>
-      this.server
-        .trades()
-        .forOffer(id)
-        .call()
-        .then((data) => data.records),
-    );
-    const tradeResponses = await Promise.all(tradeRequests);
-
-    // @ts-ignore
-    return makeDisplayableOffers({ offers, tradeResponses });
+    return this._processOpenOffers(offers);
   }
 
   /**
    * Fetch recent trades.
    */
-  public async fetchTrades(params: CollectionParams = {}): Promise<Trade[]> {
+  public async fetchTrades(
+    params: CollectionParams = {},
+  ): Promise<Collection<Trade>> {
     const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then((data) => data.records);
-
-    return makeDisplayableTrades({ publicKey: this.accountKey }, trades);
+      .call();
+    return this._processTrades(trades);
   }
 
   /**
@@ -112,17 +102,16 @@ export class DataProvider {
    */
   public async fetchTransfers(
     params: CollectionParams = {},
-  ): Promise<Transfer[]> {
+  ): Promise<Collection<Transfer>> {
     const transfers = await this.server
       .payments()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then((data) => data.records);
+      .call();
 
-    return makeDisplayableTransfers({ publicKey: this.accountKey }, transfers);
+    return this._processTransfers(transfers);
   }
 
   /**
@@ -173,6 +162,61 @@ export class DataProvider {
     // if they exec this function, don't make the balance callback do anything
     return () => {
       delete this.callbacks.accountDetails;
+    };
+  }
+
+  private async _processOpenOffers(
+    offers: Server.CollectionPage<Server.OfferRecord>,
+  ): Promise<Collection<Offer>> {
+    // find all offerids and check for trades of each
+    const tradeRequests = offers.records.map(({ id }) =>
+      this.server
+        .trades()
+        .forOffer(id)
+        .call(),
+    );
+    const tradeResponses = await Promise.all(tradeRequests);
+
+    return {
+      next: () => offers.next().then(this._processOpenOffers),
+      prev: () => offers.prev().then(this._processOpenOffers),
+      records: makeDisplayableOffers(
+        { publicKey: this.accountKey },
+        {
+          offers: offers.records,
+          tradeResponses: tradeResponses.map((res) => res.records),
+        },
+      ),
+    };
+  }
+
+  private async _processTrades(
+    trades: Server.CollectionPage<Server.TradeRecord>,
+  ): Promise<Collection<Trade>> {
+    return {
+      next: () => trades.next().then(this._processTrades),
+      prev: () => trades.prev().then(this._processTrades),
+      records: makeDisplayableTrades(
+        { publicKey: this.accountKey },
+        trades.records,
+      ),
+    };
+  }
+
+  private async _processTransfers(
+    transfers: Server.CollectionPage<
+      | Server.PaymentOperationRecord
+      | Server.CreateAccountOperationRecord
+      | Server.PathPaymentOperationRecord
+    >,
+  ): Promise<Collection<Transfer>> {
+    return {
+      next: () => transfers.next().then(this._processTransfers),
+      prev: () => transfers.prev().then(this._processTransfers),
+      records: makeDisplayableTransfers(
+        { publicKey: this.accountKey },
+        transfers.records,
+      ),
     };
   }
 

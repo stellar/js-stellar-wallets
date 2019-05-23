@@ -146,3 +146,15 @@ export interface AccountDetails {
   flags: Horizon.Flags;
   balances: BalanceMap;
 }
+
+export interface CollectionParams {
+  limit?: number;
+  order?: "desc" | "asc";
+  cursor?: string;
+}
+
+export interface Collection<Record> {
+  next: () => Promise<Collection<Record>>;
+  prev: () => Promise<Collection<Record>>;
+  records: Record[];
+}
