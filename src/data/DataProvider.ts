@@ -109,10 +109,9 @@ export class DataProvider {
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then((data) => data.records);
+      .call();
 
-    return makeDisplayableTransfers({ publicKey: this.accountKey }, transfers);
+    return this._processTransfers(transfers);
   }
 
   /**
@@ -200,6 +199,23 @@ export class DataProvider {
       records: makeDisplayableTrades(
         { publicKey: this.accountKey },
         trades.records,
+      ),
+    };
+  }
+
+  private async _processTransfers(
+    transfers: Server.CollectionPage<
+      | Server.PaymentOperationRecord
+      | Server.CreateAccountOperationRecord
+      | Server.PathPaymentOperationRecord
+    >,
+  ): Promise<Collection<Transfer>> {
+    return {
+      next: () => transfers.next().then(this._processTransfers),
+      prev: () => transfers.prev().then(this._processTransfers),
+      records: makeDisplayableTransfers(
+        { publicKey: this.accountKey },
+        transfers.records,
       ),
     };
   }
