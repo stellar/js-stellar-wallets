@@ -2,7 +2,15 @@
 import debounce from "lodash/debounce";
 import { Server, StrKey } from "stellar-sdk";
 
-import { Account, AccountDetails, Offer, Trade, Transfer } from "../types";
+import {
+  Account,
+  AccountDetails,
+  Collection,
+  CollectionParams,
+  Offer,
+  Trade,
+  Transfer,
+} from "../types";
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
@@ -16,12 +24,6 @@ export interface DataProviderParams {
 export interface WatcherParams {
   onMessage: (accountDetails: AccountDetails) => void;
   onError: (error: any) => void;
-}
-
-export interface CollectionParams {
-  limit?: number;
-  order?: "desc" | "asc";
-  cursor?: string;
 }
 
 function isAccount(obj: any): obj is Account {
@@ -67,34 +69,23 @@ export class DataProvider {
    */
   public async fetchOpenOffers(
     params: CollectionParams = {},
-  ): Promise<Offer[]> {
+  ): Promise<Collection<Offer>> {
     // first, fetch all offers
-    const offers = await this.server
+    return await this.server
       .offers("accounts", this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
       .call()
-      .then((data) => data.records);
-
-    // find all offerids and check for trades of each
-    const tradeRequests = offers.map(({ id }) =>
-      this.server
-        .trades()
-        .forOffer(id)
-        .call()
-        .then((data) => data.records),
-    );
-    const tradeResponses = await Promise.all(tradeRequests);
-
-    // @ts-ignore
-    return makeDisplayableOffers({ offers, tradeResponses });
+      .then(this._processOpenOffers);
   }
 
   /**
    * Fetch recent trades.
    */
-  public async fetchTrades(params: CollectionParams = {}): Promise<Trade[]> {
+  public async fetchTrades(
+    params: CollectionParams = {},
+  ): Promise<Collection<Trade>> {
     const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
@@ -112,7 +103,7 @@ export class DataProvider {
    */
   public async fetchTransfers(
     params: CollectionParams = {},
-  ): Promise<Transfer[]> {
+  ): Promise<Collection<Transfer>> {
     const transfers = await this.server
       .payments()
       .forAccount(this.accountKey)
@@ -173,6 +164,31 @@ export class DataProvider {
     // if they exec this function, don't make the balance callback do anything
     return () => {
       delete this.callbacks.accountDetails;
+    };
+  }
+
+  private async _processOpenOffers(
+    offers: Server.CollectionPage<Server.OfferRecord>,
+  ): Promise<Collection<Offer>> {
+    // find all offerids and check for trades of each
+    const tradeRequests = offers.records.map(({ id }) =>
+      this.server
+        .trades()
+        .forOffer(id)
+        .call(),
+    );
+    const tradeResponses = await Promise.all(tradeRequests);
+
+    return {
+      next: () => offers.next().then(this._processOpenOffers),
+      prev: () => offers.prev().then(this._processOpenOffers),
+      records: makeDisplayableOffers(
+        { publicKey: this.accountKey },
+        {
+          offers: offers.records,
+          tradeResponses: tradeResponses.map((res) => res.records),
+        },
+      ),
     };
   }
 
