@@ -71,13 +71,14 @@ export class DataProvider {
     params: CollectionParams = {},
   ): Promise<Collection<Offer>> {
     // first, fetch all offers
-    return await this.server
+    const offers = await this.server
       .offers("accounts", this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then(this._processOpenOffers);
+      .call();
+
+    return this._processOpenOffers(offers);
   }
 
   /**
@@ -92,10 +93,8 @@ export class DataProvider {
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
-      .call()
-      .then((data) => data.records);
-
-    return makeDisplayableTrades({ publicKey: this.accountKey }, trades);
+      .call();
+    return this._processTrades(trades);
   }
 
   /**
@@ -188,6 +187,19 @@ export class DataProvider {
           offers: offers.records,
           tradeResponses: tradeResponses.map((res) => res.records),
         },
+      ),
+    };
+  }
+
+  private async _processTrades(
+    trades: Server.CollectionPage<Server.TradeRecord>,
+  ): Promise<Collection<Trade>> {
+    return {
+      next: () => trades.next().then(this._processTrades),
+      prev: () => trades.prev().then(this._processTrades),
+      records: makeDisplayableTrades(
+        { publicKey: this.accountKey },
+        trades.records,
       ),
     };
   }
