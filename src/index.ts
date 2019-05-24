@@ -52,3 +52,12 @@ export const Transfers = {
   WithdrawProvider,
   getKycUrl,
 };
+
+/**
+ * Helpers
+ */
+import { getKeyMetadata } from "./helpers/getKeyMetadata";
+
+export const Helpers = {
+  getKeyMetadata,
+};
