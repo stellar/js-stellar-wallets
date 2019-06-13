@@ -9,7 +9,7 @@
   "license": "Apache-2.0",
   "prettier": "@stellar/prettier-config",
   "peerDependencies": {
-    "stellar-sdk": "^1.x.x"
+    "stellar-sdk": "^2.x.x"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
