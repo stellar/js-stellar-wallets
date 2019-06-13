@@ -67,7 +67,7 @@
     "lodash": "^4.17.11",
     "query-string": "^6.4.2",
     "scrypt-async": "^2.0.1",
-    "stellar-sdk": "^2.0.0-beta",
+    "stellar-sdk": "^2.0.0-beta.3",
     "tweetnacl": "^1.0.1",
     "tweetnacl-util": "^0.15.0",
     "url": "^0.11.0"

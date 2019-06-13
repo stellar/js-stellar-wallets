@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { Server } from "stellar-sdk";
+import { ServerApi } from "stellar-sdk";
 
 import { Account, Token, Transfer } from "../types";
 
@@ -45,28 +45,30 @@ import { Account, Token, Transfer } from "../types";
   },
 */
 
-function isCreateAccount(obj: any): obj is Server.CreateAccountOperationRecord {
+function isCreateAccount(
+  obj: any,
+): obj is ServerApi.CreateAccountOperationRecord {
   return obj.type === "create_account";
 }
 
-function isPathPayment(obj: any): obj is Server.PathPaymentOperationRecord {
+function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   return obj.type === "path_payment";
 }
 
 export function makeDisplayableTransfers(
   subjectAccount: Account,
   payments: Array<
-    | Server.CreateAccountOperationRecord
-    | Server.PaymentOperationRecord
-    | Server.PathPaymentOperationRecord
+    | ServerApi.CreateAccountOperationRecord
+    | ServerApi.PaymentOperationRecord
+    | ServerApi.PathPaymentOperationRecord
   >,
 ): Transfer[] {
   return payments.map(
     (
       payment:
-        | Server.CreateAccountOperationRecord
-        | Server.PaymentOperationRecord
-        | Server.PathPaymentOperationRecord,
+        | ServerApi.CreateAccountOperationRecord
+        | ServerApi.PaymentOperationRecord
+        | ServerApi.PathPaymentOperationRecord,
     ): Transfer => {
       const isRecipient = payment.source_account !== subjectAccount.publicKey;
 

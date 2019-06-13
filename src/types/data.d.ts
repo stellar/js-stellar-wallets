@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { Horizon, Server } from "stellar-sdk";
+import { Horizon, ServerApi } from "stellar-sdk";
 import { EffectType } from "../constants/data";
 
 export type TradeId = string;
@@ -142,7 +142,7 @@ export interface AccountDetails {
   inflationDestination?: string;
   lastModifiedLedger: number;
   thresholds: Horizon.AccountThresholds;
-  signers: Horizon.AccountSigner[];
+  signers: ServerApi.AccountRecordSigners[];
   flags: Horizon.Flags;
   balances: BalanceMap;
 }

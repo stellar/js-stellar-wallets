@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { Horizon, Server } from "stellar-sdk";
+import { Horizon, ServerApi } from "stellar-sdk";
 
 import { BalanceMap } from "../types";
 
@@ -8,7 +8,7 @@ import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "../constants/stellar";
 import { getBalanceIdentifier } from "./";
 
 export function makeDisplayableBalances(
-  accountDetails: Server.AccountRecord,
+  accountDetails: ServerApi.AccountRecord,
 ): BalanceMap {
   const { balances, subentry_count } = accountDetails;
 
