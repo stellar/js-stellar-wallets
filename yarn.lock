@@ -4972,10 +4972,10 @@ stellar-base@^1.0.2:
   optionalDependencies:
     sodium-native "^2.3.0"
 
-stellar-sdk@^2.0.0-beta.3:
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.3.tgz#cab652ba533ea3aeaa7b66de65ca40d8030af87a"
-  integrity sha512-1HVzJyNaMUJ2NFDGOQmNQi2QpvxX7HKrC7Mf0sfhPo5VGFOV7RGEjm4usJXs27OGB8UTs5XZzZ0SfTQxJ0XcEg==
+stellar-sdk@^2.0.0-beta.4:
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.4.tgz#66b6b1d2ab22e76aacaf34aac9a5950348a3a207"
+  integrity sha512-IMg13EIAdaqmq2cS1rxaCJpHWW/zfzBGcumqXwzLIcxPb2PzLpriGnN2qwZxENL9q0KL1ydG4MUG4fSDOveyxA==
   dependencies:
     "@types/node" ">= 8"
     "@types/urijs" "^1.19.1"
@@ -4989,6 +4989,7 @@ stellar-sdk@^2.0.0-beta.3:
     toml "^2.3.0"
     tslib "^1.10.0"
     urijs "^1.19.1"
+    utility-types "^3.7.0"
 
 stream-combiner@~0.0.4:
   version "0.0.4"
@@ -5457,6 +5458,11 @@ util.promisify@^1.0.0:
   dependencies:
     define-properties "^1.1.2"
     object.getownpropertydescriptors "^2.0.3"
+
+utility-types@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.7.0.tgz#51f1c29fa35d4267488345706efcf3f68f2b1933"
+  integrity sha512-mqRJXN7dEArK/NZNJUubjr9kbFFVZcmF/JHDc9jt5O/aYXUVmopHYujDMhLmLil1Bxo2+khe6KAIVvDH9Yc4VA==
 
 uuid@^3.3.2:
   version "3.3.2"
