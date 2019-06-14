@@ -15,18 +15,18 @@ module.exports = {
 
   coveragePathIgnorePatterns: [
     "node_modules",
-    "example",
     "documentation",
+    "playground",
     "build",
     "dist",
   ],
 
-  modulePathIgnorePatterns: ["example", "documentation", "build", "dist"],
+  modulePathIgnorePatterns: ["documentation", "playground", "build", "dist"],
 
   testPathIgnorePatterns: [
     "node_modules",
-    "example",
     "documentation",
+    "playground",
     "build",
     "dist",
   ],

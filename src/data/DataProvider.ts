@@ -1,6 +1,6 @@
 // @ts-ignore
 import debounce from "lodash/debounce";
-import { Server, StrKey } from "stellar-sdk";
+import { Server, ServerApi, StrKey } from "stellar-sdk";
 
 import {
   Account,
@@ -166,10 +166,12 @@ export class DataProvider {
   }
 
   private async _processOpenOffers(
-    offers: Server.CollectionPage<Server.OfferRecord>,
+    offers: ServerApi.CollectionPage<ServerApi.OfferRecord>,
   ): Promise<Collection<Offer>> {
     // find all offerids and check for trades of each
-    const tradeRequests = offers.records.map(({ id }) =>
+    const tradeRequests: Array<
+      Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
+    > = offers.records.map(({ id }: { id: string }) =>
       this.server
         .trades()
         .forOffer(id)
@@ -184,14 +186,17 @@ export class DataProvider {
         { publicKey: this.accountKey },
         {
           offers: offers.records,
-          tradeResponses: tradeResponses.map((res) => res.records),
+          tradeResponses: tradeResponses.map(
+            (res: ServerApi.CollectionPage<ServerApi.TradeRecord>) =>
+              res.records,
+          ),
         },
       ),
     };
   }
 
   private async _processTrades(
-    trades: Server.CollectionPage<Server.TradeRecord>,
+    trades: ServerApi.CollectionPage<ServerApi.TradeRecord>,
   ): Promise<Collection<Trade>> {
     return {
       next: () => trades.next().then(this._processTrades),
@@ -204,10 +209,10 @@ export class DataProvider {
   }
 
   private async _processTransfers(
-    transfers: Server.CollectionPage<
-      | Server.PaymentOperationRecord
-      | Server.CreateAccountOperationRecord
-      | Server.PathPaymentOperationRecord
+    transfers: ServerApi.CollectionPage<
+      | ServerApi.PaymentOperationRecord
+      | ServerApi.CreateAccountOperationRecord
+      | ServerApi.PathPaymentOperationRecord
     >,
   ): Promise<Collection<Transfer>> {
     return {

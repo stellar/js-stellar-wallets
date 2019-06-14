@@ -6,6 +6,7 @@
     "lib": ["es2015", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "outDir": "dist",
     "target": "es5"
   },
@@ -13,7 +14,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "examples/src/js-stellar-wallets",
+    "playground/src/@stellar",
     "documentation/src/docs.json",
     "src/fixtures"
   ],
