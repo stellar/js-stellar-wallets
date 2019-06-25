@@ -22,7 +22,7 @@ export interface RawInfoResponse {
       fee_percent: number;
       min_amount: number;
       max_amount: number;
-      types: {
+      types?: {
         [type: string]: RawType;
       };
     };
@@ -34,7 +34,7 @@ export interface RawInfoResponse {
       fee_percent: number;
       min_amount: number;
       max_amount: number;
-      fields: {
+      fields?: {
         [field: string]: RawField;
       };
     };
