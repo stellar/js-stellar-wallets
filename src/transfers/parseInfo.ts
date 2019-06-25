@@ -9,8 +9,18 @@ import {
   WithdrawInfo,
 } from "../types";
 
-export function parseInfo(info: RawInfoResponse) {
-  const { fee, transactions, transaction } = info;
+function isValidInfoResponse(obj: any): obj is RawInfoResponse {
+  return (
+    (obj as RawInfoResponse).withdraw !== undefined &&
+    (obj as RawInfoResponse).deposit !== undefined
+  );
+}
+
+export function parseInfo(info: any) {
+  if (!isValidInfoResponse(info)) {
+    throw new Error("The endpoint didn't return a valid info response!");
+  }
+  const { fee, transactions, transaction } = info as RawInfoResponse;
   return {
     withdraw: parseWithdraw(info),
     deposit: parseDeposit(info),
@@ -72,7 +82,7 @@ export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
         fee,
         minAmount: entry.min_amount,
         maxAmount: entry.max_amount,
-        types: Object.entries(entry.types).map(parseType),
+        types: Object.entries(entry.types || {}).map(parseType),
       };
       return accum;
     },
@@ -90,7 +100,7 @@ export function parseDeposit(info: RawInfoResponse): DepositInfo {
         fee,
         minAmount: entry.min_amount,
         maxAmount: entry.max_amount,
-        fields: Object.entries(entry.fields).map(parseField),
+        fields: Object.entries(entry.fields || {}).map(parseField),
       };
       return accum;
     },
