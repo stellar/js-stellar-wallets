@@ -963,11 +963,6 @@
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
   integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
 
-"@types/eventsource@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/eventsource/-/eventsource-1.1.0.tgz#4497f09af3693f5ae7d5ac2b0d3ca18a1a35c60f"
-  integrity sha512-Ygc2l1zQRuuQL9WwE7BDn7M++X4JuHgJpSTrSo/CRt/Eao268rv4hpyv4H2TlZqQ1nYt/I4Wkwbpqg8Xjz5shA==
-
 "@types/fs-extra@^5.0.3":
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.5.tgz#080d90a792f3fa2c5559eb44bd8ef840aae9104b"
@@ -1077,11 +1072,6 @@
   integrity sha512-MOilZXnnLqxCa3f2Xr7phqI8mbfz5j1BhWs6XrGwHfNTL9XQPOyLBN9tBWIsDIRZ1VyUZQ2YQLTjSppsB8/iUQ==
   dependencies:
     "@types/node" "*"
-
-"@types/urijs@^1.19.1":
-  version "1.19.1"
-  resolved "https://registry.yarnpkg.com/@types/urijs/-/urijs-1.19.1.tgz#da69e8479eec0bb4580c7cc218d218f107d2d526"
-  integrity sha512-5waMuQ9z8pH8+5yAyX05bsA7SOl50l5ZkeMripxoOgN2+nSQb4TOSuhWoRlPt7FPIIohk6iBrX/rEktUJa8KfQ==
 
 "@types/yargs@^12.0.2":
   version "12.0.12"
@@ -4977,14 +4967,12 @@ stellar-base@^1.0.2:
   optionalDependencies:
     sodium-native "^2.3.0"
 
-stellar-sdk@^2.0.0-beta.7:
-  version "2.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.7.tgz#cb1aad1308999b8d5c76a547830d603070ff4eb9"
-  integrity sha512-5G/GwkOHtfRJrcQsHSxc+ZQlMB/hSwVRriLTpE0/LJLi1sXqOca56M7XRuAFF961Z/kQpxUKYzkGQhwC9GilkQ==
+stellar-sdk@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-1.0.4.tgz#8759e60a5be9b8126b2ff89fa7b316614170b17b"
+  integrity sha512-9aH3gYHQRUdT+nRGwSytW7nrwcnGEqLdQFgLK9uhdoOtUvgUmGIQbYX8Tz9UDsnh+peaRa7TEr9Ocupe5TGU3w==
   dependencies:
-    "@types/eventsource" "^1.1.0"
     "@types/node" ">= 8"
-    "@types/urijs" "^1.19.1"
     axios "^0.19.0"
     bignumber.js "^4.0.0"
     detect-node "^2.0.4"
@@ -4993,9 +4981,7 @@ stellar-sdk@^2.0.0-beta.7:
     lodash "^4.17.11"
     stellar-base "^1.0.2"
     toml "^2.3.0"
-    tslib "^1.10.0"
     urijs "^1.19.1"
-    utility-types "^3.7.0"
 
 stream-combiner@~0.0.4:
   version "0.0.4"
@@ -5247,11 +5233,6 @@ tsc-watch@^2.1.2:
     string-argv "^0.1.1"
     strip-ansi "^4.0.0"
 
-tslib@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
-  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
-
 tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
@@ -5464,11 +5445,6 @@ util.promisify@^1.0.0:
   dependencies:
     define-properties "^1.1.2"
     object.getownpropertydescriptors "^2.0.3"
-
-utility-types@^3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.7.0.tgz#51f1c29fa35d4267488345706efcf3f68f2b1933"
-  integrity sha512-mqRJXN7dEArK/NZNJUubjr9kbFFVZcmF/JHDc9jt5O/aYXUVmopHYujDMhLmLil1Bxo2+khe6KAIVvDH9Yc4VA==
 
 uuid@^3.3.2:
   version "3.3.2"
