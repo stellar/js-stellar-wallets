@@ -59,7 +59,7 @@ const parseFee = (
 function parseType([typeName, type]: [string, RawType]) {
   return {
     name: typeName,
-    fields: Object.entries(type.fields).map(parseField),
+    fields: Object.entries(type.fields || {}).map(parseField),
   };
 }
 
