@@ -1,28 +1,16 @@
 /**
  * Constants
  */
-import { EffectType } from "./constants/data";
-import { KeyType } from "./constants/keys";
-import { TransferResponseType } from "./constants/transfers";
-
-export const Constants = {
-  EffectType,
-  KeyType,
-  TransferResponseType,
-};
+export { EffectType } from "./constants/data";
+export { KeyType } from "./constants/keys";
+export { TransferResponseType } from "./constants/transfers";
 
 /**
  * Data
  */
-import { getBalanceIdentifier, getTokenIdentifier } from "./data";
+export { getBalanceIdentifier, getTokenIdentifier } from "./data";
 
-import { DataProvider } from "./data/DataProvider";
-
-export const Data = {
-  getTokenIdentifier,
-  getBalanceIdentifier,
-  DataProvider,
-};
+export { DataProvider } from "./data/DataProvider";
 
 /**
  * Key Management
@@ -35,29 +23,14 @@ export { KeyManagerPlugins } from "./KeyManagerPlugins";
  * Plugin Testing
  */
 
-import { testEncrypter, testKeyStore } from "./PluginTesting";
-
-export const PluginTesting = {
-  testEncrypter,
-  testKeyStore,
-};
+export { testEncrypter, testKeyStore } from "./PluginTesting";
 
 /**
  * Transfers
  */
-import { DepositProvider, getKycUrl, WithdrawProvider } from "./transfers";
-
-export const Transfers = {
-  DepositProvider,
-  WithdrawProvider,
-  getKycUrl,
-};
+export { DepositProvider, getKycUrl, WithdrawProvider } from "./transfers";
 
 /**
  * Helpers
  */
-import { getKeyMetadata } from "./helpers/getKeyMetadata";
-
-export const Helpers = {
-  getKeyMetadata,
-};
+export { getKeyMetadata } from "./helpers/getKeyMetadata";

@@ -74,6 +74,7 @@ const LIBRARY_EXPORTS = {
   DepositProvider: 1,
   WithdrawProvider: 1,
   getKycUrl: 1,
+  getKeyMetadata: 1,
 };
 
 export const App = () => {
