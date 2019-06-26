@@ -74,6 +74,7 @@ const LIBRARY_EXPORTS = {
   DepositProvider: 1,
   WithdrawProvider: 1,
   getKycUrl: 1,
+  getKeyMetadata: 1,
 };
 
 export const App = () => {
@@ -128,11 +129,11 @@ export const App = () => {
 
   const libraryExports = Object.keys(LIBRARY_EXPORTS).reduce((memo, name) => {
     const item = itemsByName[name];
-    const arm = getArmName(item.sources[0].fileName);
+    const kind = item.kindString;
 
     return {
       ...memo,
-      [arm]: [...(memo[arm] || []), item],
+      [kind]: [...(memo[kind] || []), item],
     };
   }, {});
 

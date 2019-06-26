@@ -30,9 +30,11 @@ cases (particularly around offer / trade history), properties were renamed for
 clarity.
 
 ```js
-import { Data } from "@stellar/wallet-sdk";
-
-const { getTokenIdentifier, getBalanceIdentifier, DataProvider } = Data;
+import {
+  getTokenIdentifier,
+  getBalanceIdentifier,
+  DataProvider,
+} from "@stellar/wallet-sdk";
 
 // You'll use your DataProvider instance to ask for data from Stellar.
 const dataProvider = new DataProvider({
@@ -64,7 +66,7 @@ never sending sensitive information (the user's key or password) over the wire
 in a raw state.
 
 ```js
-import { KeyManager, KeyManagerPlugins, Constants } from "@stellar/wallet-sdk";
+import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 
 // To instantiate a keyManager instance, pass it an object that conforms to
 // the KeyStore interface.
@@ -86,7 +88,7 @@ this.state.keyManager
   .storeKeys({
     // The KeyManager takes keys that conform to our Key interface.
     key: {
-      type: Constants.KeyType.plaintextKey,
+      type: KeyType.plaintextKey,
       publicKey: "<<Insert public key>>",
       privateKey: "<<Insert private key>>",
     },
@@ -108,9 +110,12 @@ Like the rest of the `@steller/wallet-sdk`, the `Transfers` API is meant to
 provide a predictable, easy-to-use interface.
 
 ```js
-import { Transfers, Constants } from "@stellar/wallet-sdk";
-
-const { DepositProvider, WithdrawProvider, getKycUrl } = Transfers;
+import {
+  DepositProvider,
+  WithdrawProvider,
+  getKycUrl,
+  TransferResultType,
+} from "@stellar/wallet-sdk";
 
 const withdrawProvider = new WithdrawProvider("<<Insert transfer server URL>>");
 
@@ -134,11 +139,11 @@ const withdrawResult = await withdrawProvider.withdraw({
 });
 
 switch (withdrawResult.type) {
-  case Constants.TransferResultType.ok:
+  case TransferResultType.ok:
     // The withdraw request succeeded, so submit a payment to the network.
     // makePayment(withdrawResult);
     break;
-  case Constants.TransferResultType.interactiveKyc:
+  case TransferResultType.interactiveKyc:
     if (isBrowser) {
       // To avoid popup blockers, the new window has to be opened directly in
       // response to a user click event, so we need consumers to provide us a
@@ -178,10 +183,10 @@ switch (withdrawResult.type) {
        */
     }
     break;
-  case Constants.TransferResultType.nonInteractiveKyc:
+  case TransferResultType.nonInteractiveKyc:
     // TODO: SEP-12 data submission
     break;
-  case Constants.TransferResultType.kycStatus:
+  case TransferResultType.kycStatus:
     // The KYC information was previously submitted, but hasn't been approved
     // yet. Should show the user the pending status and any supplemental
     // information returned

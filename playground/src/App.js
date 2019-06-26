@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
 
-import { Data } from "@stellar/wallet-sdk";
+import { DataProvider } from "@stellar/wallet-sdk";
 
 import AccountDetails from "components/AccountDetails";
 import KeyEntry from "components/KeyEntry";
@@ -22,7 +22,7 @@ class App extends Component {
   };
 
   _setKey = (publicKey) => {
-    const dataProvider = new Data.DataProvider({
+    const dataProvider = new DataProvider({
       serverUrl: "https://horizon.stellar.org",
       accountOrKey: publicKey,
     });
