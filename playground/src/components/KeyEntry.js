@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import StellarSdk from "stellar-sdk";
 import { Input } from "@stellar/elements";
 
-import { KeyManager, KeyManagerPlugins, Constants } from "@stellar/wallet-sdk";
+import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 
 export default class KeyEntry extends Component {
   state = {
@@ -34,7 +34,7 @@ export default class KeyEntry extends Component {
       const key = {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
-        type: Constants.KeyType.plaintext,
+        type: KeyType.plaintext,
       };
 
       const password = "fucko";
