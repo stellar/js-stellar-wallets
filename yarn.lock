@@ -4977,10 +4977,10 @@ stellar-base@^1.0.2:
   optionalDependencies:
     sodium-native "^2.3.0"
 
-stellar-sdk@2.0.0-beta.8:
-  version "2.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.8.tgz#a6b710974588bd68287a08dbc962492c5d5e78c8"
-  integrity sha512-PNoW5qBYtYIDA8PubkdUiXXKdSlFoUMN81VvjTO+UkH9zgJzwF4RBsEvvH46NEF7Smf5gZ3hZXhCINmM+E1v6w==
+stellar-sdk@^2.0.0-beta.9:
+  version "2.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.9.tgz#b714120cbee1c9c8d474e62d29adb55866d60a2b"
+  integrity sha512-NJnHt5FlsbLXtutdlt9LRSc15UBOrg8UvWnTlocoBnmwjGp+Ei4LSyAEd7kNTKeVvqzSlQscKP3WnwfxceC1DQ==
   dependencies:
     "@types/eventsource" "^1.1.0"
     "@types/node" ">= 8"
