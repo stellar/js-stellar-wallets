@@ -1,4 +1,9 @@
 /**
+ * Types
+ */
+export * from "./types";
+
+/**
  * Constants
  */
 export { EffectType } from "./constants/data";
