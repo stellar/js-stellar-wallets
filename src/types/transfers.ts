@@ -110,10 +110,12 @@ export interface WithdrawRequest {
 }
 
 export interface DepositRequest {
-  assetCode: string;
+  assetCode?: string;
+  asset_code?: string;
   account: string;
   memo?: Memo;
   emailAddress?: string;
+  email_address?: string;
   type?: string;
 }
 
