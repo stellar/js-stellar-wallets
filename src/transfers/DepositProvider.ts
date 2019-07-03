@@ -73,10 +73,10 @@ import { TransferProvider } from "./TransferProvider";
 export class DepositProvider extends TransferProvider {
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
     const search = queryString.stringify({
-      asset_code: args.assetCode,
+      asset_code: args.assetCode || args.asset_code,
       account: args.account,
       memo: args.memo,
-      email_address: args.emailAddress,
+      email_address: args.emailAddress || args.email_address,
       type: args.type,
     });
     const response = await fetch(`${this.transferServer}/deposit?${search}`);
