@@ -1,4 +1,4 @@
-import { Horizon } from "stellar-sdk";
+import { Asset, Horizon } from "stellar-sdk";
 
 import { AssetToken, Token } from "../types";
 
@@ -26,4 +26,16 @@ export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
   }
 
   return `${balance.asset_code}:${balance.asset_issuer}`;
+}
+
+/**
+ * Convert a Wallet-SDK-formatted Token object to a Stellar SDK Asset object.
+ * @returns Returns `${tokenCode}:${issuerKey}`.
+ */
+export function getAsset(token: Token): Asset {
+  if (token.type === "native") {
+    return Asset.native();
+  }
+
+  return new Asset(token.code, (token as AssetToken).issuer.key);
 }
