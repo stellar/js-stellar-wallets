@@ -133,6 +133,7 @@ export interface NativeBalance extends Balance {
 }
 
 export interface BalanceMap {
+  [key: string]: AssetBalance | NativeBalance;
   native: NativeBalance;
 }
 
