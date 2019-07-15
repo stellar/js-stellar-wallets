@@ -68,6 +68,7 @@ const LIBRARY_EXPORTS = {
   testKeyStore: 1,
   getTokenIdentifier: 1,
   getBalanceIdentifier: 1,
+  getStellarSdkAsset: 1,
   DataProvider: 1,
   KeyManager: 1,
   KeyManagerPlugins: 1,

@@ -32,7 +32,7 @@ export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
  * Convert a Wallet-SDK-formatted Token object to a Stellar SDK Asset object.
  * @returns Returns `${tokenCode}:${issuerKey}`.
  */
-export function getAsset(token: Token): Asset {
+export function getStellarSdkAsset(token: Token): Asset {
   if (token.type === "native") {
     return Asset.native();
   }
