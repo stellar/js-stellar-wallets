@@ -4,6 +4,7 @@ import {
   DepositRequest,
   FeeArgs,
   InteractiveKycNeededResponse,
+  TransferError,
   TransferResponse,
 } from "../types";
 import { OmitProperties } from "../util";
@@ -83,7 +84,9 @@ export class DepositProvider extends TransferProvider {
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {
-      throw new Error(json.error);
+      const error: TransferError = new Error(json.error);
+      error.originalResponse = json;
+      throw error;
     }
 
     return json;

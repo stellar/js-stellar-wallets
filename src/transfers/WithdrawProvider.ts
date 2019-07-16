@@ -3,6 +3,7 @@ import queryString from "query-string";
 import {
   FeeArgs,
   InteractiveKycNeededResponse,
+  TransferError,
   TransferResponse,
   WithdrawRequest,
 } from "../types";
@@ -85,7 +86,9 @@ export class WithdrawProvider extends TransferProvider {
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {
-      throw new Error(json.error);
+      const error: TransferError = new Error(json.error);
+      error.originalResponse = json;
+      throw error;
     }
 
     return json;

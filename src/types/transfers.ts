@@ -207,3 +207,7 @@ export interface Memo {
   type: "text" | "id" | "hash";
   value: string;
 }
+
+export interface TransferError extends Error {
+  originalResponse?: any;
+}
