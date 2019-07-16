@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@stellar/elements": "^0.0.0",
+    "lodash": "^4.17.14",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
     "react-router-dom": "^5.0.0",
