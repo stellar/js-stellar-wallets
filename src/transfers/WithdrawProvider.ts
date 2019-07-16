@@ -82,7 +82,13 @@ export class WithdrawProvider extends TransferProvider {
       memo: args.memo,
     });
     const response = await fetch(`${this.transferServer}/withdraw?${search}`);
-    return response.json();
+    const json = (await response.json()) as TransferResponse;
+
+    if (json.error) {
+      throw new Error(json.error);
+    }
+
+    return json;
   }
 
   public async fetchSupportedAssets() {

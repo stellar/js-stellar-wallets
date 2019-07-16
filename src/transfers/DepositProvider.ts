@@ -80,7 +80,13 @@ export class DepositProvider extends TransferProvider {
       type: args.type,
     });
     const response = await fetch(`${this.transferServer}/deposit?${search}`);
-    return response.json();
+    const json = (await response.json()) as TransferResponse;
+
+    if (json.error) {
+      throw new Error(json.error);
+    }
+
+    return json;
   }
 
   public async fetchSupportedAssets() {
