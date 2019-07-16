@@ -4,6 +4,7 @@ import {
   DepositRequest,
   FeeArgs,
   InteractiveKycNeededResponse,
+  TransferError,
   TransferResponse,
 } from "../types";
 import { OmitProperties } from "../util";
@@ -80,7 +81,15 @@ export class DepositProvider extends TransferProvider {
       type: args.type,
     });
     const response = await fetch(`${this.transferServer}/deposit?${search}`);
-    return response.json();
+    const json = (await response.json()) as TransferResponse;
+
+    if (json.error) {
+      const error: TransferError = new Error(json.error);
+      error.originalResponse = json;
+      throw error;
+    }
+
+    return json;
   }
 
   public async fetchSupportedAssets() {

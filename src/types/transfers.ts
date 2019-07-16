@@ -126,6 +126,7 @@ export interface TransferResponse {
     | TransferResponseType.interactive_customer_info_needed
     | TransferResponseType.customer_info_status
     | TransferResponseType.error;
+  error?: string;
 }
 
 export interface WithdrawOk extends TransferResponse {
@@ -205,4 +206,8 @@ export interface SimpleFee extends Fee {
 export interface Memo {
   type: "text" | "id" | "hash";
   value: string;
+}
+
+export interface TransferError extends Error {
+  originalResponse?: any;
 }
