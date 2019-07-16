@@ -102,6 +102,9 @@ export class DepositProvider extends TransferProvider {
     return deposit;
   }
 
+  /**
+   * Calculate the real fee for a deposit.
+   */
   public async fetchFinalFee(args: OmitProperties<FeeArgs, "operation">) {
     return super.fetchFinalFee({
       ...args,

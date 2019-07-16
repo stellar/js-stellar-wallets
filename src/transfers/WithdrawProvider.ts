@@ -104,6 +104,9 @@ export class WithdrawProvider extends TransferProvider {
     return withdraw;
   }
 
+  /**
+   * Calculate the real fee for a withdrawal.
+   */
   public async fetchFinalFee(args: OmitProperties<FeeArgs, "operation">) {
     return super.fetchFinalFee({
       ...args,
