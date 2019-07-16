@@ -1,6 +1,7 @@
 import queryString from "query-string";
 
 import {
+  DepositInfo,
   DepositRequest,
   FeeArgs,
   InteractiveKycNeededResponse,
@@ -92,7 +93,11 @@ export class DepositProvider extends TransferProvider {
     return json;
   }
 
-  public async fetchSupportedAssets() {
+  /**
+   * Fetch the assets that the deposit provider supports, along with details
+   * about depositing that asset.
+   */
+  public async fetchSupportedAssets(): Promise<DepositInfo> {
     const { deposit } = await this.fetchInfo();
     return deposit;
   }

@@ -5,6 +5,7 @@ import {
   InteractiveKycNeededResponse,
   TransferError,
   TransferResponse,
+  WithdrawInfo,
   WithdrawRequest,
 } from "../types";
 import { OmitProperties } from "../util";
@@ -94,7 +95,11 @@ export class WithdrawProvider extends TransferProvider {
     return json;
   }
 
-  public async fetchSupportedAssets() {
+  /**
+   * Fetch the assets that the deposit provider supports, along with details
+   * about depositing that asset.
+   */
+  public async fetchSupportedAssets(): Promise<WithdrawInfo> {
     const { withdraw } = await this.fetchInfo();
     return withdraw;
   }
