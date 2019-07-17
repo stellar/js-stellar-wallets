@@ -2,6 +2,7 @@ import queryString from "query-string";
 
 import {
   DepositInfo,
+  Fee,
   FeeArgs,
   Info,
   RawInfoResponse,
@@ -33,25 +34,24 @@ export abstract class TransferProvider {
     | Promise<DepositInfo>;
 
   protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    const { supportedAssets, ...rest } = args;
+    const { supportedAssets, assetCode, amount } = args;
 
-    if (!supportedAssets[rest.assetCode]) {
-      throw new Error(
-        `Can't get fee for an unsupported asset, '${rest.assetCode}`,
-      );
+    if (!supportedAssets[assetCode]) {
+      throw new Error(`Can't get fee for an unsupported asset, '${assetCode}`);
     }
-    const { fee } = supportedAssets[rest.assetCode];
+    const { fee } = supportedAssets[assetCode];
     switch (fee.type) {
       case "none":
         return 0;
       case "simple":
         const simpleFee = fee as SimpleFee;
         return (
-          (simpleFee.percent / 100) * Number(rest.amount) + simpleFee.fixed
+          ((simpleFee.percent || 0) / 100) * Number(amount) +
+          (simpleFee.fixed || 0)
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(rest)}`,
+          `${this.transferServer}/fee?${queryString.stringify(args)}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;
@@ -59,7 +59,7 @@ export abstract class TransferProvider {
       default:
         throw new Error(
           `Invalid fee type found! Got '${
-            fee.type
+            (fee as Fee).type
           }' but expected one of 'none', 'simple', 'complex'`,
         );
     }
