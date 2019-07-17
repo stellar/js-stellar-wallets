@@ -7,7 +7,7 @@ export interface GetKycArgs {
 }
 
 export interface FeeArgs {
-  asset_code: string;
+  assetCode: string;
   amount: string;
   operation: "withdraw" | "deposit";
   type: string;
@@ -105,21 +105,21 @@ export interface DepositInfo {
 
 export interface WithdrawRequest {
   type: string;
-  asset_code: string;
+  assetCode: string;
   dest: string;
-  dest_extra: string;
+  destExtra: string;
   account?: string;
   memo?: Memo;
-  memo_type?: string;
+  memoType?: string;
   [key: string]: any;
 }
 
 export interface DepositRequest {
-  asset_code: string;
+  assetCode: string;
   account: string;
   memo?: Memo;
-  memo_type?: string;
-  email_address?: string;
+  memoType?: string;
+  emailAddress?: string;
   type?: string;
   [key: string]: any;
 }

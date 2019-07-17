@@ -78,21 +78,14 @@ export class DepositProvider extends TransferProvider {
       throw new Error("Run fetchSupportedAssets before running deposit!");
     }
 
-    // warn about camel-cased props
-    if (args.assetCode && !args.asset_code) {
-      throw new Error(
-        "You provided `assetCode` instead of the correct `asset_code`",
-      );
-    }
-
-    const search = queryString.stringify(args);
-    const isAuthRequired = this.info.withdraw[args.asset_code]
+    const search = queryString.stringify(this.makeSnakeCase(args));
+    const isAuthRequired = this.info.withdraw[args.assetCode]
       .authenticationRequired;
 
     if (isAuthRequired && !this.bearerToken) {
       throw new Error(
         `${
-          args.asset_code
+          args.assetCode
         } requires authentication, please authorize with setBearerToken.`,
       );
     }

@@ -1,3 +1,4 @@
+import changeCase from "change-case";
 import queryString from "query-string";
 
 import {
@@ -42,6 +43,16 @@ export abstract class TransferProvider {
     );
   }
 
+  public makeSnakeCase(args: any) {
+    return Object.keys(args).reduce(
+      (memo: object, name: string) => ({
+        ...memo,
+        [changeCase.snakeCase(name)]: args[name],
+      }),
+      {},
+    );
+  }
+
   public setBearerToken(token: string) {
     this.bearerToken = token;
   }
@@ -55,11 +66,11 @@ export abstract class TransferProvider {
       throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
     }
 
-    const assetInfo = this.info[args.operation][args.asset_code];
+    const assetInfo = this.info[args.operation][args.assetCode];
 
     if (!assetInfo) {
       throw new Error(
-        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+        `Can't get fee for an unsupported asset, '${args.assetCode}`,
       );
     }
     const { fee } = assetInfo;
@@ -74,7 +85,9 @@ export abstract class TransferProvider {
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(args as any)}`,
+          `${this.transferServer}/fee?${queryString.stringify(
+            this.makeSnakeCase(args as any),
+          )}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;
