@@ -24,9 +24,11 @@ describe("fetchFinalFee", () => {
 
     const provider = new DepositProvider("test");
 
+    // manually set info
+    provider.info = { deposit: info, withdraw: {} };
+
     expect(
       await provider.fetchFinalFee({
-        supported_assets: info,
         asset_code: info.USD.assetCode,
         amount: "15",
         type: "",
@@ -53,9 +55,10 @@ describe("fetchFinalFee", () => {
 
     const provider = new DepositProvider("test");
 
+    provider.info = { deposit: info, withdraw: {} };
+
     expect(
       await provider.fetchFinalFee({
-        supported_assets: info,
         asset_code: info.EUR.assetCode,
         amount: "10",
         type: "",
