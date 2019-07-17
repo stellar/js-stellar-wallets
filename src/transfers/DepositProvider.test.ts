@@ -1,8 +1,10 @@
 import { DepositProvider } from "./DepositProvider";
 
+import { DepositInfo } from "../types";
+
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
-    const info = {
+    const info: DepositInfo = {
       USD: {
         assetCode: "USD",
         fee: { type: "simple", fixed: 5, percent: 1 },
@@ -33,7 +35,7 @@ describe("fetchFinalFee", () => {
   });
 
   test("EUR from Nucleo staging", async () => {
-    const info = {
+    const info: DepositInfo = {
       EUR: {
         assetCode: "EUR",
         fee: { type: "simple", percent: 0.5 },
@@ -55,7 +57,7 @@ describe("fetchFinalFee", () => {
       await provider.fetchFinalFee({
         supportedAssets: info,
         assetCode: info.EUR.assetCode,
-        amount: 10,
+        amount: "10",
         type: "",
       }),
     ).toEqual(0.05);

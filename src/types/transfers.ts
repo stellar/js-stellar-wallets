@@ -195,15 +195,21 @@ export interface Field {
   choices?: string[];
 }
 
-export interface Fee {
-  type: "none" | "simple" | "complex";
+export interface NoneFee {
+  type: "none";
 }
 
-export interface SimpleFee extends Fee {
+export interface ComplexFee {
+  type: "complex";
+}
+
+export interface SimpleFee {
   type: "simple";
   fixed?: number;
   percent?: number;
 }
+
+export type Fee = NoneFee | ComplexFee | SimpleFee;
 
 export interface Memo {
   type: "text" | "id" | "hash";
