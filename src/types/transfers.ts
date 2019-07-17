@@ -102,21 +102,23 @@ export interface DepositInfo {
 
 export interface WithdrawRequest {
   type: string;
-  assetCode: string;
+  asset_code: string;
   dest: string;
-  destExtra?: string;
+  dest_extra: string;
   account?: string;
   memo?: Memo;
+  memo_type?: string;
+  [key: string]: any;
 }
 
 export interface DepositRequest {
-  assetCode?: string;
-  asset_code?: string;
+  asset_code: string;
   account: string;
   memo?: Memo;
-  emailAddress?: string;
+  memo_type?: string;
   email_address?: string;
   type?: string;
+  [key: string]: any;
 }
 
 export interface TransferResponse {

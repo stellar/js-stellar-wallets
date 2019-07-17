@@ -75,14 +75,20 @@ import { TransferProvider } from "./TransferProvider";
  */
 export class WithdrawProvider extends TransferProvider {
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
-    const search = queryString.stringify({
-      type: args.type,
-      asset_code: args.assetCode,
-      dest: args.dest,
-      dest_extra: args.destExtra,
-      account: args.account,
-      memo: args.memo,
-    });
+    // warn about camel-cased props
+    if (args.assetCode && !args.asset_code) {
+      throw new Error(
+        "You provided `assetCode` instead of the correct `asset_code`",
+      );
+    }
+    if (args.destExtra && !args.dest_extra) {
+      throw new Error(
+        "You provided `destExtra` instead of the correct `dest_extra`",
+      );
+    }
+
+    const search = queryString.stringify(args);
+
     const response = await fetch(`${this.transferServer}/withdraw?${search}`);
     const json = (await response.json()) as TransferResponse;
 
