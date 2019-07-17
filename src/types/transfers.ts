@@ -105,15 +105,19 @@ export interface WithdrawRequest {
   asset_code: string;
   dest: string;
   dest_extra: string;
-  account: string;
-  memo: Memo;
+  account?: string;
+  memo?: Memo;
+  memo_type?: string;
   [key: string]: any;
 }
 
 export interface DepositRequest {
   asset_code: string;
   account: string;
-  memo: Memo;
+  memo?: Memo;
+  memo_type?: string;
+  email_address?: string;
+  type?: string;
   [key: string]: any;
 }
 
