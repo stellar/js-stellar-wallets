@@ -52,7 +52,7 @@ const parseFee = (
   } else {
     return {
       type: feeEnabled ? "complex" : "none",
-    };
+    } as Fee;
   }
 };
 
