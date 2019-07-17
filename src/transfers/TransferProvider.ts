@@ -17,6 +17,7 @@ import { parseInfo } from "./parseInfo";
  */
 export abstract class TransferProvider {
   public transferServer: string;
+  public bearerToken?: string;
 
   constructor(transferServer: string) {
     this.transferServer = transferServer;
@@ -25,8 +26,21 @@ export abstract class TransferProvider {
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(`${this.transferServer}/info`);
     const rawInfo = (await response.json()) as RawInfoResponse;
-
     return parseInfo(rawInfo);
+  }
+
+  protected getHeaders(): Headers {
+    return new Headers(
+      this.bearerToken
+        ? {
+            Authorization: `Bearer ${this.bearerToken}`,
+          }
+        : {},
+    );
+  }
+
+  public setBearerToken(token: string) {
+    this.bearerToken = token;
   }
 
   public abstract fetchSupportedAssets():

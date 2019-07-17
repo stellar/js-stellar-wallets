@@ -22,6 +22,7 @@ export interface RawInfoResponse {
       fee_percent: number;
       min_amount: number;
       max_amount: number;
+      authentication_required?: boolean;
       types?: {
         [type: string]: RawType;
       };
@@ -34,6 +35,7 @@ export interface RawInfoResponse {
       fee_percent: number;
       min_amount: number;
       max_amount: number;
+      authentication_required?: boolean;
       fields?: {
         [field: string]: RawField;
       };
@@ -82,6 +84,7 @@ export interface WithdrawAssetInfo {
   minAmount: number;
   maxAmount: number;
   types: WithdrawType[];
+  authenticationRequired?: boolean;
 }
 
 export interface WithdrawInfo {
@@ -94,6 +97,7 @@ export interface DepositAssetInfo {
   minAmount: number;
   maxAmount?: number;
   fields: Field[];
+  authenticationRequired?: boolean;
 }
 
 export interface DepositInfo {
