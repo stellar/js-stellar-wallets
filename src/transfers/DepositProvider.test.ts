@@ -58,6 +58,6 @@ describe("fetchFinalFee", () => {
         amount: 10,
         type: "",
       }),
-    ).toEqual(0.5);
+    ).toEqual(0.05);
   });
 });

@@ -47,7 +47,8 @@ export abstract class TransferProvider {
       case "simple":
         const simpleFee = fee as SimpleFee;
         return (
-          (simpleFee.percent / 100) * Number(rest.amount) + simpleFee.fixed
+          ((simpleFee.percent || 0) / 100) * Number(rest.amount) +
+          (simpleFee.fixed || 0)
         );
       case "complex":
         const response = await fetch(
