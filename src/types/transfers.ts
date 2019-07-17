@@ -92,7 +92,7 @@ export interface DepositAssetInfo {
   assetCode: string;
   fee: Fee;
   minAmount: number;
-  maxAmount: number;
+  maxAmount?: number;
   fields: Field[];
 }
 
@@ -201,8 +201,8 @@ export interface Fee {
 
 export interface SimpleFee extends Fee {
   type: "simple";
-  fixed: number;
-  percent: number;
+  fixed?: number;
+  percent?: number;
 }
 
 export interface Memo {
