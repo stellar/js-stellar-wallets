@@ -34,24 +34,26 @@ export abstract class TransferProvider {
     | Promise<DepositInfo>;
 
   protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    const { supportedAssets, assetCode, amount } = args;
+    const { supported_assets, ...rest } = args;
 
-    if (!supportedAssets[assetCode]) {
-      throw new Error(`Can't get fee for an unsupported asset, '${assetCode}`);
+    if (!supported_assets[args.asset_code]) {
+      throw new Error(
+        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+      );
     }
-    const { fee } = supportedAssets[assetCode];
+    const { fee } = supported_assets[args.asset_code];
     switch (fee.type) {
       case "none":
         return 0;
       case "simple":
         const simpleFee = fee as SimpleFee;
         return (
-          ((simpleFee.percent || 0) / 100) * Number(amount) +
+          ((simpleFee.percent || 0) / 100) * Number(args.amount) +
           (simpleFee.fixed || 0)
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(args)}`,
+          `${this.transferServer}/fee?${queryString.stringify(rest)}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

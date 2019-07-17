@@ -26,8 +26,8 @@ describe("fetchFinalFee", () => {
 
     expect(
       await provider.fetchFinalFee({
-        supportedAssets: info,
-        assetCode: info.USD.assetCode,
+        supported_assets: info,
+        asset_code: info.USD.assetCode,
         amount: "15",
         type: "",
       }),
@@ -55,8 +55,8 @@ describe("fetchFinalFee", () => {
 
     expect(
       await provider.fetchFinalFee({
-        supportedAssets: info,
-        assetCode: info.EUR.assetCode,
+        supported_assets: info,
+        asset_code: info.EUR.assetCode,
         amount: "10",
         type: "",
       }),
