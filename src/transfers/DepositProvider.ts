@@ -74,6 +74,10 @@ import { TransferProvider } from "./TransferProvider";
  */
 export class DepositProvider extends TransferProvider {
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
+    if (!this.info || !this.info.deposit) {
+      throw new Error("Run fetchSupportedAssets before running deposit!");
+    }
+
     // warn about camel-cased props
     if (args.assetCode && !args.asset_code) {
       throw new Error(
@@ -82,7 +86,20 @@ export class DepositProvider extends TransferProvider {
     }
 
     const search = queryString.stringify(args);
-    const response = await fetch(`${this.transferServer}/deposit?${search}`);
+    const isAuthRequired = this.info.withdraw[args.asset_code]
+      .authenticationRequired;
+
+    if (isAuthRequired && !this.bearerToken) {
+      throw new Error(
+        `${
+          args.asset_code
+        } requires authentication, please authorize with setBearerToken.`,
+      );
+    }
+
+    const response = await fetch(`${this.transferServer}/deposit?${search}`, {
+      headers: isAuthRequired ? this.getHeaders() : undefined,
+    });
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {
