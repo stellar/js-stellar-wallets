@@ -7,8 +7,8 @@ export interface GetKycArgs {
 }
 
 export interface FeeArgs {
-  supportedAssets: WithdrawInfo | DepositInfo;
-  assetCode: string;
+  supported_assets: WithdrawInfo | DepositInfo;
+  asset_code: string;
   amount: string;
   operation: "withdraw" | "deposit";
   type: string;
