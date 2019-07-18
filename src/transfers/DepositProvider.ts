@@ -79,7 +79,7 @@ export class DepositProvider extends TransferProvider {
     }
 
     const search = queryString.stringify(this.makeSnakeCase(args));
-    const isAuthRequired = this.info.withdraw[args.assetCode]
+    const isAuthRequired = this.info.deposit[args.assetCode]
       .authenticationRequired;
 
     if (isAuthRequired && !this.bearerToken) {
