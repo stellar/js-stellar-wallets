@@ -3,7 +3,7 @@ import styled from "styled-components";
 import changeCase from "change-case";
 
 import { DepositProvider } from "@stellar/wallet-sdk";
-import { Button, Select } from "@stellar/elements";
+import { Button, ButtonThemes, Select } from "@stellar/elements";
 
 const El = styled.div``;
 
@@ -44,7 +44,7 @@ class AuthCurrency extends Component {
   };
 
   _submit = () => {
-    const { depositProvider, account } = this.props;
+    const { depositProvider, account, assetCode } = this.props;
 
     const args = Object.keys(this.state.args).reduce(
       (memo, key) => ({
@@ -58,6 +58,7 @@ class AuthCurrency extends Component {
       .deposit({
         amount: this.state.amount,
         account,
+        assetCode,
         ...args,
       })
       .then((res) => this.setState({ res }))
@@ -82,9 +83,10 @@ class AuthCurrency extends Component {
           <input
             type="number"
             value={this.state.amount}
-            onChange={(ev) =>
-              this.setState({ amount: ev.target.value }) && this._calculateFee()
-            }
+            onChange={(ev) => {
+              this.setState({ amount: ev.target.value });
+              this._calculateFee();
+            }}
           />
         </label>
 
@@ -117,7 +119,9 @@ class AuthCurrency extends Component {
         ))}
 
         {amountFloat > minAmount && (!maxAmount || amountFloat < maxAmount) && (
-          <Button onClick={this._submit}>Submit</Button>
+          <Button theme={ButtonThemes.primary} onClick={this._submit}>
+            Submit
+          </Button>
         )}
       </El>
     );
