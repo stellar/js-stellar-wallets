@@ -85,7 +85,7 @@ keyManager.registerEncrypter(KeyManagerPlugins.ScryptEncrypter);
 // functions to make sure that your plugins meet spec!
 
 this.state.keyManager
-  .storeKeys({
+  .storeKey({
     // The KeyManager takes keys that conform to our Key interface.
     key: {
       type: KeyType.plaintextKey,
