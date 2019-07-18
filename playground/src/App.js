@@ -5,6 +5,7 @@ import { GlobalStyle } from "@stellar/elements";
 import { DataProvider } from "@stellar/wallet-sdk";
 
 import AccountDetails from "components/AccountDetails";
+import Authorization from "components/Authorization";
 import KeyEntry from "components/KeyEntry";
 import Offers from "components/Offers";
 import Trades from "components/Trades";
@@ -38,6 +39,11 @@ class App extends Component {
     return (
       <div>
         <GlobalStyle />
+        <h2>Transfers</h2>
+
+        <Authorization />
+
+        <h2>Key Data</h2>
 
         <KeyEntry onSetKey={this._setKey} />
 
