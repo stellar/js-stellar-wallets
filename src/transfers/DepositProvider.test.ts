@@ -2,6 +2,37 @@ import { DepositProvider } from "./DepositProvider";
 
 import { DepositInfo } from "../types";
 
+describe("makeSnakeCase", () => {
+  test("changes camelcase things", () => {
+    const provider = new DepositProvider("test");
+    const req = {
+      type: "type",
+      assetCode: "assetCode",
+      dest: "dest",
+      destExtra: "destExtra",
+      account: "account",
+    };
+    expect(provider.makeSnakeCase(req)).toEqual({
+      type: "type",
+      asset_code: "assetCode",
+      dest: "dest",
+      dest_extra: "destExtra",
+      account: "account",
+    });
+  });
+  test("doesn't change snakeCase stuff", () => {
+    const provider = new DepositProvider("test");
+    const req = {
+      type: "type",
+      asset_code: "assetCode",
+      dest: "dest",
+      dest_extra: "destExtra",
+      account: "account",
+    };
+    expect(provider.makeSnakeCase(req)).toEqual(req);
+  });
+});
+
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
     const info: DepositInfo = {
@@ -24,10 +55,12 @@ describe("fetchFinalFee", () => {
 
     const provider = new DepositProvider("test");
 
+    // manually set info
+    provider.info = { deposit: info, withdraw: {} };
+
     expect(
       await provider.fetchFinalFee({
-        supported_assets: info,
-        asset_code: info.USD.assetCode,
+        assetCode: info.USD.assetCode,
         amount: "15",
         type: "",
       }),
@@ -53,10 +86,11 @@ describe("fetchFinalFee", () => {
 
     const provider = new DepositProvider("test");
 
+    provider.info = { deposit: info, withdraw: {} };
+
     expect(
       await provider.fetchFinalFee({
-        supported_assets: info,
-        asset_code: info.EUR.assetCode,
+        assetCode: info.EUR.assetCode,
         amount: "10",
         type: "",
       }),

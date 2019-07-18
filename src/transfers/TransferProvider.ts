@@ -1,3 +1,4 @@
+import changeCase from "change-case";
 import queryString from "query-string";
 
 import {
@@ -17,6 +18,8 @@ import { parseInfo } from "./parseInfo";
  */
 export abstract class TransferProvider {
   public transferServer: string;
+  public info?: Info;
+  public bearerToken?: string;
 
   constructor(transferServer: string) {
     this.transferServer = transferServer;
@@ -25,8 +28,33 @@ export abstract class TransferProvider {
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(`${this.transferServer}/info`);
     const rawInfo = (await response.json()) as RawInfoResponse;
+    const info = parseInfo(rawInfo);
+    this.info = info;
+    return info;
+  }
 
-    return parseInfo(rawInfo);
+  protected getHeaders(): Headers {
+    return new Headers(
+      this.bearerToken
+        ? {
+            Authorization: `Bearer ${this.bearerToken}`,
+          }
+        : {},
+    );
+  }
+
+  public makeSnakeCase(args: any) {
+    return Object.keys(args).reduce(
+      (memo: object, name: string) => ({
+        ...memo,
+        [changeCase.snakeCase(name)]: args[name],
+      }),
+      {},
+    );
+  }
+
+  public setBearerToken(token: string) {
+    this.bearerToken = token;
   }
 
   public abstract fetchSupportedAssets():
@@ -34,14 +62,18 @@ export abstract class TransferProvider {
     | Promise<DepositInfo>;
 
   protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    const { supported_assets, ...rest } = args;
+    if (!this.info || !this.info[args.operation]) {
+      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
+    }
 
-    if (!supported_assets[args.asset_code]) {
+    const assetInfo = this.info[args.operation][args.assetCode];
+
+    if (!assetInfo) {
       throw new Error(
-        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+        `Can't get fee for an unsupported asset, '${args.assetCode}`,
       );
     }
-    const { fee } = supported_assets[args.asset_code];
+    const { fee } = assetInfo;
     switch (fee.type) {
       case "none":
         return 0;
@@ -53,7 +85,9 @@ export abstract class TransferProvider {
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(rest)}`,
+          `${this.transferServer}/fee?${queryString.stringify(
+            this.makeSnakeCase(args as any),
+          )}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

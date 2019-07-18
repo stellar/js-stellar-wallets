@@ -74,15 +74,25 @@ import { TransferProvider } from "./TransferProvider";
  */
 export class DepositProvider extends TransferProvider {
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
-    // warn about camel-cased props
-    if (args.assetCode && !args.asset_code) {
+    if (!this.info || !this.info.deposit) {
+      throw new Error("Run fetchSupportedAssets before running deposit!");
+    }
+
+    const search = queryString.stringify(this.makeSnakeCase(args));
+    const isAuthRequired = this.info.withdraw[args.assetCode]
+      .authenticationRequired;
+
+    if (isAuthRequired && !this.bearerToken) {
       throw new Error(
-        "You provided `assetCode` instead of the correct `asset_code`",
+        `${
+          args.assetCode
+        } requires authentication, please authorize with setBearerToken.`,
       );
     }
 
-    const search = queryString.stringify(args);
-    const response = await fetch(`${this.transferServer}/deposit?${search}`);
+    const response = await fetch(`${this.transferServer}/deposit?${search}`, {
+      headers: isAuthRequired ? this.getHeaders() : undefined,
+    });
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {

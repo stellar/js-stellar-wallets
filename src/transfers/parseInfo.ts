@@ -82,6 +82,7 @@ export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
         fee,
         minAmount: entry.min_amount,
         maxAmount: entry.max_amount,
+        authenticationRequired: !!entry.authentication_required,
         types: Object.entries(entry.types || {}).map(parseType),
       };
       return accum;
@@ -100,6 +101,7 @@ export function parseDeposit(info: RawInfoResponse): DepositInfo {
         fee,
         minAmount: entry.min_amount,
         maxAmount: entry.max_amount,
+        authenticationRequired: !!entry.authentication_required,
         fields: Object.entries(entry.fields || {}).map(parseField),
       };
       return accum;

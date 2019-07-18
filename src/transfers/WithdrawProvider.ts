@@ -74,22 +74,32 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class WithdrawProvider extends TransferProvider {
+  /**
+   * Make a withdraw request.
+   *
+   * Note that all arguments must be in camelCase, even though they're sent to
+   * the server in snake_case!
+   */
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
-    // warn about camel-cased props
-    if (args.assetCode && !args.asset_code) {
-      throw new Error(
-        "You provided `assetCode` instead of the correct `asset_code`",
-      );
+    if (!this.info || !this.info.withdraw) {
+      throw new Error("Run fetchSupportedAssets before running withdraw!");
     }
-    if (args.destExtra && !args.dest_extra) {
+
+    const search = queryString.stringify(this.makeSnakeCase(args));
+    const isAuthRequired = this.info.withdraw[args.assetCode]
+      .authenticationRequired;
+
+    if (isAuthRequired && !this.bearerToken) {
       throw new Error(
-        "You provided `destExtra` instead of the correct `dest_extra`",
+        `${
+          args.assetCode
+        } requires authentication, please authorize with setBearerToken.`,
       );
     }
 
-    const search = queryString.stringify(args);
-
-    const response = await fetch(`${this.transferServer}/withdraw?${search}`);
+    const response = await fetch(`${this.transferServer}/withdraw?${search}`, {
+      headers: isAuthRequired ? this.getHeaders() : undefined,
+    });
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {
