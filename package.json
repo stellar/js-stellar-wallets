@@ -27,15 +27,19 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,md}": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.ts": [
-      "prettier --write",
-      "tslint --fix",
-      "git add"
-    ]
+    "concurrent": true,
+    "linters": {
+      "**/*.{js,md}": [
+        "prettier --write",
+        "git add"
+      ],
+      "**/*.ts": [
+        "prettier --write",
+        "tslint --fix",
+        "yarn build",
+        "git add"
+      ]
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
