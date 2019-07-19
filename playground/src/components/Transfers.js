@@ -69,6 +69,10 @@ class Transfers extends Component {
       <div>
         <h2>Transfers</h2>
 
+        <p>
+          <em>not implemented yet</em>
+        </p>
+
         <ul>
           {transfers.map(({ transfer, updateTime }) => (
             <li key={updateTime.toString()}>

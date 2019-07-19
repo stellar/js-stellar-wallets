@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
-
 import { DataProvider } from "@stellar/wallet-sdk";
+import { Network } from "stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
 import Authorization from "components/Authorization";
@@ -10,6 +10,8 @@ import KeyEntry from "components/KeyEntry";
 import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Transfers from "components/Transfers";
+
+Network.usePublicNetwork();
 
 const El = styled.div`
   display: flex;

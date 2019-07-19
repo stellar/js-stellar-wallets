@@ -7,10 +7,10 @@ import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 export default class KeyEntry extends Component {
   state = {
     key: null,
-    keyInput: localStorage.getItem("key") || "",
+    keyInput: "",
     keyManager: null,
     error: null,
-    password: "",
+    password: "test",
     authServer: "",
     authToken: null,
   };
@@ -31,7 +31,6 @@ export default class KeyEntry extends Component {
 
   _setKey = async (privateKey, password) => {
     try {
-      localStorage.setItem("key", privateKey);
       const account = StellarSdk.Keypair.fromSecret(privateKey);
 
       const key = {
@@ -70,39 +69,18 @@ export default class KeyEntry extends Component {
   render() {
     const { key, keyInput, password, error } = this.state;
 
+    const localKey = localStorage.getItem("key");
+
     if (key) {
       return (
         <>
+          <p>Password: {password}</p>
+
           <pre>{JSON.stringify(key, null, 2)}</pre>
 
-          <form
-            onSubmit={(ev) => {
-              ev.preventDefault();
-              this._setKey(keyInput, password);
-            }}
-          >
-            <label>
-              Secret seed
-              <Input
-                type="text"
-                value={keyInput}
-                onChange={(ev) => this.setState({ keyInput: ev.target.value })}
-              />
-            </label>
-
-            <label>
-              Password
-              <Input
-                type="text"
-                value={password}
-                onChange={(ev) => this.setState({ password: ev.target.value })}
-              />
-            </label>
-
-            {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
-
-            <button>Set key</button>
-          </form>
+          <button onClick={() => this.setState({ key: null })}>
+            Start over
+          </button>
         </>
       );
     }
@@ -122,6 +100,12 @@ export default class KeyEntry extends Component {
             onChange={(ev) => this.setState({ keyInput: ev.target.value })}
           />
         </label>
+
+        {localKey && localKey !== keyInput && (
+          <button onClick={() => this.setState({ keyInput: localKey })}>
+            Load from local storage
+          </button>
+        )}
 
         <label>
           Password

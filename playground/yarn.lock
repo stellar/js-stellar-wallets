@@ -1057,10 +1057,10 @@
   dependencies:
     "@types/color-convert" "*"
 
-"@types/eventsource@^1.1.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/eventsource/-/eventsource-1.1.1.tgz#61f72be00d1b02f8ebb8c8a4a4cfb945cc103f67"
-  integrity sha512-feB5PibPLCWqc6KlbcGtdsXIdZLx816p75bXQ+t7L0cJ82MxlqFuJLwlgVbzioJGa8Aul2DuuOO+a0GH8lRopA==
+"@types/eventsource@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/eventsource/-/eventsource-1.1.2.tgz#079ab4213e844e56f7384aec620e1163dab692b3"
+  integrity sha512-4AKWJ6tvEU4fk0770oAK4Z0lQUuSnc5ljHTcYZhQtdP7XMDKKvegGUC6xGD8+4+F+svZKAzlxbKnuGWfgMtgVA==
 
 "@types/node@*":
   version "11.13.0"
@@ -1117,10 +1117,10 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
 
-"@types/urijs@^1.19.1":
-  version "1.19.2"
-  resolved "https://registry.yarnpkg.com/@types/urijs/-/urijs-1.19.2.tgz#45212f53c3f14f1d90ca823a719b164748ad413b"
-  integrity sha512-8Q7e4XLsVuqWkvl5Q9osdxi4R2nciXOu2sNWaroAY1rL58PEiSFU23q/elrAAUQdsHMaHk4kwsiOZh1rZ+7APA==
+"@types/urijs@^1.19.2":
+  version "1.19.3"
+  resolved "https://registry.yarnpkg.com/@types/urijs/-/urijs-1.19.3.tgz#ed90d38baf3eff1627544ad6ed3bcdeb79ef3533"
+  integrity sha512-L5tP2dEIV+OMVEVRhf8PCFMNMyO5ZBodrXpEqnGczky60lcv8l5Kl9Yi4J1yxhSVfHUe+Pr2nXJfDM+rUYNs3w==
 
 "@types/vfile-message@*":
   version "1.0.1"
@@ -9496,14 +9496,14 @@ stellar-base@^1.0.2:
   optionalDependencies:
     sodium-native "^2.3.0"
 
-stellar-sdk@^2.0.0-beta.9:
-  version "2.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.0-beta.9.tgz#b714120cbee1c9c8d474e62d29adb55866d60a2b"
-  integrity sha512-NJnHt5FlsbLXtutdlt9LRSc15UBOrg8UvWnTlocoBnmwjGp+Ei4LSyAEd7kNTKeVvqzSlQscKP3WnwfxceC1DQ==
+stellar-sdk@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-2.0.1.tgz#4d4544977f824afde9e8830885799259d5322d94"
+  integrity sha512-WJn2/uiq7CtCNvIDKeMZjL0XVwv4DdDP5onqhqsVtOzCOuIS4yzLOpnhlEqXk/TtmsrAtNrwAQptRVsaby/olw==
   dependencies:
-    "@types/eventsource" "^1.1.0"
+    "@types/eventsource" "^1.1.2"
     "@types/node" ">= 8"
-    "@types/urijs" "^1.19.1"
+    "@types/urijs" "^1.19.2"
     axios "^0.19.0"
     bignumber.js "^4.0.0"
     detect-node "^2.0.4"

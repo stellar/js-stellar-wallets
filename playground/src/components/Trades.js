@@ -44,9 +44,13 @@ class Trades extends Component {
       streamEnder: null,
     });
 
-    const offers = await dataProvider.fetchTrades();
+    try {
+      const offers = await dataProvider.fetchTrades();
 
-    this.setState({ offers });
+      this.setState({ offers });
+    } catch (e) {
+      this.setState({ err: e.toString() });
+    }
   };
 
   render() {
