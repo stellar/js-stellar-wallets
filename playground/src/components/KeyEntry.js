@@ -10,6 +10,9 @@ export default class KeyEntry extends Component {
     keyInput: localStorage.getItem("key") || "",
     keyManager: null,
     error: null,
+    password: "",
+    authServer: "",
+    authToken: null,
   };
 
   componentDidMount() {
@@ -26,7 +29,7 @@ export default class KeyEntry extends Component {
     this.setState({ keyManager });
   }
 
-  _setKey = async (privateKey) => {
+  _setKey = async (privateKey, password) => {
     try {
       localStorage.setItem("key", privateKey);
       const account = StellarSdk.Keypair.fromSecret(privateKey);
@@ -36,8 +39,6 @@ export default class KeyEntry extends Component {
         privateKey: account.secret(),
         type: KeyType.plaintext,
       };
-
-      const password = "fucko";
 
       const keyMetadata = await this.state.keyManager.storeKey({
         key,
@@ -53,18 +54,64 @@ export default class KeyEntry extends Component {
     }
   };
 
+  _getAuthToken = (authServer) => {
+    const { keyManager, password, key } = this.state;
+    this.setState({ authToken: null });
+
+    keyManager
+      .getAuthToken({
+        publicKey: key.publicKey,
+        password,
+        authServer,
+      })
+      .then((authToken) => this.setState({ authToken }));
+  };
+
   render() {
-    const { key, keyInput, error } = this.state;
+    const { key, keyInput, password, error } = this.state;
 
     if (key) {
-      return <pre>{JSON.stringify(key, null, 2)}</pre>;
+      return (
+        <>
+          <pre>{JSON.stringify(key, null, 2)}</pre>
+
+          <form
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              this._setKey(keyInput, password);
+            }}
+          >
+            <label>
+              Secret seed
+              <Input
+                type="text"
+                value={keyInput}
+                onChange={(ev) => this.setState({ keyInput: ev.target.value })}
+              />
+            </label>
+
+            <label>
+              Password
+              <Input
+                type="text"
+                value={password}
+                onChange={(ev) => this.setState({ password: ev.target.value })}
+              />
+            </label>
+
+            {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
+
+            <button>Set key</button>
+          </form>
+        </>
+      );
     }
 
     return (
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
-          this._setKey(keyInput);
+          this._setKey(keyInput, password);
         }}
       >
         <label>
@@ -74,9 +121,20 @@ export default class KeyEntry extends Component {
             value={keyInput}
             onChange={(ev) => this.setState({ keyInput: ev.target.value })}
           />
-          {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
-          <button>Set key</button>
         </label>
+
+        <label>
+          Password
+          <Input
+            type="text"
+            value={password}
+            onChange={(ev) => this.setState({ password: ev.target.value })}
+          />
+        </label>
+
+        {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
+
+        <button>Set key</button>
       </form>
     );
   }

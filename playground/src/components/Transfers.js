@@ -42,25 +42,25 @@ class Transfers extends Component {
       streamEnder: null,
     });
 
-    const streamEnder = dataProvider.watchTransfers({
-      onMessage: (transfer) => {
-        this.setState({
-          transfers: [
-            { transfer, updateTime: new Date() },
-            ...this.state.transfers,
-          ],
-        });
-      },
-      onError: (err) => {
-        console.log("error: ", err);
-        this.setState({ err });
-        streamEnder();
-      },
-    });
+    // const streamEnder = dataProvider.watchTransfers({
+    //   onMessage: (transfer) => {
+    //     this.setState({
+    //       transfers: [
+    //         { transfer, updateTime: new Date() },
+    //         ...this.state.transfers,
+    //       ],
+    //     });
+    //   },
+    //   onError: (err) => {
+    //     console.log("error: ", err);
+    //     this.setState({ err });
+    //     streamEnder();
+    //   },
+    // });
 
-    this.setState({
-      streamEnder,
-    });
+    // this.setState({
+    //   streamEnder,
+    // });
   };
 
   render() {
