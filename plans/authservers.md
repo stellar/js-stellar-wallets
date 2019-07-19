@@ -24,14 +24,8 @@ https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md
 ```ts
 interface GetAuthTokenParams {
   authServer: string;
-  keyManager: KeyManager;
+  password: string;
 }
 
-const jwt = await getAuthToken(params: GetAuthTokenParams);
+const jwt = await KeyManager.getAuthToken(params: GetAuthTokenParams);
 ```
-
-## Possible homes
-
-- Top-level library export, getAuthToken
-- `KeyManager.getAuthToken(authServer: string)`
-- `TransferProvider.getAuthToken(params: GetAuthTokenParams)`
