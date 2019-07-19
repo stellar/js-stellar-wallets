@@ -7,7 +7,7 @@ import { KeyType } from "../constants/keys";
 
 export const plaintextKeyHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,
-  async signTransaction({
+  signTransaction({
     transaction,
     key,
   }: {
@@ -23,6 +23,7 @@ export const plaintextKeyHandler: KeyTypeHandler = {
     }
 
     const keyPair = StellarSdk.Keypair.fromSecret(key.privateKey);
+
     transaction.sign(keyPair);
 
     return Promise.resolve(transaction);

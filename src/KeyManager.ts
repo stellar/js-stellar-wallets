@@ -1,5 +1,4 @@
-import { Transaction } from "stellar-base";
-import { Network } from "stellar-sdk";
+import { Network, Networks, Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
@@ -152,7 +151,7 @@ export class KeyManager {
    * cached key and going out to the keystore to read and decrypt
    *
    * @async
-   * @param {xdr.Transaction} transaction Transaction object to sign
+   * @param {Transaction} transaction Transaction object to sign
    * @param {string} publicKey key to sign with
    * @returns signed transaction
    */
@@ -218,7 +217,9 @@ export class KeyManager {
       this._writeIndexCache(publicKey, key);
     }
 
-    const challengeRes = await fetch(authServer);
+    const challengeRes = await fetch(
+      `${authServer}?account=${encodeURIComponent(publicKey)}`,
+    );
     const {
       transaction,
       network_passphrase,
@@ -229,20 +230,12 @@ export class KeyManager {
       throw new Error(error);
     }
 
-    // make sure we're on the right network
-    if ((Network as any).networkPassphrase() !== network_passphrase) {
-      throw new Error(
-        `
-          That auth server is on the wrong network! Your network's 
-          passphrase is ${(Network as any).networkPassphrase()}, but this one is 
-          ${network_passphrase}
-        `,
-      );
-    }
+    Network.use(new Network(network_passphrase || Networks.PUBLIC));
 
     const keyHandler = this.keyHandlerMap[key.type];
+
     const signedTransaction = await keyHandler.signTransaction({
-      transaction,
+      transaction: new Transaction(transaction),
       key,
     });
 

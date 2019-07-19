@@ -13,6 +13,7 @@ export default class KeyEntry extends Component {
     password: "test",
     authServer: "",
     authToken: null,
+    authTokenError: null,
   };
 
   componentDidMount() {
@@ -36,7 +37,7 @@ export default class KeyEntry extends Component {
       const key = {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
-        type: KeyType.plaintext,
+        type: KeyType.plaintextKey,
       };
 
       const keyMetadata = await this.state.keyManager.storeKey({
@@ -53,21 +54,33 @@ export default class KeyEntry extends Component {
     }
   };
 
-  _getAuthToken = (authServer) => {
+  _getAuthToken = async (authServer) => {
     const { keyManager, password, key } = this.state;
     this.setState({ authToken: null });
 
-    keyManager
-      .getAuthToken({
+    try {
+      const authToken = await keyManager.getAuthToken({
         publicKey: key.publicKey,
         password,
         authServer,
-      })
-      .then((authToken) => this.setState({ authToken }));
+      });
+
+      this.setState({ authToken });
+    } catch (e) {
+      this.setState({ authTokenError: e.toString() });
+    }
   };
 
   render() {
-    const { key, keyInput, password, error } = this.state;
+    const {
+      authServer,
+      authToken,
+      authTokenError,
+      key,
+      keyInput,
+      password,
+      error,
+    } = this.state;
 
     const localKey = localStorage.getItem("key");
 
@@ -77,6 +90,29 @@ export default class KeyEntry extends Component {
           <p>Password: {password}</p>
 
           <pre>{JSON.stringify(key, null, 2)}</pre>
+
+          <form
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              this._getAuthToken(authServer);
+            }}
+          >
+            <label>
+              Auth server
+              <Input
+                type="text"
+                value={authServer}
+                onChange={(ev) =>
+                  this.setState({ authServer: ev.target.value })
+                }
+              />
+            </label>
+
+            <button>Get auth token</button>
+
+            {authToken && <p>Auth token: {authToken}</p>}
+            {authTokenError && <p>Auth token: {authTokenError}</p>}
+          </form>
 
           <button onClick={() => this.setState({ key: null })}>
             Start over

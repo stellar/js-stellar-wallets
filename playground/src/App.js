@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
-import { DataProvider } from "@stellar/wallet-sdk";
-import { Network } from "stellar-sdk";
+import * as WalletSdk from "@stellar/wallet-sdk";
+import StellarSdk from "stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
 import Authorization from "components/Authorization";
@@ -11,7 +11,7 @@ import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Transfers from "components/Transfers";
 
-Network.usePublicNetwork();
+StellarSdk.Network.usePublicNetwork();
 
 const El = styled.div`
   display: flex;
@@ -24,8 +24,13 @@ class App extends Component {
     dataProvider: null,
   };
 
+  componentDidMount() {
+    window.StellarSdk = StellarSdk;
+    window.WalletSdk = WalletSdk;
+  }
+
   _setKey = (publicKey) => {
-    const dataProvider = new DataProvider({
+    const dataProvider = new WalletSdk.DataProvider({
       serverUrl: "https://horizon.stellar.org",
       accountOrKey: publicKey,
     });
@@ -41,9 +46,6 @@ class App extends Component {
     return (
       <div>
         <GlobalStyle />
-        <h2>Transfers</h2>
-
-        <Authorization />
 
         <h2>Key Data</h2>
 
@@ -63,6 +65,10 @@ class App extends Component {
             </div>
           </El>
         )}
+
+        <h2>Transfers</h2>
+
+        <Authorization />
       </div>
     );
   }
