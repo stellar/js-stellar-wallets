@@ -25,6 +25,7 @@ https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md
 interface GetAuthTokenParams {
   authServer: string;
   password: string;
+  publicKey: PublicKey;
 }
 
 const jwt = await KeyManager.getAuthToken(params: GetAuthTokenParams);
