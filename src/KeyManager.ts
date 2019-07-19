@@ -230,11 +230,11 @@ export class KeyManager {
     }
 
     // make sure we're on the right network
-    if (Network.networkPassphrase() !== network_passphrase) {
+    if ((Network as any).networkPassphrase() !== network_passphrase) {
       throw new Error(
         `
           That auth server is on the wrong network! Your network's 
-          passphrase is ${Network.networkPassphrase()}, but this one is 
+          passphrase is ${(Network as any).networkPassphrase()}, but this one is 
           ${network_passphrase}
         `,
       );
