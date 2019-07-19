@@ -158,3 +158,11 @@ export interface KeyTypeHandler {
     key,
   }: HandlerSignTransactionArgs): Promise<Transaction>;
 }
+
+export type AuthToken = string;
+
+export interface GetAuthTokenParams {
+  publicKey: string;
+  password: string;
+  authServer: string;
+}

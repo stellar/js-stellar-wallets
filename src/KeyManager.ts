@@ -1,4 +1,5 @@
 import { Transaction } from "stellar-base";
+import { Network } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
@@ -6,8 +7,10 @@ import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
 import { KeyType } from "./constants/keys";
 
 import {
+  AuthToken,
   EncryptedKey,
   Encrypter,
+  GetAuthTokenParams,
   Key,
   KeyMetadata,
   KeyStore,
@@ -100,12 +103,12 @@ export class KeyManager {
   /**
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
+   * @async
    * @param key key to store
    * @param password encrypt key with this as the secret
    * @param encrypterName encryption algorithm to use (must have been registered)
    *
    * @returns The metadata of the key
-   * @throws on any error
    */
   public async storeKey({
     key,
@@ -126,7 +129,6 @@ export class KeyManager {
    *  List information about stored keys
    *
    * @returns a list of metadata about all stored keys
-   * @throws on any error
    */
   public loadAllKeyMetadata(): Promise<KeyMetadata[]> {
     return this.keyStore.loadAllKeyMetadata();
@@ -135,9 +137,9 @@ export class KeyManager {
   /**
    *  remove the key specified by this publicKey.
    *
+   * @async
    * @param publicKey specifies which key to remove
    * @returns Metadata of the removed key
-   * @throws on any error
    */
   public async removeKey(publicKey: string): Promise<KeyMetadata | undefined> {
     const res = await this.keyStore.removeKey(publicKey);
@@ -149,10 +151,10 @@ export class KeyManager {
    * Sign a transaction using the specified publicKey. Supports both using a
    * cached key and going out to the keystore to read and decrypt
    *
-   * @param transaction Transaction object to sign
-   * @param publicKey key to sign with
+   * @async
+   * @param {xdr.Transaction} transaction Transaction object to sign
+   * @param {string} publicKey key to sign with
    * @returns signed transaction
-   * @throws on any error, or if no key was found
    */
   public async signTransaction({
     transaction,
@@ -182,10 +184,95 @@ export class KeyManager {
   }
 
   /**
+   * Request an auth token from auth server, which can be used to deposit and
+   * withdraw auth-required tokens.
+   *
+   * Under the hood, it fetches a transaction from the auth server, signs that
+   * transaction with the user's key, and returns that transaction for a JWT.
+   *
+   * https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md
+   *
+   * @async
+   * @param {object} params Params object
+   * @param {string} params.publicKey The user's key to authenticate
+   * @param {string} params.password The password that will decrypt that secret
+   * @param {string} params.authServer The URL of the authentication server
+   * @returns {Promise<string>} authToken JWT
+   */
+  public async getAuthToken({
+    publicKey,
+    password,
+    authServer,
+  }: GetAuthTokenParams): Promise<AuthToken> {
+    let key = this._readFromCache(publicKey);
+
+    if (!key) {
+      const encryptedKey = await this.keyStore.loadKey(publicKey);
+
+      if (!encryptedKey) {
+        throw new Error("No key found");
+      }
+
+      const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
+      key = await encrypterObj.decryptKey({ encryptedKey, password });
+      this._writeIndexCache(publicKey, key);
+    }
+
+    const challengeRes = await fetch(authServer);
+    const {
+      transaction,
+      network_passphrase,
+      error,
+    } = await challengeRes.json();
+
+    if (error) {
+      throw new Error(error);
+    }
+
+    // make sure we're on the right network
+    if (Network.networkPassphrase() !== network_passphrase) {
+      throw new Error(
+        `
+          That auth server is on the wrong network! Your network's 
+          passphrase is ${Network.networkPassphrase()}, but this one is 
+          ${network_passphrase}
+        `,
+      );
+    }
+
+    const keyHandler = this.keyHandlerMap[key.type];
+    const signedTransaction = await keyHandler.signTransaction({
+      transaction,
+      key,
+    });
+
+    const signedTransactionXDR: string = signedTransaction
+      .toEnvelope()
+      .toXDR()
+      .toString("base64");
+
+    const responseRes = await fetch(authServer, {
+      method: "POST",
+      body: JSON.stringify({
+        transaction: signedTransactionXDR,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const { token } = await responseRes.json();
+
+    return token;
+  }
+
+  /**
    * Update the stored keys to be encrypted with the new password.
    *
+   * @async
    * @param oldPassword the user's old password
    * @param newPassword the user's new password
+   * @returns {Promise<KeyMetadata[]>}
    */
   public async changePassword({
     oldPassword,
