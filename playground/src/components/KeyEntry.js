@@ -7,9 +7,13 @@ import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 export default class KeyEntry extends Component {
   state = {
     key: null,
-    keyInput: localStorage.getItem("key") || "",
+    keyInput: "",
     keyManager: null,
     error: null,
+    password: "test",
+    authServer: "",
+    authToken: null,
+    authTokenError: null,
   };
 
   componentDidMount() {
@@ -26,18 +30,15 @@ export default class KeyEntry extends Component {
     this.setState({ keyManager });
   }
 
-  _setKey = async (privateKey) => {
+  _setKey = async (privateKey, password) => {
     try {
-      localStorage.setItem("key", privateKey);
       const account = StellarSdk.Keypair.fromSecret(privateKey);
 
       const key = {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
-        type: KeyType.plaintext,
+        type: KeyType.plaintextKey,
       };
-
-      const password = "fucko";
 
       const keyMetadata = await this.state.keyManager.storeKey({
         key,
@@ -53,18 +54,78 @@ export default class KeyEntry extends Component {
     }
   };
 
+  _getAuthToken = async (authServer) => {
+    const { keyManager, password, key } = this.state;
+    this.setState({ authToken: null });
+
+    try {
+      const authToken = await keyManager.getAuthToken({
+        publicKey: key.publicKey,
+        password,
+        authServer,
+      });
+
+      this.setState({ authToken });
+    } catch (e) {
+      this.setState({ authTokenError: e.toString() });
+    }
+  };
+
   render() {
-    const { key, keyInput, error } = this.state;
+    const {
+      authServer,
+      authToken,
+      authTokenError,
+      key,
+      keyInput,
+      password,
+      error,
+    } = this.state;
+
+    const localKey = localStorage.getItem("key");
 
     if (key) {
-      return <pre>{JSON.stringify(key, null, 2)}</pre>;
+      return (
+        <>
+          <p>Password: {password}</p>
+
+          <pre>{JSON.stringify(key, null, 2)}</pre>
+
+          <form
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              this._getAuthToken(authServer);
+            }}
+          >
+            <label>
+              Auth server
+              <Input
+                type="text"
+                value={authServer}
+                onChange={(ev) =>
+                  this.setState({ authServer: ev.target.value })
+                }
+              />
+            </label>
+
+            <button>Get auth token</button>
+
+            {authToken && <p>Auth token: {authToken}</p>}
+            {authTokenError && <p>Auth token: {authTokenError}</p>}
+          </form>
+
+          <button onClick={() => this.setState({ key: null })}>
+            Start over
+          </button>
+        </>
+      );
     }
 
     return (
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
-          this._setKey(keyInput);
+          this._setKey(keyInput, password);
         }}
       >
         <label>
@@ -74,9 +135,26 @@ export default class KeyEntry extends Component {
             value={keyInput}
             onChange={(ev) => this.setState({ keyInput: ev.target.value })}
           />
-          {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
-          <button>Set key</button>
         </label>
+
+        {localKey && localKey !== keyInput && (
+          <button onClick={() => this.setState({ keyInput: localKey })}>
+            Load from local storage
+          </button>
+        )}
+
+        <label>
+          Password
+          <Input
+            type="text"
+            value={password}
+            onChange={(ev) => this.setState({ password: ev.target.value })}
+          />
+        </label>
+
+        {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
+
+        <button>Set key</button>
       </form>
     );
   }

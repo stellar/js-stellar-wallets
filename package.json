@@ -23,19 +23,22 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "concurrently 'lint-staged' 'yarn build'"
     }
   },
   "lint-staged": {
-    "**/*.{js,md}": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.ts": [
-      "prettier --write",
-      "tslint --fix",
-      "git add"
-    ]
+    "concurrent": true,
+    "linters": {
+      "**/*.{js,md}": [
+        "prettier --write",
+        "git add"
+      ],
+      "**/*.ts": [
+        "prettier --write",
+        "tslint --fix",
+        "git add"
+      ]
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
@@ -47,6 +50,7 @@
     "@types/ledgerhq__hw-transport-u2f": "^4.21.1",
     "@types/sinon": "^7.0.11",
     "babel-jest": "^24.5.0",
+    "concurrently": "^4.1.1",
     "husky": "^1.3.1",
     "jest": "^24.7.1",
     "lint-staged": "^8.1.5",

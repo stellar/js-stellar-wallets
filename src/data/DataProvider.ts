@@ -35,14 +35,14 @@ interface CallbacksObject {
 }
 
 export class DataProvider {
-  private server: Server;
   private accountKey: string;
+  private serverUrl: string;
 
   private effectStreamEnder?: () => void;
   private callbacks: CallbacksObject;
 
   constructor(params: DataProviderParams) {
-    this.server = new Server(params.serverUrl);
+    this.serverUrl = params.serverUrl;
     this.accountKey = isAccount(params.accountOrKey)
       ? params.accountOrKey.publicKey
       : params.accountOrKey;
@@ -71,7 +71,7 @@ export class DataProvider {
     params: CollectionParams = {},
   ): Promise<Collection<Offer>> {
     // first, fetch all offers
-    const offers = await this.server
+    const offers = await new Server(this.serverUrl)
       .offers("accounts", this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
@@ -87,13 +87,14 @@ export class DataProvider {
   public async fetchTrades(
     params: CollectionParams = {},
   ): Promise<Collection<Trade>> {
-    const trades = await this.server
+    const trades = await new Server(this.serverUrl)
       .trades()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
       .call();
+
     return this._processTrades(trades);
   }
 
@@ -103,7 +104,7 @@ export class DataProvider {
   public async fetchTransfers(
     params: CollectionParams = {},
   ): Promise<Collection<Transfer>> {
-    const transfers = await this.server
+    const transfers = await new Server(this.serverUrl)
       .payments()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
@@ -118,7 +119,7 @@ export class DataProvider {
    * Fetch account details (balances, signers, etc.).
    */
   public async fetchAccountDetails(): Promise<AccountDetails> {
-    const accountSummary = await this.server
+    const accountSummary = await new Server(this.serverUrl)
       .accounts()
       .accountId(this.accountKey)
       .call();
@@ -172,11 +173,12 @@ export class DataProvider {
     const tradeRequests: Array<
       Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
     > = offers.records.map(({ id }: { id: string }) =>
-      this.server
+      new Server(this.serverUrl)
         .trades()
         .forOffer(id)
         .call(),
     );
+
     const tradeResponses = await Promise.all(tradeRequests);
 
     return {
@@ -231,7 +233,7 @@ export class DataProvider {
     }
 
     // get the latest cursor
-    const recentEffect = await this.server
+    const recentEffect = await new Server(this.serverUrl)
       .effects()
       .forAccount(this.accountKey)
       .limit(1)
@@ -240,7 +242,7 @@ export class DataProvider {
 
     const cursor: string = recentEffect.records[0].paging_token;
 
-    this.effectStreamEnder = this.server
+    this.effectStreamEnder = new Server(this.serverUrl)
       .effects()
       .forAccount(this.accountKey)
       .cursor(cursor)

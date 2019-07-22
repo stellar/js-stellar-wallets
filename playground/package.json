@@ -11,7 +11,7 @@
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
-    "stellar-sdk": "^2.0.0-beta.9"
+    "stellar-sdk": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -42,25 +42,25 @@ class Transfers extends Component {
       streamEnder: null,
     });
 
-    const streamEnder = dataProvider.watchTransfers({
-      onMessage: (transfer) => {
-        this.setState({
-          transfers: [
-            { transfer, updateTime: new Date() },
-            ...this.state.transfers,
-          ],
-        });
-      },
-      onError: (err) => {
-        console.log("error: ", err);
-        this.setState({ err });
-        streamEnder();
-      },
-    });
+    // const streamEnder = dataProvider.watchTransfers({
+    //   onMessage: (transfer) => {
+    //     this.setState({
+    //       transfers: [
+    //         { transfer, updateTime: new Date() },
+    //         ...this.state.transfers,
+    //       ],
+    //     });
+    //   },
+    //   onError: (err) => {
+    //     console.log("error: ", err);
+    //     this.setState({ err });
+    //     streamEnder();
+    //   },
+    // });
 
-    this.setState({
-      streamEnder,
-    });
+    // this.setState({
+    //   streamEnder,
+    // });
   };
 
   render() {
@@ -68,6 +68,10 @@ class Transfers extends Component {
     return (
       <div>
         <h2>Transfers</h2>
+
+        <p>
+          <em>not implemented yet</em>
+        </p>
 
         <ul>
           {transfers.map(({ transfer, updateTime }) => (

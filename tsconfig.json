@@ -9,7 +9,8 @@
     "resolveJsonModule": true,
     "outDir": "dist",
     "target": "es5",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "sourceMap": true
   },
   "include": ["src"],
   "exclude": [
