@@ -139,12 +139,6 @@ export async function testKeyStore(
   const testMetadata = await keyStore.storeKeys([encryptedKey]);
 
   if (keyMetadata.publicKey !== testMetadata[0].publicKey) {
-    console.log(
-      "expected metadata: ",
-      keyMetadata.publicKey,
-      "but received: ",
-      testMetadata[0],
-    );
     return Promise.reject(
       new Error("[KeyStore.storeKeys] Key metadata doesn't match"),
     );
