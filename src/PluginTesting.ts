@@ -142,7 +142,7 @@ export async function testKeyStore(
     console.log(
       "expected metadata: ",
       keyMetadata.publicKey,
-      "and test stored shit got back: ",
+      "but received: ",
       testMetadata[0],
     );
     return Promise.reject(
