@@ -274,15 +274,15 @@ export class KeyManager {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (encryptedKey: EncryptedKey) => {
-        const encrypterName = this.encrypterMap[encryptedKey.encrypterName];
-        const decryptedKey = await encrypterName.decryptKey({
+        const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
+        const decryptedKey = await encrypterObj.decryptKey({
           encryptedKey,
           password: oldPassword,
         });
 
         this._writeIndexCache(encryptedKey.publicKey, decryptedKey);
 
-        return encrypterName.encryptKey({
+        return encrypterObj.encryptKey({
           key: decryptedKey,
           password: newPassword,
         });
