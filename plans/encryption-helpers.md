@@ -28,18 +28,69 @@ interface EncryptionUtils {
 }
 
 class KeyStore implements Types.KeyStore {
-  public async storeKeys(
+  public storeKeys(
     encryptedKeys: Types.EncryptedKey[],
     utils: EncryptionUtils,
-  );
-  public async updateKeys(
+  ): Promise<KeysMetadata>;
+
+  public updateKeys(
     encryptedKeys: Types.EncryptedKey[],
     utils: EncryptionUtils,
-  );
-  public async loadAllKeyMetadata(utils: EncryptionUtils);
-  public async loadAllKeys(utils: EncryptionUtils);
-  public async loadKey(utils: EncryptionUtils);
-  public async removeKey(publicKey: string, utils: EncryptionUtils);
+  ): Promise<KeysMetadata>;
+
+  public loadAllKeyMetadata(utils: EncryptionUtils): Promise<KeysMetadata>;
+  public loadAllKeys(utils: EncryptionUtils): Promise<EncryptedKeys>;
+  public loadKey(utils: EncryptionUtils): Promise<EncryptedKey>;
+
+  public removeKey(
+    publicKey: string,
+    utils: EncryptionUtils,
+  ): Promise<KeyMetadata>;
+}
+```
+
+To enable the definition of encryption helpers, we need to change the encrypter
+plugin's API. Instead of tightly coupling it to private keys encryption, let's
+move to a more generic API, like the following:
+
+```ts
+export interface EncryptParams {
+  content: string;
+  password?: string;
+}
+
+export interface DecryptParams {
+  content: string;
+  password?: string;
+  salt?: string;
+}
+
+export interface EncryptedData {
+  content: string;
+  encrypterName: string;
+  salt?: string;
+}
+
+export interface DecryptedData {
+  content: string;
+}
+
+export interface Encrypter {
+  name: string;
+
+  encrypt(params: EncryptParams): Promise<EncryptedData>;
+  decrypt(params: DecryptParams): Promise<DecryptedData>;
+}
+```
+
+With this new API, we'll have to introduce a generic class for bridge the
+conversion between `EncryptedData`/`DecryptedData` to `EncryptedKey`/`Key` and
+vice-versa.
+
+```ts
+export interface KeyEncrypter {
+  encryptKey(params: EncryptKeyParams): Promise<EncryptedKey>;
+  decryptKey(params: DecryptKeyParams): Promise<Key>;
 }
 ```
 
