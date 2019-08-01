@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import StellarSdk from "stellar-sdk";
-import { Input } from "@stellar/elements";
+import { Input, Checkbox } from "@stellar/elements";
 
 import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 
@@ -14,6 +14,7 @@ export default class KeyEntry extends Component {
     authServer: "",
     authToken: null,
     authTokenError: null,
+    isTestnet: false,
   };
 
   componentDidMount() {
@@ -48,7 +49,7 @@ export default class KeyEntry extends Component {
 
       this.setState({ key: keyMetadata });
 
-      this.props.onSetKey(keyMetadata.publicKey);
+      this.props.onSetKey(keyMetadata.publicKey, this.state.isTestnet);
     } catch (e) {
       this.setState({ error: e.toString() });
     }
@@ -80,6 +81,7 @@ export default class KeyEntry extends Component {
       keyInput,
       password,
       error,
+      isTestnet,
     } = this.state;
 
     const localKey = localStorage.getItem("key");
@@ -87,6 +89,7 @@ export default class KeyEntry extends Component {
     if (key) {
       return (
         <>
+          {isTestnet ? <p>Testnet</p> : <p>Mainnet</p>}
           <p>Password: {password}</p>
 
           <pre>{JSON.stringify(key, null, 2)}</pre>
@@ -151,6 +154,12 @@ export default class KeyEntry extends Component {
             onChange={(ev) => this.setState({ password: ev.target.value })}
           />
         </label>
+
+        <Checkbox
+          label="Use testnet"
+          checked={isTestnet}
+          onChange={() => this.setState({ isTestnet: !isTestnet })}
+        />
 
         {error && <p style={{ color: "red" }}>Sad error: {error}</p>}
 
