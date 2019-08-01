@@ -49,6 +49,14 @@ export class DataProvider {
       ? params.accountOrKey.publicKey
       : params.accountOrKey;
 
+    if (!accountKey) {
+      throw new Error("No account key provided.");
+    }
+
+    if (!params.serverUrl) {
+      throw new Error("No server url provided.");
+    }
+
     // make sure the account key is a real account
     try {
       Keypair.fromPublicKey(accountKey);
