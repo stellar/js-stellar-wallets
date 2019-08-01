@@ -1,6 +1,6 @@
 // @ts-ignore
 import debounce from "lodash/debounce";
-import { Server, ServerApi, StrKey } from "stellar-sdk";
+import { Keypair, Server, ServerApi, StrKey } from "stellar-sdk";
 
 import {
   Account,
@@ -45,11 +45,20 @@ export class DataProvider {
   private callbacks: CallbacksObject;
 
   constructor(params: DataProviderParams) {
-    this.serverUrl = params.serverUrl;
-    this.accountKey = isAccount(params.accountOrKey)
+    const accountKey = isAccount(params.accountOrKey)
       ? params.accountOrKey.publicKey
       : params.accountOrKey;
+
+    // make sure the account key is a real account
+    try {
+      Keypair.fromPublicKey(accountKey);
+    } catch (e) {
+      throw new Error(`The provided key was not valid: ${accountKey}`);
+    }
+
     this.callbacks = {};
+    this.serverUrl = params.serverUrl;
+    this.accountKey = accountKey;
     this.unfundedWatcherTimeout = null;
   }
 

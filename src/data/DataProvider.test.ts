@@ -35,9 +35,7 @@ describe("Account validation", () => {
         serverUrl: "https://horizon.stellar.org",
       });
     } catch (e) {
-      console.log("error: ", e);
       expect(e).toBeTruthy();
-      expect(e.isUnfunded).toBeFalsy();
     }
     expect(provider).not.toBeInstanceOf(DataProvider);
   });
