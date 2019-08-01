@@ -86,6 +86,18 @@ export class DataProvider {
   }
 
   /**
+   * Check if the current account is funded or not.
+   */
+  public async isAccountFunded(): Promise<boolean> {
+    try {
+      await this.fetchAccountDetails();
+      return true;
+    } catch (e) {
+      return !!e.isUnfunded;
+    }
+  }
+
+  /**
    * Fetch outstanding offers.
    */
   public async fetchOpenOffers(
