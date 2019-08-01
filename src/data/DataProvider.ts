@@ -7,10 +7,12 @@ import {
   AccountDetails,
   Collection,
   CollectionParams,
+  FetchAccountError,
   Offer,
   Trade,
   Transfer,
 } from "../types";
+
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
@@ -121,24 +123,29 @@ export class DataProvider {
    * Fetch account details (balances, signers, etc.).
    */
   public async fetchAccountDetails(): Promise<AccountDetails> {
-    const accountSummary = await new Server(this.serverUrl)
-      .accounts()
-      .accountId(this.accountKey)
-      .call();
+    try {
+      const accountSummary = await new Server(this.serverUrl)
+        .accounts()
+        .accountId(this.accountKey)
+        .call();
 
-    // @ts-ignore
-    const balances = makeDisplayableBalances(accountSummary);
+      // @ts-ignore
+      const balances = makeDisplayableBalances(accountSummary);
 
-    return {
-      id: accountSummary.id,
-      subentryCount: accountSummary.subentry_count,
-      inflationDestination: accountSummary.inflation_destination,
-      lastModifiedLedger: accountSummary.last_modified_ledger,
-      thresholds: accountSummary.thresholds,
-      signers: accountSummary.signers,
-      flags: accountSummary.flags,
-      balances,
-    };
+      return {
+        id: accountSummary.id,
+        subentryCount: accountSummary.subentry_count,
+        inflationDestination: accountSummary.inflation_destination,
+        lastModifiedLedger: accountSummary.last_modified_ledger,
+        thresholds: accountSummary.thresholds,
+        signers: accountSummary.signers,
+        flags: accountSummary.flags,
+        balances,
+      };
+    } catch (err) {
+      err.isUnfunded = err.response && err.response.status === 404;
+      throw err as FetchAccountError;
+    }
   }
 
   /**
@@ -167,7 +174,7 @@ export class DataProvider {
 
       // otherwise, if it's a 404, try again in a bit.
       .catch((err) => {
-        if (err.response && err.response.status === 404) {
+        if (err.isUnfunded) {
           this.unfundedWatcherTimeout = setTimeout(() => {
             this.watchAccountDetails(params);
           }, 2000);
