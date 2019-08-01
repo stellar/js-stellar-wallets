@@ -37,6 +37,7 @@ interface CallbacksObject {
 export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
+  private unfundedWatcherTimeout: any;
 
   private effectStreamEnder?: () => void;
   private callbacks: CallbacksObject;
@@ -47,6 +48,7 @@ export class DataProvider {
       ? params.accountOrKey.publicKey
       : params.accountOrKey;
     this.callbacks = {};
+    this.unfundedWatcherTimeout = null;
   }
 
   /**
@@ -140,28 +142,46 @@ export class DataProvider {
   }
 
   /**
-   * Fetch account detqails, then re-fetch whenever the details update.
+   * Fetch account details, then re-fetch whenever the details update.
+   * If the account doesn't exist yet, it will re-check it every 2 seconds.
    * Returns a function you can execute to stop the watcher.
    */
   public watchAccountDetails(params: WatcherParams): () => void {
     const { onMessage, onError } = params;
 
     this.fetchAccountDetails()
-      .then(onMessage)
-      .catch(onError);
 
-    this.callbacks.accountDetails = debounce(() => {
-      this.fetchAccountDetails()
-        .then(onMessage)
-        .catch(onError);
-    }, 2000);
+      // if the account is funded, watch for effects.
+      .then((res) => {
+        onMessage(res);
+        this.callbacks.accountDetails = debounce(() => {
+          this.fetchAccountDetails()
+            .then(onMessage)
+            .catch(onError);
+        }, 2000);
 
-    this._startEffectWatcher().catch((err) => {
-      onError(err);
-    });
+        this._startEffectWatcher().catch((err) => {
+          onError(err);
+        });
+      })
+
+      // otherwise, if it's a 404, try again in a bit.
+      .catch((err) => {
+        if (err.response && err.response.status === 404) {
+          this.unfundedWatcherTimeout = setTimeout(() => {
+            this.watchAccountDetails(params);
+          }, 2000);
+        } else {
+          onError(err);
+        }
+      });
 
     // if they exec this function, don't make the balance callback do anything
     return () => {
+      if (this.unfundedWatcherTimeout) {
+        clearTimeout(this.unfundedWatcherTimeout);
+      }
+
       delete this.callbacks.accountDetails;
     };
   }
