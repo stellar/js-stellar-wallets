@@ -32,15 +32,21 @@ export default class KeyEntry extends Component {
   }
 
   _setKey = async (privateKey, password) => {
+    let key;
+
     try {
       const account = StellarSdk.Keypair.fromSecret(privateKey);
-
-      const key = {
+      key = {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
         type: KeyType.plaintextKey,
       };
+    } catch (e) {
+      this.setState({ error: "That wasn't a valid secret key." });
+      return;
+    }
 
+    try {
       const keyMetadata = await this.state.keyManager.storeKey({
         key,
         password,
