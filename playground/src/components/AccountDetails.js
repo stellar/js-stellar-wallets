@@ -6,6 +6,7 @@ class AccountDetails extends Component {
     err: null,
     updateTimes: [],
     streamEnder: null,
+    isAccountFunded: null,
   };
 
   componentDidMount() {
@@ -41,11 +42,17 @@ class AccountDetails extends Component {
       err: null,
       updateTimes: [],
       streamEnder: null,
+      isAccountFunded: false,
     });
+
+    dataProvider
+      .isAccountFunded()
+      .then((isFunded) => this.setState({ isFunded }));
 
     const streamEnder = dataProvider.watchAccountDetails({
       onMessage: (accountDetails) => {
         this.setState({
+          isAccountFunded: true,
           accountDetails,
           updateTimes: [...this.state.updateTimes, new Date()],
         });
@@ -63,17 +70,25 @@ class AccountDetails extends Component {
   };
 
   render() {
-    const { accountDetails, err, updateTimes } = this.state;
+    const { accountDetails, err, updateTimes, isAccountFunded } = this.state;
     return (
       <div>
         <h2>Account Details</h2>
-        <ul>
-          {updateTimes.map((time) => (
-            <li key={time.toString()}>{time.toString()}</li>
-          ))}
-        </ul>
 
-        {accountDetails && <pre>{JSON.stringify(accountDetails, null, 2)}</pre>}
+        {!isAccountFunded && <p>Account isn't funded yet.</p>}
+        {isAccountFunded && (
+          <>
+            <ul>
+              {updateTimes.map((time) => (
+                <li key={time.toString()}>{time.toString()}</li>
+              ))}
+            </ul>
+            {accountDetails && (
+              <pre>{JSON.stringify(accountDetails, null, 2)}</pre>
+            )}
+          </>
+        )}
+
         {err && <p>Error: {err.toString()}</p>}
       </div>
     );

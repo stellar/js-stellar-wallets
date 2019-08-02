@@ -1,7 +1,22 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { Horizon, ServerApi } from "stellar-sdk";
+import {
+  BadRequestError,
+  Horizon,
+  NetworkError,
+  NotFoundError,
+  ServerApi,
+} from "stellar-sdk";
 import { EffectType } from "../constants/data";
+
+interface NotFundedError {
+  isUnfunded: boolean;
+}
+
+export type FetchAccountError =
+  | BadRequestError
+  | NetworkError
+  | NotFoundError & NotFundedError;
 
 export type TradeId = string;
 export type OfferId = string;

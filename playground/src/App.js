@@ -22,6 +22,7 @@ const El = styled.div`
 class App extends Component {
   state = {
     dataProvider: null,
+    isTestnet: false,
   };
 
   componentDidMount() {
@@ -29,9 +30,11 @@ class App extends Component {
     window.WalletSdk = WalletSdk;
   }
 
-  _setKey = (publicKey) => {
+  _setKey = (publicKey, isTestnet) => {
     const dataProvider = new WalletSdk.DataProvider({
-      serverUrl: "https://horizon.stellar.org",
+      serverUrl: isTestnet
+        ? "https://horizon-testnet.stellar.org/"
+        : "https://horizon.stellar.org",
       accountOrKey: publicKey,
     });
 
