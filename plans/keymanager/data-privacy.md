@@ -39,6 +39,8 @@ export interface Key {
   creationTime?: number;
   modifiedTime?: number;
 }
+
+encryptedBlob = base64url(encrypt(json(encryptingParams)));
 ```
 
 The keystore and keymanager will receive the `id` from now on, allowing
