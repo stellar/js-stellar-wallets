@@ -71,7 +71,8 @@ export class KeyManager {
 
 In order to integrate with keystore.stellar.org, a few changes would be required
 to accomodate the SDK's separation of concerns. Right now, the keystore can't
-perform any encryption operations, encrypting the whole keys blob.
+perform any encryption operations, like encrypting the whole keys blob as
+keystore.stellar.org expects.
 
 ```ts
 interface EncryptingData {
