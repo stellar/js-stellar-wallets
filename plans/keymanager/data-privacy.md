@@ -40,7 +40,7 @@ export interface Key {
   modifiedTime?: number;
 }
 
-encryptedBlob = base64url(encrypt(json(encryptingParams)));
+encryptedBlob = base64(encrypt(json(encryptingParams)));
 ```
 
 The keystore and keymanager will receive the `id` from now on, allowing
@@ -72,31 +72,26 @@ export class KeyManager {
 In order to integrate with keystore.stellar.org, a few changes would be required
 to accomodate the SDK's separation of concerns. Right now, the keystore can't
 perform any encryption operations, like encrypting the whole keys blob as
-keystore.stellar.org expects.
+keystore.stellar.org expects. These are the
+[updated bits of the spec](https://github.com/stellar/go/blob/master/services/keystore/spec.md).
 
 ```ts
-interface EncryptingData {
-  publicKey: string;
-  privateKey: string;
-}
-
-interface RawKeyData {
-  keyType: string;
-  publicKey: string;
-  privateKey: string;
-  path?: string;
-  extra?: any;
-}
-
 interface EncryptedKeysData {
   keysBlob: string;
   creationTime: number;
   modifiedTime: number;
 }
 
-encryptedBlob = base64(json(EncryptingData))
-keysBlob = base64url(json(RawKeyData[]))
+interface PutKeysRequest {
+  keysBlob: string;
+}
+
+keysBlob = base64url(json(EncryptedKey[]))
 ```
+
+The most important aspect of the changes is that `keysBlob` doesn't require
+encryption anymore because each key will have its own encrypted blob, as
+described by `EncryptedKey`'s `encryptedBlob` property.
 
 ## Considerations
 
