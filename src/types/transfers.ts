@@ -7,7 +7,7 @@ export interface GetKycArgs {
 }
 
 export interface FeeArgs {
-  assetCode: string;
+  asset_code: string;
   amount: string;
   operation: "withdraw" | "deposit";
   type: string;
@@ -15,7 +15,7 @@ export interface FeeArgs {
 
 export interface RawInfoResponse {
   withdraw: {
-    [assetCode: string]: {
+    [asset_code: string]: {
       enabled: boolean;
       fee_fixed: number;
       fee_percent: number;
@@ -28,7 +28,7 @@ export interface RawInfoResponse {
     };
   };
   deposit: {
-    [assetCode: string]: {
+    [asset_code: string]: {
       enabled: boolean;
       fee_fixed: number;
       fee_percent: number;
@@ -78,12 +78,12 @@ export interface Info {
 }
 
 export interface WithdrawAssetInfo {
-  assetCode: string;
+  asset_code: string;
   fee: Fee;
-  minAmount: number;
-  maxAmount: number;
+  min_amount: number;
+  max_amount: number;
   types: WithdrawType[];
-  authenticationRequired?: boolean;
+  authentication_required?: boolean;
 }
 
 export interface WithdrawInfo {
@@ -91,16 +91,16 @@ export interface WithdrawInfo {
 }
 
 export interface DepositAssetInfo {
-  assetCode: string;
+  asset_code: string;
   fee: Fee;
-  minAmount: number;
-  maxAmount?: number;
+  min_amount: number;
+  max_amount?: number;
   fields: Field[];
-  authenticationRequired?: boolean;
+  authentication_required?: boolean;
 }
 
 export interface DepositInfo {
-  [assetCode: string]: DepositAssetInfo;
+  [asset_code: string]: DepositAssetInfo;
 }
 
 export interface WithdrawRequest {

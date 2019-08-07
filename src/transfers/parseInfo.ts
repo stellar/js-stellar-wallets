@@ -74,15 +74,15 @@ function parseField([fieldName, field]: FieldEntry): Field {
 
 export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
   return Object.entries(info.withdraw).reduce(
-    (accum, [assetCode, entry]) => {
+    (accum, [asset_code, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
 
-      accum[assetCode] = {
-        assetCode,
+      accum[asset_code] = {
+        asset_code,
         fee,
-        minAmount: entry.min_amount,
-        maxAmount: entry.max_amount,
-        authenticationRequired: !!entry.authentication_required,
+        min_amount: entry.min_amount,
+        max_amount: entry.max_amount,
+        authentication_required: !!entry.authentication_required,
         types: Object.entries(entry.types || {}).map(parseType),
       };
       return accum;
@@ -93,15 +93,15 @@ export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
 
 export function parseDeposit(info: RawInfoResponse): DepositInfo {
   return Object.entries(info.deposit).reduce(
-    (accum, [assetCode, entry]) => {
+    (accum, [asset_code, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
 
-      accum[assetCode] = {
-        assetCode,
+      accum[asset_code] = {
+        asset_code,
         fee,
-        minAmount: entry.min_amount,
-        maxAmount: entry.max_amount,
-        authenticationRequired: !!entry.authentication_required,
+        min_amount: entry.min_amount,
+        max_amount: entry.max_amount,
+        authentication_required: !!entry.authentication_required,
         fields: Object.entries(entry.fields || {}).map(parseField),
       };
       return accum;

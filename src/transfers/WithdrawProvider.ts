@@ -85,9 +85,9 @@ export class WithdrawProvider extends TransferProvider {
       throw new Error("Run fetchSupportedAssets before running withdraw!");
     }
 
-    const search = queryString.stringify(this.makeSnakeCase(args));
+    const search = queryString.stringify(args);
     const isAuthRequired = this.info.withdraw[args.assetCode]
-      .authenticationRequired;
+      .authentication_required;
 
     if (isAuthRequired && !this.bearerToken) {
       throw new Error(

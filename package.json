@@ -15,7 +15,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
     "docs": "typedoc",
-    "lint": "tslint --fix --project tsconfig.json",
+    "lint": "tslint --fix --format verbose --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
     "prettier": "prettier --write '**/*.{js,ts,md}'",
     "test": "jest --watch",
@@ -35,7 +35,7 @@
       ],
       "**/*.ts": [
         "prettier --write",
-        "tslint --fix",
+        "tslint --fix --format verbose",
         "git add"
       ]
     }
