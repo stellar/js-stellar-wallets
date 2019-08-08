@@ -17,9 +17,7 @@ export function makeDisplayableBalances(
       const identifier = getBalanceIdentifier(balance);
 
       const total = new BigNumber(balance.balance);
-      // @ts-ignore
       const sellingLiabilities = new BigNumber(balance.selling_liabilities);
-      // @ts-ignore
       const buyingLiabilities = new BigNumber(balance.buying_liabilities);
       const available = total.minus(sellingLiabilities);
 
@@ -56,9 +54,8 @@ export function makeDisplayableBalances(
           sellingLiabilities,
           buyingLiabilities,
           total,
-          lastModified:
-            // @ts-ignore
-            (balance as Horizon.BalanceLineAsset).last_modified_ledger,
+          lastModified: (balance as Horizon.BalanceLineAsset)
+            .last_modified_ledger,
           limit: new BigNumber((balance as Horizon.BalanceLineAsset).limit),
           available: total.minus(sellingLiabilities),
         },
