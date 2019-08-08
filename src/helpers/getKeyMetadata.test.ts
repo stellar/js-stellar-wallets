@@ -1,4 +1,3 @@
-import { KeyType } from "../constants/keys";
 import { EncryptedKey } from "../types";
 
 import { getKeyMetadata } from "./getKeyMetadata";
@@ -6,23 +5,16 @@ import { getKeyMetadata } from "./getKeyMetadata";
 describe("getKeyMetadata", () => {
   test("ledger key", () => {
     const encryptedKey: EncryptedKey = {
-      type: KeyType.plaintextKey,
-      publicKey: "AVACYN",
-      encryptedPrivateKey: "ARCHANGEL",
+      id: "PURIFIER",
+      encryptedBlob: "BLOB",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
+      creationTime: 666,
+      modifiedTime: 666,
     };
 
-    expect(
-      getKeyMetadata({
-        encryptedKey,
-        creationTime: 666,
-        modifiedTime: 666,
-      }),
-    ).toEqual({
-      type: KeyType.plaintextKey,
-      encrypterName: "Test",
-      publicKey: "AVACYN",
+    expect(getKeyMetadata(encryptedKey)).toEqual({
+      id: "PURIFIER",
       creationTime: 666,
       modifiedTime: 666,
     });

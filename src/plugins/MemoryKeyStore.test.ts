@@ -1,6 +1,5 @@
 import sinon from "sinon";
 
-import { KeyType } from "../constants/keys";
 import { testKeyStore } from "../PluginTesting";
 import { EncryptedKey } from "../types";
 import { MemoryKeyStore } from "./MemoryKeyStore";
@@ -21,17 +20,14 @@ describe("MemoryKeyStore", function() {
     const testStore = new MemoryKeyStore();
 
     const encryptedKey: EncryptedKey = {
-      type: KeyType.plaintextKey,
-      publicKey: "AVACYN",
-      encryptedPrivateKey: "ARCHANGEL",
+      id: "PURIFIER",
+      encryptedBlob: "BLOB",
       encrypterName: "Test",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
 
     const keyMetadata = {
-      type: KeyType.plaintextKey,
-      encrypterName: "Test",
-      publicKey: "AVACYN",
+      id: "PURIFIER",
       creationTime: 666,
       modifiedTime: 666,
     };
@@ -46,24 +42,21 @@ describe("MemoryKeyStore", function() {
 
     const allKeys = await testStore.loadAllKeys();
 
-    expect(allKeys).toEqual([encryptedKey]);
+    expect(allKeys).toEqual([{ ...encryptedKey, ...keyMetadata }]);
   });
 
   it("properly deletes keys", async () => {
     const testStore = new MemoryKeyStore();
 
     const encryptedKey: EncryptedKey = {
-      type: KeyType.plaintextKey,
-      publicKey: "AVACYN",
-      encryptedPrivateKey: "ARCHANGEL",
+      id: "PURIFIER",
       encrypterName: "Test",
+      encryptedBlob: "BLOB",
       salt: "SLFKJSDLKFJLSKDJFLKSJD",
     };
 
     const keyMetadata = {
-      type: KeyType.plaintextKey,
-      encrypterName: "Test",
-      publicKey: "AVACYN",
+      id: "PURIFIER",
       creationTime: 666,
       modifiedTime: 666,
     };
@@ -72,9 +65,9 @@ describe("MemoryKeyStore", function() {
 
     const allKeys = await testStore.loadAllKeys();
 
-    expect(allKeys).toEqual([encryptedKey]);
+    expect(allKeys).toEqual([{ ...encryptedKey, ...keyMetadata }]);
 
-    const removalMetadata = await testStore.removeKey("AVACYN");
+    const removalMetadata = await testStore.removeKey("PURIFIER");
 
     expect(removalMetadata).toEqual(keyMetadata);
 

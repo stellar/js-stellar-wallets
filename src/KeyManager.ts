@@ -1,3 +1,4 @@
+import sha1 from "js-sha1";
 import { Network, Networks, Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
@@ -14,6 +15,7 @@ import {
   KeyMetadata,
   KeyStore,
   KeyTypeHandler,
+  NewKey,
 } from "./types";
 
 export interface KeyManagerParams {
@@ -22,14 +24,14 @@ export interface KeyManagerParams {
 }
 
 export interface StoreKeyParams {
-  key: Key;
+  key: Key | NewKey;
   encrypterName: string;
   password?: string;
 }
 
 export interface SignTransactionParams {
   transaction: Transaction;
-  publicKey: string;
+  id: string;
   password?: string;
 }
 
@@ -75,7 +77,7 @@ export class KeyManager {
   private encrypterMap: { [key: string]: Encrypter };
   private keyStore: KeyStore;
   private keyHandlerMap: { [key: string]: KeyTypeHandler };
-  private keyCache: { [publicKey: string]: Key };
+  private keyCache: { [id: string]: Key };
   private shouldCache: boolean;
 
   constructor(params: KeyManagerParams) {
@@ -115,12 +117,21 @@ export class KeyManager {
     password,
     encrypterName,
   }: StoreKeyParams): Promise<KeyMetadata> {
-    // happy path-only code to demonstrate idea
-    const encrypterObj = this.encrypterMap[encrypterName];
-    const encryptedKey = await encrypterObj.encryptKey({ key, password });
+    const id = key.id || sha1(`${key.privateKey}${key.publicKey}`);
+
+    const newKey: Key = {
+      ...key,
+      id,
+    };
+
+    const encrypter = this.encrypterMap[encrypterName];
+    const encryptedKey = await encrypter.encryptKey({
+      key: newKey,
+      password,
+    });
     const keyMetadata = await this.keyStore.storeKeys([encryptedKey]);
 
-    this._writeIndexCache(key.publicKey, key);
+    this._writeIndexCache(newKey.id, newKey);
 
     return keyMetadata[0];
   }
@@ -135,15 +146,16 @@ export class KeyManager {
   }
 
   /**
-   *  remove the key specified by this publicKey.
+   *  Remove the key specified by this publicKey.
    *
    * @async
-   * @param publicKey specifies which key to remove
+   * @param id Specifies which key to remove.
+   *                     The id is computed as `sha1(private key + public key)`.
    * @returns Metadata of the removed key
    */
-  public async removeKey(publicKey: string): Promise<KeyMetadata | undefined> {
-    const res = await this.keyStore.removeKey(publicKey);
-    this._writeIndexCache(publicKey, undefined);
+  public async removeKey(id: string): Promise<KeyMetadata | undefined> {
+    const res = await this.keyStore.removeKey(id);
+    this._writeIndexCache(id, undefined);
     return res;
   }
 
@@ -153,26 +165,27 @@ export class KeyManager {
    *
    * @async
    * @param {Transaction} transaction Transaction object to sign
-   * @param {string} publicKey key to sign with
-   * @returns signed transaction
+   * @param {string} id Key to sign with. The id is computed as
+   *                    `sha1(private key + public key)`.
+   * @returns Signed transaction
    */
   public async signTransaction({
     transaction,
-    publicKey,
+    id,
     password,
   }: SignTransactionParams): Promise<Transaction> {
-    let key = this._readFromCache(publicKey);
+    let key = this._readFromCache(id);
 
     if (!key) {
-      const encryptedKey = await this.keyStore.loadKey(publicKey);
+      const encryptedKey = await this.keyStore.loadKey(id);
 
       if (!encryptedKey) {
         throw new Error("No key found");
       }
 
-      const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-      key = await encrypterObj.decryptKey({ encryptedKey, password });
-      this._writeIndexCache(publicKey, key);
+      const encrypter = this.encrypterMap[encryptedKey.encrypterName];
+      key = await encrypter.decryptKey({ encryptedKey, password });
+      this._writeIndexCache(id, key);
     }
 
     const keyHandler = this.keyHandlerMap[key.type];
@@ -195,34 +208,36 @@ export class KeyManager {
    *
    * @async
    * @param {object} params Params object
-   * @param {string} params.publicKey The user's key to authenticate
+   * @param {string} params.id The user's key to authenticate. The id is
+   *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
   public async getAuthToken({
-    publicKey,
+    id,
     password,
     authServer,
   }: GetAuthTokenParams): Promise<AuthToken> {
-    let key = this._readFromCache(publicKey);
+    let key = this._readFromCache(id);
 
     if (!key) {
-      const encryptedKey = await this.keyStore.loadKey(publicKey);
+      const encryptedKey = await this.keyStore.loadKey(id);
 
       if (!encryptedKey) {
         throw new Error("No key found");
       }
 
-      const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-      key = await encrypterObj.decryptKey({ encryptedKey, password });
-      this._writeIndexCache(publicKey, key);
+      const encrypter = this.encrypterMap[encryptedKey.encrypterName];
+      key = await encrypter.decryptKey({ encryptedKey, password });
+      this._writeIndexCache(id, key);
     }
 
     const challengeRes = await fetch(
-      `${authServer}?account=${encodeURIComponent(publicKey)}`,
+      `${authServer}?account=${encodeURIComponent(key.publicKey)}`,
     );
+
     const {
       transaction,
       network_passphrase,
@@ -277,15 +292,15 @@ export class KeyManager {
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (encryptedKey: EncryptedKey) => {
-        const encrypterObj = this.encrypterMap[encryptedKey.encrypterName];
-        const decryptedKey = await encrypterObj.decryptKey({
+        const encrypter = this.encrypterMap[encryptedKey.encrypterName];
+        const decryptedKey = await encrypter.decryptKey({
           encryptedKey,
           password: oldPassword,
         });
 
-        this._writeIndexCache(encryptedKey.publicKey, decryptedKey);
+        this._writeIndexCache(decryptedKey.id, decryptedKey);
 
-        return encrypterObj.encryptKey({
+        return encrypter.encryptKey({
           key: decryptedKey,
           password: newPassword,
         });
@@ -295,17 +310,17 @@ export class KeyManager {
     return this.keyStore.updateKeys(newKeys);
   }
 
-  private _readFromCache(publicKey: string): Key | undefined {
+  private _readFromCache(id: string): Key | undefined {
     if (!this.shouldCache) {
       return undefined;
     }
 
-    return this.keyCache[publicKey];
+    return this.keyCache[id];
   }
 
-  private _writeIndexCache(publicKey: string, key: Key | undefined) {
+  private _writeIndexCache(id: string, key: Key | undefined) {
     if (this.shouldCache && key) {
-      this.keyCache[publicKey] = key;
+      this.keyCache[id] = key;
     }
   }
 }

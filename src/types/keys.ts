@@ -2,10 +2,12 @@ import { Transaction } from "stellar-base";
 import { KeyType } from "../constants/keys";
 
 export interface BaseKey {
-  type: KeyType | string;
-  publicKey: string;
-  path?: string;
+  creationTime?: number;
   extra?: any;
+  modifiedTime?: number;
+  path?: string;
+  publicKey: string;
+  type: KeyType | string;
 }
 
 /**
@@ -20,6 +22,12 @@ export interface BaseKey {
  * hatch to support any exotic key type in the future.
  */
 export interface Key extends BaseKey {
+  id: string;
+  privateKey: string;
+}
+
+export interface NewKey extends BaseKey {
+  id?: string;
   privateKey: string;
 }
 
@@ -27,27 +35,30 @@ export interface Key extends BaseKey {
  * The encrypted key is the exact same shape as the key, minus secret
  * information and plus encrypted information.
  */
-export interface EncryptedKey extends BaseKey {
-  encryptedPrivateKey: string;
+export interface EncryptedKey {
+  creationTime?: number;
+  encryptedBlob: string;
   encrypterName: string;
+  id: string;
+  modifiedTime?: number;
   salt: string;
 }
 
 /**
  * Metadata about the key and when it was changed.
  */
-export interface KeyMetadata extends BaseKey {
-  encrypterName: string;
-  creationTime: number;
-  modifiedTime: number;
+export interface KeyMetadata {
+  id: string;
+  creationTime?: number;
+  modifiedTime?: number;
 }
 
-export interface EncryptKeyParams {
+export interface EncryptParams {
   key: Key;
   password?: string;
 }
 
-export interface DecryptKeyParams {
+export interface DecryptParams {
   encryptedKey: EncryptedKey;
   password?: string;
 }
@@ -67,14 +78,14 @@ export interface Encrypter {
   /**
    * Encrypt a raw, unencrypted key.
    */
-  encryptKey(params: EncryptKeyParams): Promise<EncryptedKey>;
+  encryptKey(params: EncryptParams): Promise<EncryptedKey>;
 
   /**
    * Decrypt an encrypted key. If the password doesn't properly encrypt the key,
    * it should throw an error. Please make sure the error message is descriptive
    * and user-friendly.
    */
-  decryptKey(params: DecryptKeyParams): Promise<Key>;
+  decryptKey(params: DecryptParams): Promise<Key>;
 }
 
 /**
@@ -83,6 +94,8 @@ export interface Encrypter {
  * types of keystores:
  *   - authenticated server-side storage
  *   - storage on local device
+ *
+ * A key's id is generating by computing `sha1(private key + public key)`.
  */
 export interface KeyStore {
   name: string;
@@ -118,14 +131,14 @@ export interface KeyStore {
   updateKeys(keys: EncryptedKey[]): Promise<KeyMetadata[]>;
 
   /**
-   *  Load the key specified by this publicKey.
+   *  Load the key specified by this key id.
    */
-  loadKey(publicKey: string): Promise<EncryptedKey | undefined>;
+  loadKey(id: string): Promise<EncryptedKey | undefined>;
 
   /**
-   *  Remove the key specified by this publicKey.
+   *  Remove the key specified by this key id.
    */
-  removeKey(publicKey: string): Promise<KeyMetadata | undefined>;
+  removeKey(id: string): Promise<KeyMetadata | undefined>;
 
   /**
    *  List information about stored keys.
@@ -162,7 +175,7 @@ export interface KeyTypeHandler {
 export type AuthToken = string;
 
 export interface GetAuthTokenParams {
-  publicKey: string;
+  id: string;
   password: string;
   authServer: string;
 }

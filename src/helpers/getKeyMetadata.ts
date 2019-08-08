@@ -1,18 +1,11 @@
 import { EncryptedKey, KeyMetadata } from "../types";
 
-export function getKeyMetadata({
-  encryptedKey,
-  creationTime,
-  modifiedTime,
-}: {
-  encryptedKey: EncryptedKey;
-  creationTime: number;
-  modifiedTime: number;
-}): KeyMetadata {
-  const { encryptedPrivateKey, salt, ...keyWithoutDetails } = encryptedKey;
+export function getKeyMetadata(encryptedKey: EncryptedKey): KeyMetadata {
+  const { creationTime, modifiedTime, id } = encryptedKey;
+
   return {
-    ...keyWithoutDetails,
     creationTime,
     modifiedTime,
+    id,
   };
 }
