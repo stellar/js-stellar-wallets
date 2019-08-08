@@ -170,7 +170,8 @@ export class WithdrawProvider extends TransferProvider {
    * you pass it in.
    * @returns {Promise} A promise with the result of the KYC attempt. If it
    * succeeds, this will be the information needed to complete a withdrawal. If
-   * it fails, it will contain information about the KYC failure from the anchor.
+   * it fails, it will contain information about the KYC failure from the
+   * anchor.
    */
   public async fetchKycInBrowser({
     response,

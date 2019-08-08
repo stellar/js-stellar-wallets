@@ -105,7 +105,8 @@ export class KeyManager {
    * @async
    * @param key key to store
    * @param password encrypt key with this as the secret
-   * @param encrypterName encryption algorithm to use (must have been registered)
+   * @param encrypterName encryption algorithm to use (must have been
+   * registered)
    *
    * @returns The metadata of the key
    */
@@ -182,6 +183,7 @@ export class KeyManager {
     return signedTransaction;
   }
 
+  // tslint:disable max-line-length
   /**
    * Request an auth token from auth server, which can be used to deposit and
    * withdraw auth-required tokens.
@@ -198,6 +200,7 @@ export class KeyManager {
    * @param {string} params.authServer The URL of the authentication server
    * @returns {Promise<string>} authToken JWT
    */
+  // tslint:enable max-line-length
   public async getAuthToken({
     publicKey,
     password,

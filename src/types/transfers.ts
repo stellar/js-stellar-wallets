@@ -163,6 +163,7 @@ export interface DepositOk extends TransferResponse {
 export interface NonInteractiveKycNeededResponse extends TransferResponse {
   type: TransferResponseType.non_interactive_customer_info_needed;
   fields: string[]; // This can be restricted to the list of strings in SEP-9
+  // tslint:disable-next-line max-line-length
   // https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0009.md#kyc--aml-fields
 }
 
