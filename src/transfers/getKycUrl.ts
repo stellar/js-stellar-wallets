@@ -9,17 +9,17 @@ import {
 
 interface PostMessageArgs {
   response: InteractiveKycNeededResponse;
-  callbackUrl: "postMessage";
+  callback_url: "postMessage";
 }
 interface CallbackUrlArgs {
   response: InteractiveKycNeededResponse;
-  callbackUrl: string;
+  callback_url: string;
   request: DepositRequest | WithdrawRequest;
 }
 export type KycUrlArgs = PostMessageArgs | CallbackUrlArgs;
 
 const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
-  args.callbackUrl === "postMessage";
+  args.callback_url === "postMessage";
 
 /**
  * `getKycUrl` takes in the original request object, a response object, and a
@@ -34,7 +34,7 @@ const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
  * if (depositResponse === TransferResponseType.interactiveKyc) {
  *   const kycRedirect = getKycUrl({
  *     result: withdrawResult,
- *     callbackUrl,
+ *     callback_url,
  *   });
  * }
  * ```
@@ -48,7 +48,7 @@ const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
  * @param {DepositRequest | WithdrawRequest} args.request The original request
  * that needs KYC information.
  * @param {InteractiveKycNeededResponse} args.response The complete response.
- * @param {string} args.callbackUrl A url that the anchor should send
+ * @param {string} args.callback_url A url that the anchor should send
  * information to once KYC information has been received.
  * @returns {string} A URL to open so users can complete their KYC information.
  */
@@ -58,7 +58,7 @@ export function getKycUrl(args: KycUrlArgs) {
   } else {
     // If the callback arg is a URL, add the original request to it as a
     // querystring argument.
-    const url = new URL(args.callbackUrl);
+    const url = new URL(args.callback_url);
     const search = { ...queryString.parse(url.search) };
     search.request = encodeURIComponent(JSON.stringify(args.request));
     url.search = queryString.stringify(search);

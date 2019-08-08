@@ -3,7 +3,7 @@ import { TransferResponseType } from "../constants/transfers";
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeededResponse;
-  callbackUrl: string;
+  callback_url: string;
 }
 
 export interface FeeArgs {
@@ -107,7 +107,7 @@ export interface WithdrawRequest {
   type: string;
   asset_code: string;
   dest: string;
-  destExtra: string;
+  dest_extra: string;
   account?: string;
   memo?: Memo;
   memoType?: string;
@@ -136,12 +136,12 @@ export interface TransferResponse {
 
 export interface WithdrawOk extends TransferResponse {
   status: "ok";
-  sendTo: string;
-  needsMemo: boolean;
+  send_to: string;
+  needs_memo: boolean;
   memo: Memo;
   eta?: number;
-  minAmount?: number;
-  maxAmount?: number;
+  min_amount?: number;
+  max_amount?: number;
   fee: Fee;
   extraInfo?: {
     message: string;
@@ -151,11 +151,11 @@ export interface WithdrawOk extends TransferResponse {
 export interface DepositOk extends TransferResponse {
   how: string;
   eta?: number;
-  minAmount?: number;
-  maxAmount?: number;
-  feeFixed?: number;
-  feePercent?: number;
-  extraInfo?: {
+  min_amount?: number;
+  max_amount?: number;
+  fee_fixed?: number;
+  fee_percent?: number;
+  extra_info?: {
     message: string;
   };
 }
@@ -170,7 +170,7 @@ export interface NonInteractiveKycNeededResponse extends TransferResponse {
 export interface InteractiveKycNeededResponse extends TransferResponse {
   type: TransferResponseType.interactive_customer_info_needed;
   url: string;
-  interactiveDeposit?: boolean;
+  interactive_deposit?: boolean;
 }
 
 export interface KycStatus extends TransferResponse {
