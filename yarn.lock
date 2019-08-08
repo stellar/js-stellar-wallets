@@ -920,10 +920,10 @@
   resolved "https://registry.yarnpkg.com/@stellar/tsconfig/-/tsconfig-1.0.1.tgz#71fdb62e9a20a435d4962b906c997ec6927264e6"
   integrity sha512-dYdEY2chPcD8V2flkG00BTxYUKkIFqTV1n8aIxkdUpSIfnMv8FnixtdLbCb9hRutQgKjIQvHRisUS7yczfjSrw==
 
-"@stellar/tslint-config@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stellar/tslint-config/-/tslint-config-1.0.0.tgz#9f0a5db93191a899d8abf7869b61e6898cf86a0f"
-  integrity sha512-D2pvfvmYtVbrNUGAeIBXaiDCV2xP62kHjfT/X9E2ZIOJyj4UQ9HQvPkKz7uiLwRmMU0jmvz+lqOGbwDXH5SOrg==
+"@stellar/tslint-config@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@stellar/tslint-config/-/tslint-config-1.0.4.tgz#d395a269c00f1768b659e544eb1fe1f007033152"
+  integrity sha512-m1bw9vHt3zGIu5rhItqYM5rc4vxYJpqXIUwZXEn1MK/IC414Eth+uvNve4dKl6GgWJYEOnqlj9uAlEk3gmU/eQ==
 
 "@types/babel__core@^7.1.0":
   version "7.1.0"

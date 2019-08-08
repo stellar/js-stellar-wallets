@@ -46,7 +46,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@stellar/prettier-config": "^1.0.1",
     "@stellar/tsconfig": "^1.0.1",
-    "@stellar/tslint-config": "^1.0.0",
+    "@stellar/tslint-config": "^1.0.4",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.1",
     "@types/sinon": "^7.0.11",
     "babel-jest": "^24.5.0",
