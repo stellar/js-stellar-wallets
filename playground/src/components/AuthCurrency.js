@@ -50,8 +50,6 @@ class AuthCurrency extends Component {
       authentication_required,
     } = this.props;
 
-    console.log("properties: ", this.props);
-
     depositProvider
       .deposit({
         amount: this.state.amount,
@@ -62,7 +60,6 @@ class AuthCurrency extends Component {
       })
       .then((res) => this.setState({ res }))
       .catch((e) => {
-        debugger;
         this.setState({ error: e.toString() });
       });
   };
