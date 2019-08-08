@@ -55,7 +55,7 @@ export function makeDisplayableTransfers(
               payment.asset_type === "native"
                 ? undefined
                 : {
-                    key: payment.asset_issuer,
+                    key: payment.asset_issuer as string,
                   },
           };
 
@@ -77,7 +77,7 @@ export function makeDisplayableTransfers(
                 payment.source_asset_type === "native"
                   ? undefined
                   : {
-                      key: payment.source_asset_issuer,
+                      key: payment.source_asset_issuer as string,
                     },
             }
           : undefined,
