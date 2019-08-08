@@ -29,7 +29,7 @@ import { TransferProvider } from "./TransferProvider";
  * // user provides information, picks asset
  *
  * const fee = await depositProvider.fetchFinalFee({
- *   assetCode,
+ *   asset_code,
  *   amount,
  *   type,
  * });
@@ -37,7 +37,7 @@ import { TransferProvider } from "./TransferProvider";
  * // show fee to user, confirm amount and destination
  *
  * const depositResult = await depositProvider.deposit({
- *   assetCode,
+ *   asset_code,
  *   account,
  *   // more optional properties
  * });
@@ -80,13 +80,13 @@ export class DepositProvider extends TransferProvider {
 
     const search = queryString.stringify(args);
 
-    const isAuthRequired = this.info.deposit[args.assetCode]
+    const isAuthRequired = this.info.deposit[args.asset_code]
       .authentication_required;
 
     if (isAuthRequired && !this.bearerToken) {
       throw new Error(
         `${
-          args.assetCode
+          args.asset_code
         } requires authentication, please authorize with setBearerToken.`,
       );
     }

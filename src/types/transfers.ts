@@ -87,7 +87,7 @@ export interface WithdrawAssetInfo {
 }
 
 export interface WithdrawInfo {
-  [assetCode: string]: WithdrawAssetInfo;
+  [asset_code: string]: WithdrawAssetInfo;
 }
 
 export interface DepositAssetInfo {
@@ -105,7 +105,7 @@ export interface DepositInfo {
 
 export interface WithdrawRequest {
   type: string;
-  assetCode: string;
+  asset_code: string;
   dest: string;
   destExtra: string;
   account?: string;
@@ -115,7 +115,7 @@ export interface WithdrawRequest {
 }
 
 export interface DepositRequest {
-  assetCode: string;
+  asset_code: string;
   account: string;
   memo?: Memo;
   memoType?: string;

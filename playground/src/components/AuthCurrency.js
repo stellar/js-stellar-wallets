@@ -43,17 +43,26 @@ class AuthCurrency extends Component {
   };
 
   _submit = () => {
-    const { depositProvider, account, asset_code } = this.props;
+    const {
+      depositProvider,
+      account,
+      asset_code,
+      authentication_required,
+    } = this.props;
+
+    console.log("properties: ", this.props);
 
     depositProvider
       .deposit({
         amount: this.state.amount,
         account,
         asset_code,
+        authentication_required,
         ...this.state.args,
       })
       .then((res) => this.setState({ res }))
       .catch((e) => {
+        debugger;
         this.setState({ error: e.toString() });
       });
   };

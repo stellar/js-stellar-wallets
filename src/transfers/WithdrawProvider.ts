@@ -29,7 +29,7 @@ import { TransferProvider } from "./TransferProvider";
  * // user provides information, picks asset
  *
  * const fee = await withdrawProvider.fetchFinalFee({
- *   assetCode,
+ *   asset_code,
  *   amount,
  *   type,
  * });
@@ -38,7 +38,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * const withdrawResult = await withdrawProvider.withdraw({
  *   type
- *   assetCode,
+ *   asset_code,
  *   dest,
  *   // more optional properties
  * });
@@ -86,13 +86,13 @@ export class WithdrawProvider extends TransferProvider {
     }
 
     const search = queryString.stringify(args);
-    const isAuthRequired = this.info.withdraw[args.assetCode]
+    const isAuthRequired = this.info.withdraw[args.asset_code]
       .authentication_required;
 
     if (isAuthRequired && !this.bearerToken) {
       throw new Error(
         `${
-          args.assetCode
+          args.asset_code
         } requires authentication, please authorize with setBearerToken.`,
       );
     }
