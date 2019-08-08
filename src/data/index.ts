@@ -4,7 +4,8 @@ import { AssetToken, Token } from "../types";
 
 /**
  * Get the string identifier for a token.
- * @returns "native" if the token is native, otherwise returns `${tokenCode}:${issuerKey}`.
+ * @returns "native" if the token is native, otherwise returns
+ * `${tokenCode}:${issuerKey}`.
  */
 export function getTokenIdentifier(token: Token): string {
   if (token.type === "native") {

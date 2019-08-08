@@ -1,3 +1,5 @@
+// tslint:disable max-line-length
+
 export const AccountResponse = {
   _links: {
     self: {

@@ -3,11 +3,11 @@ import { TransferResponseType } from "../constants/transfers";
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeededResponse;
-  callbackUrl: string;
+  callback_url: string;
 }
 
 export interface FeeArgs {
-  assetCode: string;
+  asset_code: string;
   amount: string;
   operation: "withdraw" | "deposit";
   type: string;
@@ -15,7 +15,7 @@ export interface FeeArgs {
 
 export interface RawInfoResponse {
   withdraw: {
-    [assetCode: string]: {
+    [asset_code: string]: {
       enabled: boolean;
       fee_fixed: number;
       fee_percent: number;
@@ -28,7 +28,7 @@ export interface RawInfoResponse {
     };
   };
   deposit: {
-    [assetCode: string]: {
+    [asset_code: string]: {
       enabled: boolean;
       fee_fixed: number;
       fee_percent: number;
@@ -78,36 +78,36 @@ export interface Info {
 }
 
 export interface WithdrawAssetInfo {
-  assetCode: string;
+  asset_code: string;
   fee: Fee;
-  minAmount: number;
-  maxAmount: number;
+  min_amount: number;
+  max_amount: number;
   types: WithdrawType[];
-  authenticationRequired?: boolean;
+  authentication_required?: boolean;
 }
 
 export interface WithdrawInfo {
-  [assetCode: string]: WithdrawAssetInfo;
+  [asset_code: string]: WithdrawAssetInfo;
 }
 
 export interface DepositAssetInfo {
-  assetCode: string;
+  asset_code: string;
   fee: Fee;
-  minAmount: number;
-  maxAmount?: number;
+  min_amount: number;
+  max_amount?: number;
   fields: Field[];
-  authenticationRequired?: boolean;
+  authentication_required?: boolean;
 }
 
 export interface DepositInfo {
-  [assetCode: string]: DepositAssetInfo;
+  [asset_code: string]: DepositAssetInfo;
 }
 
 export interface WithdrawRequest {
   type: string;
-  assetCode: string;
+  asset_code: string;
   dest: string;
-  destExtra: string;
+  dest_extra: string;
   account?: string;
   memo?: Memo;
   memoType?: string;
@@ -115,7 +115,7 @@ export interface WithdrawRequest {
 }
 
 export interface DepositRequest {
-  assetCode: string;
+  asset_code: string;
   account: string;
   memo?: Memo;
   memoType?: string;
@@ -136,12 +136,12 @@ export interface TransferResponse {
 
 export interface WithdrawOk extends TransferResponse {
   status: "ok";
-  sendTo: string;
-  needsMemo: boolean;
+  send_to: string;
+  needs_memo: boolean;
   memo: Memo;
   eta?: number;
-  minAmount?: number;
-  maxAmount?: number;
+  min_amount?: number;
+  max_amount?: number;
   fee: Fee;
   extraInfo?: {
     message: string;
@@ -151,11 +151,11 @@ export interface WithdrawOk extends TransferResponse {
 export interface DepositOk extends TransferResponse {
   how: string;
   eta?: number;
-  minAmount?: number;
-  maxAmount?: number;
-  feeFixed?: number;
-  feePercent?: number;
-  extraInfo?: {
+  min_amount?: number;
+  max_amount?: number;
+  fee_fixed?: number;
+  fee_percent?: number;
+  extra_info?: {
     message: string;
   };
 }
@@ -163,13 +163,14 @@ export interface DepositOk extends TransferResponse {
 export interface NonInteractiveKycNeededResponse extends TransferResponse {
   type: TransferResponseType.non_interactive_customer_info_needed;
   fields: string[]; // This can be restricted to the list of strings in SEP-9
+  // tslint:disable-next-line max-line-length
   // https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0009.md#kyc--aml-fields
 }
 
 export interface InteractiveKycNeededResponse extends TransferResponse {
   type: TransferResponseType.interactive_customer_info_needed;
   url: string;
-  interactiveDeposit?: boolean;
+  interactive_deposit?: boolean;
 }
 
 export interface KycStatus extends TransferResponse {

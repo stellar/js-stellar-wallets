@@ -2,44 +2,13 @@ import { DepositProvider } from "./DepositProvider";
 
 import { DepositInfo } from "../types";
 
-describe("makeSnakeCase", () => {
-  test("changes camelcase things", () => {
-    const provider = new DepositProvider("test");
-    const req = {
-      type: "type",
-      assetCode: "assetCode",
-      dest: "dest",
-      destExtra: "destExtra",
-      account: "account",
-    };
-    expect(provider.makeSnakeCase(req)).toEqual({
-      type: "type",
-      asset_code: "assetCode",
-      dest: "dest",
-      dest_extra: "destExtra",
-      account: "account",
-    });
-  });
-  test("doesn't change snakeCase stuff", () => {
-    const provider = new DepositProvider("test");
-    const req = {
-      type: "type",
-      asset_code: "assetCode",
-      dest: "dest",
-      dest_extra: "destExtra",
-      account: "account",
-    };
-    expect(provider.makeSnakeCase(req)).toEqual(req);
-  });
-});
-
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
     const info: DepositInfo = {
       USD: {
-        assetCode: "USD",
+        asset_code: "USD",
         fee: { type: "simple", fixed: 5, percent: 1 },
-        minAmount: 15,
+        min_amount: 15,
         fields: [
           {
             description: "your email address for transaction status updates",
@@ -60,7 +29,7 @@ describe("fetchFinalFee", () => {
 
     expect(
       await provider.fetchFinalFee({
-        assetCode: info.USD.assetCode,
+        asset_code: info.USD.asset_code,
         amount: "15",
         type: "",
       }),
@@ -70,10 +39,10 @@ describe("fetchFinalFee", () => {
   test("EUR from Nucleo staging", async () => {
     const info: DepositInfo = {
       EUR: {
-        assetCode: "EUR",
+        asset_code: "EUR",
         fee: { type: "simple", percent: 0.5 },
-        minAmount: 1,
-        maxAmount: 1000000000,
+        min_amount: 1,
+        max_amount: 1000000000,
         fields: [
           {
             description: "Type of deposit method for EUR",
@@ -90,7 +59,7 @@ describe("fetchFinalFee", () => {
 
     expect(
       await provider.fetchFinalFee({
-        assetCode: info.EUR.assetCode,
+        asset_code: info.EUR.asset_code,
         amount: "10",
         type: "",
       }),

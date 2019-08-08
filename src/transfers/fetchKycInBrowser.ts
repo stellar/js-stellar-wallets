@@ -31,7 +31,7 @@ export function fetchKycInBrowser({
     windowContext.addEventListener("message", handleMessage);
     windowContext.location.href = getKycUrl({
       response,
-      callbackUrl: "postMessage",
+      callback_url: "postMessage",
     });
   });
 }

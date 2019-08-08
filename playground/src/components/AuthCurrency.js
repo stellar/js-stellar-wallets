@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import changeCase from "change-case";
 
 import { DepositProvider } from "@stellar/wallet-sdk";
 import { Button, ButtonThemes, Select } from "@stellar/elements";
@@ -31,12 +30,12 @@ class AuthCurrency extends Component {
   }
 
   _calculateFee = () => {
-    const { account, assetCode, depositProvider } = this.props;
+    const { account, asset_code, depositProvider } = this.props;
     const { amount } = this.state;
     depositProvider
       .fetchFinalFee({
         amount,
-        assetCode,
+        asset_code,
         account,
       })
       .then((fee) => this.setState({ fee }))
@@ -44,22 +43,20 @@ class AuthCurrency extends Component {
   };
 
   _submit = () => {
-    const { depositProvider, account, assetCode } = this.props;
-
-    const args = Object.keys(this.state.args).reduce(
-      (memo, key) => ({
-        ...memo,
-        [changeCase.camelCase(key)]: this.state.args[key],
-      }),
-      {},
-    );
+    const {
+      depositProvider,
+      account,
+      asset_code,
+      authentication_required,
+    } = this.props;
 
     depositProvider
       .deposit({
         amount: this.state.amount,
         account,
-        assetCode,
-        ...args,
+        asset_code,
+        authentication_required,
+        ...this.state.args,
       })
       .then((res) => this.setState({ res }))
       .catch((e) => {
@@ -68,18 +65,18 @@ class AuthCurrency extends Component {
   };
 
   render() {
-    const { assetCode, minAmount, maxAmount, fields } = this.props;
+    const { asset_code, min_amount, max_amount, fields } = this.props;
     const { args, amount, error, fee } = this.state;
     const amountFloat = parseFloat(amount);
 
     return (
       <El>
-        <h3>{assetCode}</h3>
+        <h3>{asset_code}</h3>
 
         {error && <p>Deposit error: {error}</p>}
 
         <label>
-          Amount ({minAmount} to {maxAmount || "∞"}){" "}
+          Amount ({min_amount} to {max_amount || "∞"}){" "}
           <input
             type="number"
             value={this.state.amount}
@@ -118,7 +115,7 @@ class AuthCurrency extends Component {
           </div>
         ))}
 
-        {amountFloat > minAmount && (!maxAmount || amountFloat < maxAmount) && (
+        {amountFloat > min_amount && (!max_amount || amountFloat < max_amount) && (
           <Button theme={ButtonThemes.primary} onClick={this._submit}>
             Submit
           </Button>

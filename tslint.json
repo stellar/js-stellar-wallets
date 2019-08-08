@@ -1,3 +1,13 @@
 {
-  "extends": ["@stellar/tslint-config"]
+  "extends": ["@stellar/tslint-config"],
+  "rules": {
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "allow-leading-underscore",
+        "allow-pascal-case",
+        "allow-snake-case"
+      ]
+    }
+  }
 }

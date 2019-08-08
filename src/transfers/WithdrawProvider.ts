@@ -29,7 +29,7 @@ import { TransferProvider } from "./TransferProvider";
  * // user provides information, picks asset
  *
  * const fee = await withdrawProvider.fetchFinalFee({
- *   assetCode,
+ *   asset_code,
  *   amount,
  *   type,
  * });
@@ -38,7 +38,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * const withdrawResult = await withdrawProvider.withdraw({
  *   type
- *   assetCode,
+ *   asset_code,
  *   dest,
  *   // more optional properties
  * });
@@ -77,22 +77,22 @@ export class WithdrawProvider extends TransferProvider {
   /**
    * Make a withdraw request.
    *
-   * Note that all arguments must be in camelCase, even though they're sent to
-   * the server in snake_case!
+   * Note that all arguments must be in snake_case (which is what transfer
+   * servers expect)!
    */
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
     if (!this.info || !this.info.withdraw) {
       throw new Error("Run fetchSupportedAssets before running withdraw!");
     }
 
-    const search = queryString.stringify(this.makeSnakeCase(args));
-    const isAuthRequired = this.info.withdraw[args.assetCode]
-      .authenticationRequired;
+    const search = queryString.stringify(args);
+    const isAuthRequired = this.info.withdraw[args.asset_code]
+      .authentication_required;
 
     if (isAuthRequired && !this.bearerToken) {
       throw new Error(
         `${
-          args.assetCode
+          args.asset_code
         } requires authentication, please authorize with setBearerToken.`,
       );
     }
@@ -170,7 +170,8 @@ export class WithdrawProvider extends TransferProvider {
    * you pass it in.
    * @returns {Promise} A promise with the result of the KYC attempt. If it
    * succeeds, this will be the information needed to complete a withdrawal. If
-   * it fails, it will contain information about the KYC failure from the anchor.
+   * it fails, it will contain information about the KYC failure from the
+   * anchor.
    */
   public async fetchKycInBrowser({
     response,

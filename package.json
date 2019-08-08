@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.0.3-rc.18",
+  "version": "0.0.4-rc.1",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
     "docs": "typedoc",
-    "lint": "tslint --fix --project tsconfig.json",
+    "lint": "tslint --fix --format verbose --project tsconfig.json",
     "lintAndTest": "yarn lint && jest",
     "prettier": "prettier --write '**/*.{js,ts,md}'",
     "test": "jest --watch",
@@ -35,7 +35,7 @@
       ],
       "**/*.ts": [
         "prettier --write",
-        "tslint --fix",
+        "tslint --fix --format verbose",
         "git add"
       ]
     }
@@ -46,7 +46,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@stellar/prettier-config": "^1.0.1",
     "@stellar/tsconfig": "^1.0.1",
-    "@stellar/tslint-config": "^1.0.0",
+    "@stellar/tslint-config": "^1.0.4",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.1",
     "@types/sinon": "^7.0.11",
     "babel-jest": "^24.5.0",
@@ -68,7 +68,6 @@
     "@types/jest": "^24.0.11",
     "@types/stellar-base": "^0.10.2",
     "bignumber.js": "^8.1.1",
-    "change-case": "^3.1.0",
     "lodash": "^4.17.14",
     "query-string": "^6.4.2",
     "scrypt-async": "^2.0.1",
