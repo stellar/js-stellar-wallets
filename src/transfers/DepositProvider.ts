@@ -73,6 +73,12 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class DepositProvider extends TransferProvider {
+  /**
+   * Make a deposit request.
+   *
+   * Note that all arguments must be in snake_case (which is what transfer
+   * servers expect)!
+   */
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
     if (!this.info || !this.info.deposit) {
       throw new Error("Run fetchSupportedAssets before running deposit!");

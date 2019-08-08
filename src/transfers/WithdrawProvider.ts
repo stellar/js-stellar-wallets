@@ -77,8 +77,8 @@ export class WithdrawProvider extends TransferProvider {
   /**
    * Make a withdraw request.
    *
-   * Note that all arguments must be in camelCase, even though they're sent to
-   * the server in snake_case!
+   * Note that all arguments must be in snake_case (which is what transfer
+   * servers expect)!
    */
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
     if (!this.info || !this.info.withdraw) {
