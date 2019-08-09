@@ -36,6 +36,10 @@ interface CallbacksObject {
   accountDetails?: () => void;
 }
 
+interface ErrorHandlersObject {
+  accountDetails?: (error: any) => void;
+}
+
 export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
@@ -43,6 +47,7 @@ export class DataProvider {
 
   private effectStreamEnder?: () => void;
   private callbacks: CallbacksObject;
+  private errorHandlers: ErrorHandlersObject;
 
   constructor(params: DataProviderParams) {
     const accountKey = isAccount(params.accountOrKey)
@@ -65,6 +70,7 @@ export class DataProvider {
     }
 
     this.callbacks = {};
+    this.errorHandlers = {};
     this.serverUrl = params.serverUrl;
     this.accountKey = accountKey;
     this.unfundedWatcherTimeout = null;
@@ -195,6 +201,7 @@ export class DataProvider {
             .then(onMessage)
             .catch(onError);
         }, 2000);
+        this.errorHandlers.accountDetails = onError;
 
         this._startEffectWatcher().catch((err) => {
           onError(err);
@@ -219,6 +226,7 @@ export class DataProvider {
       }
 
       delete this.callbacks.accountDetails;
+      delete this.errorHandlers.accountDetails;
     };
   }
 
@@ -316,6 +324,17 @@ export class DataProvider {
             if (this.effectStreamEnder) {
               this.effectStreamEnder();
             }
+          }
+        },
+        onerror: (e) => {
+          // run error handlers
+          const errorHandlers = Object.values(this.errorHandlers).filter(
+            (errorHandler) => !!errorHandler,
+          );
+          if (errorHandlers.length) {
+            errorHandlers.forEach((errorHandler) => {
+              errorHandler(e);
+            });
           }
         },
       });
