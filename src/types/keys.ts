@@ -26,7 +26,7 @@ export interface Key extends BaseKey {
   privateKey: string;
 }
 
-export interface NewKey extends BaseKey {
+export interface UnstoredKey extends BaseKey {
   id?: string;
   privateKey: string;
 }

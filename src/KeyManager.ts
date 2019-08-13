@@ -15,7 +15,7 @@ import {
   KeyMetadata,
   KeyStore,
   KeyTypeHandler,
-  NewKey,
+  UnstoredKey,
 } from "./types";
 
 export interface KeyManagerParams {
@@ -24,7 +24,7 @@ export interface KeyManagerParams {
 }
 
 export interface StoreKeyParams {
-  key: Key | NewKey;
+  key: Key | UnstoredKey;
   encrypterName: string;
   password?: string;
 }
