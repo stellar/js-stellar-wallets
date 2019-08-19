@@ -10,8 +10,6 @@ const key: Key = {
   type: KeyType.plaintextKey,
   publicKey: "AVACYN",
   privateKey: "ARCHANGEL",
-  creationTime: 666,
-  modifiedTime: 666,
 };
 
 const encryptedKey: EncryptedKey = {
@@ -23,8 +21,6 @@ const encryptedKey: EncryptedKey = {
   }),
   encrypterName: "IdentityEncrypter",
   salt: "identity",
-  creationTime: 666,
-  modifiedTime: 666,
 };
 
 it("encrypts to itself", async () => {

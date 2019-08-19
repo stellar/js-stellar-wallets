@@ -2,9 +2,7 @@ import { Transaction } from "stellar-base";
 import { KeyType } from "../constants/keys";
 
 export interface BaseKey {
-  creationTime?: number;
   extra?: any;
-  modifiedTime?: number;
   path?: string;
   publicKey: string;
   type: KeyType | string;
@@ -36,11 +34,9 @@ export interface UnstoredKey extends BaseKey {
  * information and plus encrypted information.
  */
 export interface EncryptedKey {
-  creationTime?: number;
   encryptedBlob: string;
   encrypterName: string;
   id: string;
-  modifiedTime?: number;
   salt: string;
 }
 
@@ -49,8 +45,6 @@ export interface EncryptedKey {
  */
 export interface KeyMetadata {
   id: string;
-  creationTime?: number;
-  modifiedTime?: number;
 }
 
 export interface EncryptParams {

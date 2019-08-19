@@ -47,7 +47,5 @@ export function generateKeyMetadata(encrypterName: string): KeyMetadata {
 
   return {
     id,
-    creationTime: Math.floor(Date.now() / 1000),
-    modifiedTime: Math.floor(Date.now() / 1000),
   };
 }

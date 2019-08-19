@@ -28,8 +28,6 @@ describe("MemoryKeyStore", function() {
 
     const keyMetadata = {
       id: "PURIFIER",
-      creationTime: 666,
-      modifiedTime: 666,
     };
 
     const testMetadata = await testStore.storeKeys([encryptedKey]);
@@ -57,8 +55,6 @@ describe("MemoryKeyStore", function() {
 
     const keyMetadata = {
       id: "PURIFIER",
-      creationTime: 666,
-      modifiedTime: 666,
     };
 
     await testStore.storeKeys([encryptedKey]);

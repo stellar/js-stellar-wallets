@@ -137,8 +137,6 @@ describe("testEncrypter", () => {
 describe("testKeyStore", () => {
   function makeKeyMetadata(encryptedKey: any) {
     return getKeyMetadata({
-      creationTime: Math.floor(Date.now() / 1000),
-      modifiedTime: Math.floor(Date.now() / 1000),
       ...encryptedKey,
     });
   }

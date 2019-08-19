@@ -38,15 +38,11 @@ describe("KeyManager", function() {
 
     expect(metadata).toEqual({
       id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
-      creationTime: 666,
-      modifiedTime: 666,
     });
 
     expect(await testKeyManager.loadAllKeyMetadata()).toEqual([
       {
         id: metadata.id,
-        creationTime: 666,
-        modifiedTime: 666,
       },
     ]);
 

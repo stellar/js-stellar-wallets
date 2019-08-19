@@ -10,8 +10,6 @@ test("encrypts and decrypts a key", async () => {
     id: "PURIFIER",
     path: "PATH",
     extra: "EXTRA",
-    creationTime: 666,
-    modifiedTime: 666,
   };
 
   const password = "This is a really cool password and is good";

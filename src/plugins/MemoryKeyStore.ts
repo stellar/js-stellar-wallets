@@ -5,10 +5,6 @@ interface MemoryStorer {
   [id: string]: EncryptedKey;
 }
 
-function getNow() {
-  return Math.floor(Date.now());
-}
-
 export class MemoryKeyStore implements KeyStore {
   public name: string;
   private keyStore: MemoryStorer;
@@ -37,13 +33,8 @@ export class MemoryKeyStore implements KeyStore {
     }
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
-      const creationTime = getNow();
-      const modifiedTime = getNow();
-
       this.keyStore[encryptedKey.id] = {
         ...encryptedKey,
-        creationTime,
-        modifiedTime,
       };
 
       return getKeyMetadata(this.keyStore[encryptedKey.id]);
@@ -68,13 +59,9 @@ export class MemoryKeyStore implements KeyStore {
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
       const id = encryptedKey.id;
-      const creationTime = this.keyStore[id].creationTime;
-      const modifiedTime = getNow();
 
       this.keyStore[id] = {
         ...encryptedKey,
-        creationTime,
-        modifiedTime,
       };
 
       return getKeyMetadata(this.keyStore[id]);
