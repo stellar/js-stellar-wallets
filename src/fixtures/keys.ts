@@ -1,3 +1,4 @@
+import sha1 from "js-sha1";
 import StellarSdk from "stellar-sdk";
 
 import { EncryptedKey, Key, KeyMetadata } from "../types";
@@ -6,18 +7,25 @@ import { KeyType } from "../constants/keys";
 
 export function generatePlaintextKey(): Key {
   const account = StellarSdk.Keypair.random();
+  const publicKey = account.publicKey();
+  const privateKey = account.secret();
+
   return {
+    id: sha1(`${privateKey}${publicKey}`),
     type: KeyType.plaintextKey,
-    publicKey: account.publicKey(),
-    privateKey: account.secret(),
+    publicKey,
+    privateKey,
   };
 }
 
 export function generateLedgerKey(): Key {
   const account = StellarSdk.Keypair.random();
+  const publicKey = account.publicKey();
+
   return {
+    id: sha1(`${publicKey}`),
     type: KeyType.ledger,
-    publicKey: account.publicKey(),
+    publicKey,
     privateKey: "",
     path: "44'/148'/0'",
   };
@@ -30,18 +38,14 @@ export function generateEncryptedKey(encrypterName: string): EncryptedKey {
     ...key,
     encrypterName,
     salt: "",
-    encryptedPrivateKey: `${privateKey}password`,
+    encryptedBlob: `${privateKey}password`,
   };
 }
 
 export function generateKeyMetadata(encrypterName: string): KeyMetadata {
-  const { encryptedPrivateKey, salt, ...encryptedKey } = generateEncryptedKey(
-    encrypterName,
-  );
+  const { id } = generateEncryptedKey(encrypterName);
+
   return {
-    ...encryptedKey,
-    encrypterName,
-    creationTime: Math.floor(Date.now() / 1000),
-    modifiedTime: Math.floor(Date.now() / 1000),
+    id,
   };
 }

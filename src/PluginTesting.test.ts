@@ -8,18 +8,20 @@ describe("testEncrypter", () => {
   function encryptKeyGood({ key, password }: any) {
     return Promise.resolve({
       ...key,
+      type: undefined,
+      publicKey: undefined,
       privateKey: undefined,
-      encryptedPrivateKey: `${key.privateKey}${password}`,
+      encryptedBlob: `${key.privateKey}${password}`,
     });
   }
 
   function decryptKeyGood({ encryptedKey, password }: any) {
     return Promise.resolve({
       ...encryptedKey,
-      encryptedPrivateKey: undefined,
+      encryptedBlob: undefined,
       encrypterName: undefined,
       salt: undefined,
-      privateKey: encryptedKey.encryptedPrivateKey.split(password)[0],
+      privateKey: encryptedKey.encryptedBlob.split(password)[0],
     });
   }
 
@@ -31,13 +33,12 @@ describe("testEncrypter", () => {
     return Promise.resolve({ encryptedKey, password });
   }
 
-  function decryptKeyIncorrect({ encryptedKey }: any) {
+  function decryptKeyIncorrect() {
     return Promise.resolve({
-      ...encryptedKey,
-      encryptedPrivateKey: undefined,
+      privateKey: "INCORRECT",
+      encryptedBlob: undefined,
       encrypterName: undefined,
       salt: undefined,
-      privateKey: encryptedKey.encryptedPrivateKey,
     });
   }
 
@@ -58,6 +59,7 @@ describe("testEncrypter", () => {
       encryptKey: encryptKeyGood,
       decryptKey: decryptKeyGood,
     };
+
     testEncrypter(goodEncrypter)
       .then(() => done())
       .catch(done);
@@ -135,9 +137,7 @@ describe("testEncrypter", () => {
 describe("testKeyStore", () => {
   function makeKeyMetadata(encryptedKey: any) {
     return getKeyMetadata({
-      encryptedKey,
-      creationTime: Math.floor(Date.now() / 1000),
-      modifiedTime: Math.floor(Date.now() / 1000),
+      ...encryptedKey,
     });
   }
 
@@ -153,14 +153,14 @@ describe("testKeyStore", () => {
     storeKeys(keys: EncryptedKey[]) {
       // kill anything already in storage
       if (!skipStorageChecks) {
-        const areStored = keys.filter((key) => storage[key.publicKey]);
+        const areStored = keys.filter((key) => storage[key.id]);
         if (areStored.length) {
           throw new Error("stored already");
         }
       }
 
       keys.forEach((key) => {
-        storage[key.publicKey] = key;
+        storage[key.id] = key;
       });
 
       return Promise.resolve(
@@ -170,31 +170,31 @@ describe("testKeyStore", () => {
     updateKeys(keys: EncryptedKey[]) {
       // kill anything already in storage
       if (!skipUpdateChecks) {
-        const areNotStored = keys.filter((key) => !storage[key.publicKey]);
+        const areNotStored = keys.filter((key) => !storage[key.id]);
         if (areNotStored.length) {
           throw new Error("stored already");
         }
       }
 
       keys.forEach((key) => {
-        storage[key.publicKey] = key;
+        storage[key.id] = key;
       });
 
       return Promise.resolve(
         keys.map((encryptedKey: EncryptedKey) => makeKeyMetadata(encryptedKey)),
       );
     },
-    loadKey(publicKey: string) {
-      return Promise.resolve(storage[publicKey]);
+    loadKey(id: string) {
+      return Promise.resolve(storage[id]);
     },
-    removeKey(publicKey: string) {
-      const key = storage[publicKey];
+    removeKey(id: string) {
+      const key = storage[id];
 
       if (!key) {
         return Promise.resolve(undefined);
       }
 
-      delete storage[publicKey];
+      delete storage[id];
 
       return Promise.resolve(makeKeyMetadata(key));
     },

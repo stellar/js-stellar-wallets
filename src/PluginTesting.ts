@@ -1,3 +1,4 @@
+import sha1 from "js-sha1";
 import StellarSdk from "stellar-sdk";
 
 import { KeyType } from "./constants/keys";
@@ -10,7 +11,7 @@ function isKey(obj: any): obj is Key {
 }
 
 function isEncryptedKey(obj: any): obj is EncryptedKey {
-  return obj.encryptedPrivateKey !== undefined;
+  return obj.encryptedBlob !== undefined;
 }
 
 /**
@@ -39,10 +40,14 @@ export async function testEncrypter(encrypter: any = 0): Promise<boolean> {
     );
   }
 
-  const key = {
+  const publicKey = account.publicKey();
+  const privateKey = account.secret();
+
+  const key: Key = {
+    id: sha1(`${privateKey}${publicKey}`),
     type: KeyType.plaintextKey,
-    publicKey: account.publicKey(),
-    privateKey: account.secret(),
+    publicKey,
+    privateKey,
   };
 
   const password = "kh2fu0b939uvdkj";
@@ -116,11 +121,7 @@ export async function testKeyStore(
 
   const encryptedKey: EncryptedKey = generateEncryptedKey(keyStore.name);
 
-  const keyMetadata: KeyMetadata = getKeyMetadata({
-    encryptedKey,
-    creationTime: 0,
-    modifiedTime: 0,
-  });
+  const keyMetadata: KeyMetadata = getKeyMetadata(encryptedKey);
 
   // make sure we can't update a key that doesn't exist
   try {
@@ -138,7 +139,7 @@ export async function testKeyStore(
   // KeyStore.storeKeys
   const testMetadata = await keyStore.storeKeys([encryptedKey]);
 
-  if (keyMetadata.publicKey !== testMetadata[0].publicKey) {
+  if (keyMetadata.id !== testMetadata[0].id) {
     return Promise.reject(
       new Error("[KeyStore.storeKeys] Key metadata doesn't match"),
     );
@@ -160,10 +161,7 @@ export async function testKeyStore(
 
   const allMetadata = await keyStore.loadAllKeyMetadata();
 
-  if (
-    allMetadata.length !== 1 ||
-    keyMetadata.publicKey !== allMetadata[0].publicKey
-  ) {
+  if (allMetadata.length !== 1 || keyMetadata.id !== allMetadata[0].id) {
     return Promise.reject(
       new Error(
         "[KeyStore.loadAllKeyMetadata] loadAllKeyMetadata doesn't match",
@@ -175,22 +173,22 @@ export async function testKeyStore(
 
   if (
     allKeys.length !== 1 ||
-    encryptedKey.encryptedPrivateKey !== allKeys[0].encryptedPrivateKey
+    encryptedKey.encryptedBlob !== allKeys[0].encryptedBlob
   ) {
     return Promise.reject(
       new Error("[KeyStore.loadAllKeys] loadAllKeys doesn't match"),
     );
   }
 
-  const removalMetadata = await keyStore.removeKey(encryptedKey.publicKey);
+  const removalMetadata = await keyStore.removeKey(encryptedKey.id);
 
-  if (!removalMetadata || keyMetadata.publicKey !== removalMetadata.publicKey) {
+  if (!removalMetadata || keyMetadata.id !== removalMetadata.id) {
     return Promise.reject(
       new Error("[KeyStore.removeKey] Removed metadata doesn't match"),
     );
   }
 
-  if (!removalMetadata || keyMetadata.publicKey !== removalMetadata.publicKey) {
+  if (!removalMetadata || keyMetadata.id !== removalMetadata.id) {
     return Promise.reject(
       new Error("[KeyStore.removeKey] Removed metadata doesn't match"),
     );

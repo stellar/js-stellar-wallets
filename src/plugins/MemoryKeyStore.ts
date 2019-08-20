@@ -1,22 +1,8 @@
 import { getKeyMetadata } from "../helpers/getKeyMetadata";
 import { EncryptedKey, KeyMetadata, KeyStore } from "../types";
 
-interface MemoryItem {
-  creationTime: number;
-  modifiedTime: number;
-  encryptedKey: EncryptedKey;
-}
-
 interface MemoryStorer {
-  [publicKey: string]: MemoryItem;
-}
-
-function getNow() {
-  return Math.floor(Date.now());
-}
-
-function getMetadataFromMemoryItem(item: any): KeyMetadata {
-  return getKeyMetadata(item);
+  [id: string]: EncryptedKey;
 }
 
 export class MemoryKeyStore implements KeyStore {
@@ -35,97 +21,77 @@ export class MemoryKeyStore implements KeyStore {
   public storeKeys(keys: EncryptedKey[]) {
     // We can't store keys if they're already there
     const invalidKeys: EncryptedKey[] = keys.filter(
-      (encryptedKey: EncryptedKey) => !!this.keyStore[encryptedKey.publicKey],
+      (encryptedKey: EncryptedKey) => !!this.keyStore[encryptedKey.id],
     );
 
     if (invalidKeys.length) {
       return Promise.reject(
         `Some keys were already stored in the keystore: ${invalidKeys
-          .map((k) => k.publicKey)
+          .map((k) => k.id)
           .join(", ")}`,
       );
     }
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
-      const creationTime = getNow();
-      const modifiedTime = getNow();
-      this.keyStore[encryptedKey.publicKey] = {
-        creationTime,
-        modifiedTime,
-        encryptedKey,
+      this.keyStore[encryptedKey.id] = {
+        ...encryptedKey,
       };
-      return getMetadataFromMemoryItem({
-        encryptedKey,
-        creationTime,
-        modifiedTime,
-      });
+
+      return getKeyMetadata(this.keyStore[encryptedKey.id]);
     });
+
     return Promise.resolve(keysMetadata);
   }
 
   public updateKeys(keys: EncryptedKey[]) {
     // we can't update keys if they're already stored
     const invalidKeys: EncryptedKey[] = keys.filter(
-      (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.publicKey],
+      (encryptedKey: EncryptedKey) => !this.keyStore[encryptedKey.id],
     );
 
     if (invalidKeys.length) {
       return Promise.reject(
         `Some keys couldn't be found in the keystore: ${invalidKeys
-          .map((k) => k.publicKey)
+          .map((k) => k.id)
           .join(", ")}`,
       );
     }
 
     const keysMetadata = keys.map((encryptedKey: EncryptedKey) => {
-      const publicKey = encryptedKey.publicKey;
-      const creationTime = this.keyStore[publicKey].creationTime;
-      const modifiedTime = getNow();
-      this.keyStore[publicKey] = {
-        creationTime,
-        modifiedTime,
-        encryptedKey,
+      const id = encryptedKey.id;
+
+      this.keyStore[id] = {
+        ...encryptedKey,
       };
-      return getMetadataFromMemoryItem({
-        encryptedKey,
-        creationTime,
-        modifiedTime,
-      });
+
+      return getKeyMetadata(this.keyStore[id]);
     });
 
     return Promise.resolve(keysMetadata);
   }
 
-  public loadKey(publicKey: string) {
-    return Promise.resolve(
-      this.keyStore[publicKey]
-        ? this.keyStore[publicKey].encryptedKey
-        : undefined,
-    );
+  public loadKey(id: string) {
+    return Promise.resolve(this.keyStore[id]);
   }
 
-  public removeKey(publicKey: string) {
-    if (!this.keyStore[publicKey]) {
-      return Promise.reject(publicKey);
+  public removeKey(id: string) {
+    if (!this.keyStore[id]) {
+      return Promise.reject(id);
     }
 
-    const metadata: KeyMetadata = getMetadataFromMemoryItem(
-      this.keyStore[publicKey],
-    );
-    delete this.keyStore[publicKey];
+    const metadata: KeyMetadata = getKeyMetadata(this.keyStore[id]);
+    delete this.keyStore[id];
 
     return Promise.resolve(metadata);
   }
 
   public loadAllKeyMetadata() {
-    return Promise.resolve(
-      Object.values(this.keyStore).map(getMetadataFromMemoryItem),
-    );
+    return Promise.resolve(Object.values(this.keyStore).map(getKeyMetadata));
   }
 
   public loadAllKeys() {
     return Promise.resolve(
-      Object.values(this.keyStore).map((item: MemoryItem) => item.encryptedKey),
+      Object.values(this.keyStore).map((item: EncryptedKey) => item),
     );
   }
 }

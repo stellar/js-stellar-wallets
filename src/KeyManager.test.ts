@@ -2,9 +2,7 @@ import sinon from "sinon";
 import StellarBase from "stellar-base";
 
 import { KeyType } from "./constants/keys";
-
 import { KeyManager } from "./KeyManager";
-
 import { IdentityEncrypter } from "./plugins/IdentityEncrypter";
 import { MemoryKeyStore } from "./plugins/MemoryKeyStore";
 
@@ -39,24 +37,16 @@ describe("KeyManager", function() {
     });
 
     expect(metadata).toEqual({
-      type: KeyType.plaintextKey,
-      encrypterName: "IdentityEncrypter",
-      publicKey: "AVACYN",
-      creationTime: 666,
-      modifiedTime: 666,
+      id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
     });
 
     expect(await testKeyManager.loadAllKeyMetadata()).toEqual([
       {
-        type: KeyType.plaintextKey,
-        encrypterName: "IdentityEncrypter",
-        publicKey: "AVACYN",
-        creationTime: 666,
-        modifiedTime: 666,
+        id: metadata.id,
       },
     ]);
 
-    await testKeyManager.removeKey("AVACYN");
+    await testKeyManager.removeKey(metadata.id);
 
     expect(await testKeyManager.loadAllKeyMetadata()).toEqual([]);
   });
@@ -75,7 +65,7 @@ describe("KeyManager", function() {
     const keypair = StellarBase.Keypair.master();
 
     // save this key
-    await testKeyManager.storeKey({
+    const keyMetadata = await testKeyManager.storeKey({
       key: {
         type: KeyType.plaintextKey,
         publicKey: keypair.publicKey(),
@@ -97,7 +87,7 @@ describe("KeyManager", function() {
 
     const signedTransaction = await testKeyManager.signTransaction({
       transaction,
-      publicKey: keypair.publicKey(),
+      id: keyMetadata.id,
       password: "test",
     });
 

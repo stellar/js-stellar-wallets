@@ -1,19 +1,24 @@
 import { KeyType } from "../constants/keys";
+import { EncryptedKey, Key } from "../types";
 
 import { IdentityEncrypter } from "./IdentityEncrypter";
 
 import { testEncrypter } from "../PluginTesting";
 
-const key = {
+const key: Key = {
+  id: "PURIFIER",
   type: KeyType.plaintextKey,
   publicKey: "AVACYN",
   privateKey: "ARCHANGEL",
 };
 
-const encryptedKey = {
-  type: KeyType.plaintextKey,
-  publicKey: "AVACYN",
-  encryptedPrivateKey: "ARCHANGEL",
+const encryptedKey: EncryptedKey = {
+  id: "PURIFIER",
+  encryptedBlob: JSON.stringify({
+    type: KeyType.plaintextKey,
+    publicKey: "AVACYN",
+    privateKey: "ARCHANGEL",
+  }),
   encrypterName: "IdentityEncrypter",
   salt: "identity",
 };

@@ -8,22 +8,32 @@ const NAME = "IdentityEncrypter";
 export const IdentityEncrypter: Encrypter = {
   name: NAME,
   encryptKey({ key }: { key: Key }) {
-    const { privateKey, ...secretlessKey } = key;
+    const { type, privateKey, publicKey, path, extra, ...props } = key;
 
     return Promise.resolve({
-      ...secretlessKey,
-      encryptedPrivateKey: privateKey,
+      ...props,
+      encryptedBlob: JSON.stringify({
+        type,
+        publicKey,
+        privateKey,
+        path,
+        extra,
+      }),
       encrypterName: NAME,
       salt: "identity",
     });
   },
+
   decryptKey({ encryptedKey }: { encryptedKey: EncryptedKey }) {
     const {
       encrypterName,
       salt,
-      encryptedPrivateKey,
-      ...key
+      encryptedBlob,
+      ...props
     } = encryptedKey as any;
-    return Promise.resolve({ ...key, privateKey: encryptedPrivateKey });
+
+    const data = JSON.parse(encryptedBlob);
+
+    return Promise.resolve({ ...props, ...data });
   },
 };

@@ -15,20 +15,21 @@ export const ScryptEncrypter: Encrypter = {
     key: Key;
     password: string;
   }): Promise<EncryptedKey> {
-    const { privateKey, ...secretlessKey } = key;
+    const { privateKey, path, extra, publicKey, type, ...props } = key;
 
     const { encryptedPhrase, salt } = await encrypt({
       password,
-      phrase: privateKey,
+      phrase: JSON.stringify({ privateKey, path, extra, publicKey, type }),
     });
 
-    return Promise.resolve({
-      ...secretlessKey,
-      encryptedPrivateKey: encryptedPhrase,
+    return {
+      ...props,
+      encryptedBlob: encryptedPhrase,
       encrypterName: NAME,
       salt,
-    });
+    };
   },
+
   async decryptKey({
     encryptedKey,
     password,
@@ -36,15 +37,15 @@ export const ScryptEncrypter: Encrypter = {
     encryptedKey: EncryptedKey;
     password: string;
   }) {
-    const { encrypterName, salt, encryptedPrivateKey, ...key } = encryptedKey;
+    const { encrypterName, salt, encryptedBlob, ...props } = encryptedKey;
 
-    return Promise.resolve({
-      ...key,
-      privateKey: await decrypt({
-        phrase: encryptedPrivateKey,
-        password,
-        salt,
-      }),
-    });
+    const data = JSON.parse(
+      await decrypt({ phrase: encryptedBlob, salt, password }),
+    );
+
+    return {
+      ...props,
+      ...data,
+    };
   },
 };
