@@ -85,10 +85,6 @@ export class MemoryKeyStore implements KeyStore {
     return Promise.resolve(metadata);
   }
 
-  public loadAllKeyMetadata() {
-    return Promise.resolve(Object.values(this.keyStore).map(getKeyMetadata));
-  }
-
   public loadAllKeys() {
     return Promise.resolve(
       Object.values(this.keyStore).map((item: EncryptedKey) => item),

@@ -105,7 +105,6 @@ export async function testKeyStore(
     "updateKeys",
     "loadKey",
     "removeKey",
-    "loadAllKeyMetadata",
     "loadAllKeys",
   ];
 
@@ -158,16 +157,6 @@ export async function testKeyStore(
   }
 
   // make sure we can't store a key that exists
-
-  const allMetadata = await keyStore.loadAllKeyMetadata();
-
-  if (allMetadata.length !== 1 || keyMetadata.id !== allMetadata[0].id) {
-    return Promise.reject(
-      new Error(
-        "[KeyStore.loadAllKeyMetadata] loadAllKeyMetadata doesn't match",
-      ),
-    );
-  }
 
   const allKeys = await keyStore.loadAllKeys();
 

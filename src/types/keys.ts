@@ -135,11 +135,6 @@ export interface KeyStore {
   removeKey(id: string): Promise<KeyMetadata | undefined>;
 
   /**
-   *  List information about stored keys.
-   */
-  loadAllKeyMetadata(): Promise<KeyMetadata[]>;
-
-  /**
    *  Load all encrypted keys.
    */
   loadAllKeys(): Promise<EncryptedKey[]>;
