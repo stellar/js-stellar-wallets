@@ -26,13 +26,14 @@ describe("KeyManager", function() {
 
     testKeyManager.registerEncrypter(IdentityEncrypter);
 
+    const password = "test";
     const metadata = await testKeyManager.storeKey({
       key: {
         type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         privateKey: "ARCHANGEL",
       },
-      password: "test",
+      password,
       encrypterName: "IdentityEncrypter",
     });
 
@@ -40,15 +41,18 @@ describe("KeyManager", function() {
       id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
     });
 
-    expect(await testKeyManager.loadAllKeyMetadata()).toEqual([
+    expect(await testKeyManager.loadAllKeys(password)).toEqual([
       {
-        id: metadata.id,
+        id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
+        privateKey: "ARCHANGEL",
+        publicKey: "AVACYN",
+        type: "plaintextKey",
       },
     ]);
 
     await testKeyManager.removeKey(metadata.id);
 
-    expect(await testKeyManager.loadAllKeyMetadata()).toEqual([]);
+    expect(await testKeyManager.loadAllKeys(password)).toEqual([]);
   });
 
   test("Sign transactions", async () => {

@@ -139,10 +139,24 @@ export class KeyManager {
   /**
    *  List information about stored keys
    *
-   * @returns a list of metadata about all stored keys
+   * @returns a list of all stored keys
    */
-  public loadAllKeyMetadata(): Promise<KeyMetadata[]> {
-    return this.keyStore.loadAllKeyMetadata();
+  public async loadAllKeys(password?: string): Promise<any[]> {
+    const encryptedKeys: EncryptedKey[] = await this.keyStore.loadAllKeys();
+    const keys = [];
+
+    while (encryptedKeys.length) {
+      const encryptedKey = encryptedKeys.shift() as EncryptedKey;
+      const encrypter = this.encrypterMap[encryptedKey.encrypterName];
+      const key = await encrypter.decryptKey({
+        encryptedKey,
+        password,
+      });
+
+      keys.push(key);
+    }
+
+    return keys;
   }
 
   /**

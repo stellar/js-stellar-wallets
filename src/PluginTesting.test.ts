@@ -198,9 +198,6 @@ describe("testKeyStore", () => {
 
       return Promise.resolve(makeKeyMetadata(key));
     },
-    loadAllKeyMetadata() {
-      return Promise.resolve(Object.values(storage).map(makeKeyMetadata));
-    },
     loadAllKeys() {
       return Promise.resolve(Object.values(storage));
     },
@@ -299,18 +296,6 @@ describe("testKeyStore", () => {
       .catch((err: Error) => {
         expect(err.toString()).toMatch("Invalid function");
         expect(err.toString()).toMatch("[KeyStore.removeKey]");
-        done();
-      });
-  });
-
-  test("error if bad loadAllKeyMetadata", (done) => {
-    testKeyStore({ ...goodKeyStore, loadAllKeyMetadata: undefined })
-      .then(() => {
-        done("Succeeded but should have failed");
-      })
-      .catch((err: Error) => {
-        expect(err.toString()).toMatch("Invalid function");
-        expect(err.toString()).toMatch("[KeyStore.loadAllKeyMetadata]");
         done();
       });
   });
