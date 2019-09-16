@@ -103,7 +103,11 @@ export class DepositProvider extends TransferProvider {
     const json = (await response.json()) as TransferResponse;
 
     if (json.error) {
-      const error: TransferError = new Error(json.error);
+      const error: TransferError = new Error(
+        typeof json.error === "string"
+          ? json.error
+          : JSON.stringify(json.error),
+      );
       error.originalResponse = json;
       throw error;
     }
