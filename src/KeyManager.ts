@@ -234,6 +234,17 @@ export class KeyManager {
     password,
     authServer,
   }: GetAuthTokenParams): Promise<AuthToken> {
+    // throw errors for missing params
+    if (!id) {
+      throw new Error("Required parameter `id` is missing!");
+    }
+    if (!password) {
+      throw new Error("Required parameter `password` is missing!");
+    }
+    if (!authServer) {
+      throw new Error("Required parameter `authServer` is missing!");
+    }
+
     let key = this._readFromCache(id);
 
     if (!key) {
