@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
-import README from "README.md";
+import raw from "raw.macro";
 
 import { DisplayItem } from "components/DisplayItem";
 import { Markdown } from "components/Markdown";
@@ -12,6 +11,8 @@ import { getArmName } from "helpers/getArmName";
 import { StateProvider } from "AppState";
 
 import docs from "./docs.json";
+
+const README = raw("../../README.md");
 
 const SIDEBAR_WIDTH = 300;
 
@@ -130,6 +131,11 @@ export const App = () => {
 
   const libraryExports = Object.keys(LIBRARY_EXPORTS).reduce((memo, name) => {
     const item = itemsByName[name];
+
+    if (!item) {
+      return memo;
+    }
+
     const kind = item.kindString;
 
     return {
