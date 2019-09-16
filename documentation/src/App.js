@@ -133,7 +133,6 @@ export const App = () => {
     const item = itemsByName[name];
 
     if (!item) {
-      console.log("missing item ", name);
       return memo;
     }
 
