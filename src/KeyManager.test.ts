@@ -105,4 +105,123 @@ describe("KeyManager", function() {
       ),
     ).toEqual(true);
   });
+
+  describe("getAuthToken", () => {
+    beforeEach(() => {
+      // @ts-ignore
+      fetch.resetMocks();
+    });
+
+    test("Throws errors for missing params", async () => {
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+      try {
+        // @ts-ignore
+        await testKeyManager.getAuthToken({});
+        expect("This test failed").toBe(null);
+      } catch (e) {
+        expect(e).toBeTruthy();
+      }
+    });
+
+    test("Rejects challenges that return errors", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const error = "Test error";
+      const password = "very secure password";
+
+      // @ts-ignore
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          error,
+        }),
+      );
+
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+      const network = StellarBase.Networks.TESTNET;
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(network);
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      try {
+        await testKeyManager.getAuthToken({
+          id: keyMetadata.id,
+          password,
+          authServer,
+        });
+
+        expect("This test failed").toBe(null);
+      } catch (e) {
+        expect(e.toString()).toBe(`Error: ${error}`);
+      }
+    });
+
+    test("Rejects challenges with network mismatches", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const password = "very secure password";
+
+      const keyNetwork = StellarBase.Networks.TESTNET;
+      const challengeNetwork = StellarBase.Networks.PUBLIC;
+
+      // @ts-ignore
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          network_passphrase: challengeNetwork,
+        }),
+      );
+
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(keyNetwork);
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network: keyNetwork,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      try {
+        await testKeyManager.getAuthToken({
+          id: keyMetadata.id,
+          password,
+          authServer,
+        });
+
+        expect("This test failed").toBe(null);
+      } catch (e) {
+        expect(e.toString()).toMatch(`Network mismatch`);
+      }
+    });
+  });
 });

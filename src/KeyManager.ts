@@ -20,7 +20,7 @@ import {
 
 export interface KeyManagerParams {
   keyStore: KeyStore;
-  networkPassphrase?: string;
+  defaultNetworkPassphrase?: string;
   shouldCache?: boolean;
 }
 
@@ -80,6 +80,7 @@ export class KeyManager {
   private keyHandlerMap: { [key: string]: KeyTypeHandler };
   private keyCache: { [id: string]: Key };
   private shouldCache: boolean;
+  private defaultNetworkPassphrase: string;
 
   constructor(params: KeyManagerParams) {
     this.encrypterMap = {};
@@ -92,6 +93,9 @@ export class KeyManager {
 
     this.keyStore = params.keyStore;
     this.shouldCache = params.shouldCache || false;
+
+    this.defaultNetworkPassphrase =
+      params.defaultNetworkPassphrase || Networks.PUBLIC;
   }
 
   /**
@@ -272,6 +276,8 @@ export class KeyManager {
       `${authServer}?account=${encodeURIComponent(key.publicKey)}`,
     );
 
+    const keyNetwork = key.network || this.defaultNetworkPassphrase;
+
     const {
       transaction,
       network_passphrase,
@@ -283,14 +289,11 @@ export class KeyManager {
     }
 
     // Throw error when network_passphrase is returned, and doesn't match
-    if (
-      network_passphrase !== undefined &&
-      (key.network || Networks.PUBLIC) !== network_passphrase
-    ) {
+    if (network_passphrase !== undefined && keyNetwork !== network_passphrase) {
       throw new Error(
         `
         Network mismatch: the transfer server expects "${network_passphrase}", 
-        but you're using "${key.network || Networks.PUBLIC}"
+        but you're using "${keyNetwork}"
         `,
       );
     }
@@ -298,7 +301,7 @@ export class KeyManager {
     const keyHandler = this.keyHandlerMap[key.type];
 
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: new Transaction(transaction, key.network || Networks.PUBLIC),
+      transaction: new Transaction(transaction, keyNetwork),
       key,
     });
 
