@@ -298,10 +298,7 @@ export class KeyManager {
     const keyHandler = this.keyHandlerMap[key.type];
 
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: new Transaction(
-        transaction,
-        network_passphrase || key.network || Networks.PUBLIC,
-      ),
+      transaction: new Transaction(transaction, key.network || Networks.PUBLIC),
       key,
     });
 
