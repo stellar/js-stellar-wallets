@@ -4,6 +4,7 @@
 module.exports = {
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
+  automock: false,
 
   setupFiles: ["<rootDir>/config/polyfills.js"],
 

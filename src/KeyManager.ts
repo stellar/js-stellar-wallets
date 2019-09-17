@@ -1,5 +1,5 @@
 import sha1 from "js-sha1";
-import { Network, Networks, Transaction } from "stellar-sdk";
+import { Networks, Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
@@ -20,6 +20,7 @@ import {
 
 export interface KeyManagerParams {
   keyStore: KeyStore;
+  defaultNetworkPassphrase?: string;
   shouldCache?: boolean;
 }
 
@@ -79,6 +80,7 @@ export class KeyManager {
   private keyHandlerMap: { [key: string]: KeyTypeHandler };
   private keyCache: { [id: string]: Key };
   private shouldCache: boolean;
+  private defaultNetworkPassphrase: string;
 
   constructor(params: KeyManagerParams) {
     this.encrypterMap = {};
@@ -91,12 +93,23 @@ export class KeyManager {
 
     this.keyStore = params.keyStore;
     this.shouldCache = params.shouldCache || false;
+
+    this.defaultNetworkPassphrase =
+      params.defaultNetworkPassphrase || Networks.PUBLIC;
   }
 
+  /**
+   * Register a KeyTypeHandler for a given key type.
+   * @param {KeyTypeHandler} keyHandler
+   */
   public registerKeyHandler(keyHandler: KeyTypeHandler) {
     this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
+  /**
+   * Register a new encrypter.
+   * @param {Encrypter} encrypter
+   */
   public registerEncrypter(encrypter: Encrypter) {
     this.encrypterMap[encrypter.name] = encrypter;
   }
@@ -263,6 +276,8 @@ export class KeyManager {
       `${authServer}?account=${encodeURIComponent(key.publicKey)}`,
     );
 
+    const keyNetwork = key.network || this.defaultNetworkPassphrase;
+
     const {
       transaction,
       network_passphrase,
@@ -273,12 +288,20 @@ export class KeyManager {
       throw new Error(error);
     }
 
-    Network.use(new Network(network_passphrase || Networks.PUBLIC));
+    // Throw error when network_passphrase is returned, and doesn't match
+    if (network_passphrase !== undefined && keyNetwork !== network_passphrase) {
+      throw new Error(
+        `
+        Network mismatch: the transfer server expects "${network_passphrase}", 
+        but you're using "${keyNetwork}"
+        `,
+      );
+    }
 
     const keyHandler = this.keyHandlerMap[key.type];
 
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: new Transaction(transaction),
+      transaction: new Transaction(transaction, keyNetwork),
       key,
     });
 

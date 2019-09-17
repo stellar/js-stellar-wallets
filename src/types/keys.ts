@@ -5,6 +5,8 @@ export interface BaseKey {
   extra?: any;
   path?: string;
   publicKey: string;
+  // if the network is not set, the key is assumed to be on Networks.PUBLIC
+  network?: string;
   type: KeyType | string;
 }
 
