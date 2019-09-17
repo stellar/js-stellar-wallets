@@ -1,5 +1,5 @@
 import sha1 from "js-sha1";
-import { Network, Networks, Transaction } from "stellar-sdk";
+import { Networks, Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
@@ -20,6 +20,7 @@ import {
 
 export interface KeyManagerParams {
   keyStore: KeyStore;
+  networkPassphrase?: string;
   shouldCache?: boolean;
 }
 
@@ -93,10 +94,18 @@ export class KeyManager {
     this.shouldCache = params.shouldCache || false;
   }
 
+  /**
+   * Register a KeyTypeHandler for a given key type.
+   * @param {KeyTypeHandler} keyHandler
+   */
   public registerKeyHandler(keyHandler: KeyTypeHandler) {
     this.keyHandlerMap[keyHandler.keyType] = keyHandler;
   }
 
+  /**
+   * Register a new encrypter.
+   * @param {Encrypter} encrypter
+   */
   public registerEncrypter(encrypter: Encrypter) {
     this.encrypterMap[encrypter.name] = encrypter;
   }
@@ -273,12 +282,26 @@ export class KeyManager {
       throw new Error(error);
     }
 
-    Network.use(new Network(network_passphrase || Networks.PUBLIC));
+    // Throw error when network_passphrase is returned, and doesn't match
+    if (
+      network_passphrase !== undefined &&
+      (key.network || Networks.PUBLIC) !== network_passphrase
+    ) {
+      throw new Error(
+        `
+        Network mismatch: the transfer server expects "${network_passphrase}", 
+        but you're using "${key.network || Networks.PUBLIC}"
+        `,
+      );
+    }
 
     const keyHandler = this.keyHandlerMap[key.type];
 
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: new Transaction(transaction),
+      transaction: new Transaction(
+        transaction,
+        network_passphrase || key.network || Networks.PUBLIC,
+      ),
       key,
     });
 

@@ -61,12 +61,11 @@ describe("KeyManager", function() {
     const testKeyManager = new KeyManager({
       keyStore: testStore,
     });
+    const network = StellarBase.Networks.TESTNET;
 
     testKeyManager.registerEncrypter(IdentityEncrypter);
 
-    StellarBase.Network.useTestNetwork();
-
-    const keypair = StellarBase.Keypair.master();
+    const keypair = StellarBase.Keypair.master(network);
 
     // save this key
     const keyMetadata = await testKeyManager.storeKey({
@@ -74,6 +73,7 @@ describe("KeyManager", function() {
         type: KeyType.plaintextKey,
         publicKey: keypair.publicKey(),
         privateKey: keypair.secret(),
+        network,
       },
       password: "test",
       encrypterName: "IdentityEncrypter",
@@ -84,7 +84,10 @@ describe("KeyManager", function() {
       "0",
     );
 
-    const transaction = new StellarBase.TransactionBuilder(source, { fee: 100 })
+    const transaction = new StellarBase.TransactionBuilder(source, {
+      fee: 100,
+      networkPassphrase: network,
+    })
       .addOperation(StellarBase.Operation.inflation({}))
       .setTimeout(StellarBase.TimeoutInfinite)
       .build();

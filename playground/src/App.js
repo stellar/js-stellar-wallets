@@ -11,8 +11,6 @@ import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Transfers from "components/Transfers";
 
-StellarSdk.Network.usePublicNetwork();
-
 const El = styled.div`
   display: flex;
   font-size: 0.8em;
