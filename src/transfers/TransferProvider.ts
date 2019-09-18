@@ -2,7 +2,6 @@ import queryString from "query-string";
 
 import {
   DepositInfo,
-  DepositTransaction,
   Fee,
   FeeArgs,
   Info,
@@ -12,7 +11,6 @@ import {
   TransactionArgs,
   TransactionStatus,
   WithdrawInfo,
-  WithdrawTransaction,
 } from "../types";
 
 import { parseInfo } from "./parseInfo";
@@ -82,16 +80,16 @@ export abstract class TransferProvider {
     // stub
     return [
       this.operation === "deposit"
-        ? ({
+        ? {
             id: "test",
             kind: "deposit",
             status: TransactionStatus.completed,
-          } as DepositTransaction)
-        : ({
+          }
+        : {
             id: "test",
             kind: "withdrawal",
             status: TransactionStatus.completed,
-          } as WithdrawTransaction),
+          },
     ];
   }
 
