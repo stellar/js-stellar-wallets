@@ -36,6 +36,9 @@ class App extends Component {
       accountOrKey: publicKey,
     });
 
+    console.log("data provider: ", dataProvider);
+    console.log("key: ", publicKey);
+
     this.setState({
       dataProvider,
     });
@@ -57,21 +60,20 @@ class App extends Component {
         )}
 
         {dataProvider && dataProvider.isValidKey() && (
-          <El>
-            <AccountDetails dataProvider={dataProvider} />
-            <div>
-              <Transfers dataProvider={dataProvider} />
-              <Offers dataProvider={dataProvider} />
-              <Trades dataProvider={dataProvider} />
-            </div>
-          </El>
+          <>
+            <El>
+              <AccountDetails dataProvider={dataProvider} />
+              <div>
+                <Transfers dataProvider={dataProvider} />
+                <Offers dataProvider={dataProvider} />
+                <Trades dataProvider={dataProvider} />
+              </div>
+            </El>
+            <h2>Transfers</h2>
+
+            <TransferProvider accountKey={dataProvider.getAccountKey()} />
+          </>
         )}
-
-        <h2>Transfers</h2>
-
-        <TransferProvider
-          accountKey={dataProvider && dataProvider.getAccountKey()}
-        />
       </div>
     );
   }

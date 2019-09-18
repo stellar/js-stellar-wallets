@@ -58,10 +58,10 @@ export abstract class TransferProvider {
   public async fetchTransactions(
     args: TransactionArgs,
   ): Promise<Transaction[]> {
-    if (args.asset_code) {
+    if (!args.asset_code) {
       throw new Error("Required parameter `asset_code` not provided!");
     }
-    if (args.account) {
+    if (!args.account) {
       throw new Error("Required parameter `account` not provided!");
     }
 

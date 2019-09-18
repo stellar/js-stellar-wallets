@@ -2,7 +2,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Json from "react-json-view";
 import * as WalletSdk from "@stellar/wallet-sdk";
-import { Input, Button, ButtonThemes, Checkbox } from "@stellar/elements";
+import {
+  Input,
+  Button,
+  ButtonThemes,
+  Checkbox,
+  Select,
+} from "@stellar/elements";
 
 class TransferProvider extends Component {
   state = {
@@ -71,39 +77,41 @@ class TransferProvider extends Component {
           </>
         )}
 
-        {depositProvider && (
+        {depositProvider && info && (
           <>
-            {info && (
-              <>
-                <h2>Supported tokens:</h2>
-                <Json src={info} />
-              </>
-            )}
-
             <label>
-              Get transactions for asset:
-              <Input
-                type="text"
+              Get transactions for asset:{" "}
+              <Select
                 value={assetCode}
                 onChange={(ev) => this.setState({ assetCode: ev.target.value })}
-              />
+              >
+                <option>-- Select one --</option>
+                {Object.keys(info.deposit).map((code) => (
+                  <option value={code} key={code}>
+                    {code}
+                  </option>
+                ))}
+              </Select>
             </label>
 
-            {assetCode && (
-              <Button
-                theme={ButtonThemes.primary}
-                onClick={() =>
-                  depositProvider
-                    .fetchTransactions({
-                      account: accountKey,
-                      asset_code: assetCode,
-                    })
-                    .then((transactions) => this.setState({ transactions }))
-                }
-              >
-                Fetch deposits
-              </Button>
-            )}
+            {assetCode &&
+              (accountKey ? (
+                <Button
+                  theme={ButtonThemes.primary}
+                  onClick={() =>
+                    depositProvider
+                      .fetchTransactions({
+                        account: accountKey,
+                        asset_code: assetCode,
+                      })
+                      .then((transactions) => this.setState({ transactions }))
+                  }
+                >
+                  Fetch deposits
+                </Button>
+              ) : (
+                <p>Enter an account key before proceeding!</p>
+              ))}
 
             {transactions && <Json src={transactions} />}
           </>
@@ -114,7 +122,7 @@ class TransferProvider extends Component {
 }
 
 TransferProvider.propTypes = {
-  accountKey: PropTypes.string,
+  accountKey: PropTypes.string.isRequired,
 };
 
 export default TransferProvider;

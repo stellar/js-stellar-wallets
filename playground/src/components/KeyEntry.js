@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import StellarSdk from "stellar-sdk";
 import { Input, Checkbox } from "@stellar/elements";
 
@@ -55,7 +56,7 @@ export default class KeyEntry extends Component {
 
       this.setState({ key: keyMetadata });
 
-      this.props.onSetKey(keyMetadata.publicKey, this.state.isTestnet);
+      this.props.onSetKey(key.publicKey, this.state.isTestnet);
     } catch (e) {
       this.setState({ error: e.toString() });
     }
@@ -175,4 +176,6 @@ export default class KeyEntry extends Component {
   }
 }
 
-KeyEntry.propTypes = {};
+KeyEntry.propTypes = {
+  onSetKey: PropTypes.func,
+};
