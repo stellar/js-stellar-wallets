@@ -223,3 +223,66 @@ export interface Memo {
 export interface TransferError extends Error {
   originalResponse?: any;
 }
+
+export enum TransactionStatus {
+  completed = "completed",
+  pending_external = "pending_external",
+  pending_anchor = "pending_anchor",
+  pending_stellar = "pending_stellar",
+  pending_trust = "pending_trust",
+  pending_user = "pending_user",
+  pending_user_transfer_start = "pending_user_transfer_start",
+  incomplete = "incomplete",
+  no_market = "no_market",
+  too_small = "too_small",
+  too_large = "too_large",
+  error = "error",
+}
+
+interface BaseTransaction {
+  id: string;
+  kind: "deposit" | "withdrawal";
+  status:
+    | TransactionStatus.completed
+    | TransactionStatus.pending_external
+    | TransactionStatus.pending_anchor
+    | TransactionStatus.pending_stellar
+    | TransactionStatus.pending_trust
+    | TransactionStatus.pending_user
+    | TransactionStatus.pending_user_transfer_start
+    | TransactionStatus.incomplete
+    | TransactionStatus.no_market
+    | TransactionStatus.too_small
+    | TransactionStatus.too_large
+    | TransactionStatus.error;
+  status_eta?: number;
+  more_info_url?: string;
+  amount_in?: string;
+  amount_out?: string;
+  amount_fee?: string;
+  from?: string;
+  to?: string;
+  external_extra?: string;
+  external_extra_text?: string;
+  started_at?: string;
+  completed_at?: string;
+  stellar_transaction_id?: string;
+  external_transaction_id?: string;
+  message?: string;
+  refunded?: boolean;
+}
+
+export interface DepositTransaction extends BaseTransaction {
+  kind: "deposit";
+  deposit_memo?: string;
+  deposit_memo_type?: string;
+}
+
+export interface WithdrawTransaction extends BaseTransaction {
+  kind: "withdrawal";
+  withdraw_anchor_account?: string;
+  withdraw_memo?: string;
+  withdraw_memo_type: string;
+}
+
+export type Transaction = DepositTransaction | WithdrawTransaction;
