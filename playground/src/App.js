@@ -5,11 +5,11 @@ import * as WalletSdk from "@stellar/wallet-sdk";
 import StellarSdk from "stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
-import Authorization from "components/Authorization";
 import KeyEntry from "components/KeyEntry";
 import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Transfers from "components/Transfers";
+import TransferProvider from "components/TransferProvider";
 
 const El = styled.div`
   display: flex;
@@ -69,7 +69,9 @@ class App extends Component {
 
         <h2>Transfers</h2>
 
-        <Authorization />
+        <TransferProvider
+          accountKey={dataProvider && dataProvider.getAccountKey()}
+        />
       </div>
     );
   }
