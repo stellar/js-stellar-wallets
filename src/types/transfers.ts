@@ -9,7 +9,6 @@ export interface GetKycArgs {
 export interface FeeArgs {
   asset_code: string;
   amount: string;
-  operation: "withdraw" | "deposit";
   type: string;
 }
 
@@ -241,7 +240,6 @@ export enum TransactionStatus {
 
 interface BaseTransaction {
   id: string;
-  kind: "deposit" | "withdrawal";
   status:
     | TransactionStatus.completed
     | TransactionStatus.pending_external
@@ -282,7 +280,16 @@ export interface WithdrawTransaction extends BaseTransaction {
   kind: "withdrawal";
   withdraw_anchor_account?: string;
   withdraw_memo?: string;
-  withdraw_memo_type: string;
+  withdraw_memo_type?: string;
 }
 
 export type Transaction = DepositTransaction | WithdrawTransaction;
+
+export interface TransactionArgs {
+  asset_code: string;
+  account: string;
+  no_older_than?: string;
+  limit?: number;
+  kind?: string;
+  paging_id?: string;
+}

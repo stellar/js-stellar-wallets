@@ -2,12 +2,17 @@ import queryString from "query-string";
 
 import {
   DepositInfo,
+  DepositTransaction,
   Fee,
   FeeArgs,
   Info,
   RawInfoResponse,
   SimpleFee,
+  Transaction,
+  TransactionArgs,
+  TransactionStatus,
   WithdrawInfo,
+  WithdrawTransaction,
 } from "../types";
 
 import { parseInfo } from "./parseInfo";
@@ -17,11 +22,13 @@ import { parseInfo } from "./parseInfo";
  */
 export abstract class TransferProvider {
   public transferServer: string;
+  public operation: "deposit" | "withdraw";
   public info?: Info;
   public bearerToken?: string;
 
-  constructor(transferServer: string) {
+  constructor(transferServer: string, operation: "deposit" | "withdraw") {
     this.transferServer = transferServer;
+    this.operation = operation;
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -50,12 +57,50 @@ export abstract class TransferProvider {
     | Promise<WithdrawInfo>
     | Promise<DepositInfo>;
 
-  protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    if (!this.info || !this.info[args.operation]) {
+  public async fetchTransactions(
+    args: TransactionArgs,
+  ): Promise<Transaction[]> {
+    if (args.asset_code) {
+      throw new Error("Required parameter `asset_code` not provided!");
+    }
+    if (args.account) {
+      throw new Error("Required parameter `account` not provided!");
+    }
+
+    if (!this.info || !this.info[this.operation]) {
       throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
     }
 
-    const assetInfo = this.info[args.operation][args.asset_code];
+    const assetInfo = this.info[this.operation][args.asset_code];
+
+    if (!assetInfo) {
+      throw new Error(
+        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+      );
+    }
+
+    // stub
+    return [
+      this.operation === "deposit"
+        ? ({
+            id: "test",
+            kind: "deposit",
+            status: TransactionStatus.completed,
+          } as DepositTransaction)
+        : ({
+            id: "test",
+            kind: "withdrawal",
+            status: TransactionStatus.completed,
+          } as WithdrawTransaction),
+    ];
+  }
+
+  public async fetchFinalFee(args: FeeArgs): Promise<number> {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
+    }
+
+    const assetInfo = this.info[this.operation][args.asset_code];
 
     if (!assetInfo) {
       throw new Error(

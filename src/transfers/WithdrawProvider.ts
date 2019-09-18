@@ -1,14 +1,12 @@
 import queryString from "query-string";
 
 import {
-  FeeArgs,
   InteractiveKycNeededResponse,
   TransferError,
   TransferResponse,
   WithdrawInfo,
   WithdrawRequest,
 } from "../types";
-import { OmitProperties } from "../util";
 
 import { fetchKycInBrowser } from "./fetchKycInBrowser";
 import { TransferProvider } from "./TransferProvider";
@@ -74,6 +72,10 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class WithdrawProvider extends TransferProvider {
+  constructor(transferServer: string) {
+    super(transferServer, "withdraw");
+  }
+
   /**
    * Make a withdraw request.
    *
@@ -118,16 +120,6 @@ export class WithdrawProvider extends TransferProvider {
   public async fetchSupportedAssets(): Promise<WithdrawInfo> {
     const { withdraw } = await this.fetchInfo();
     return withdraw;
-  }
-
-  /**
-   * Calculate the real fee for a withdrawal.
-   */
-  public async fetchFinalFee(args: OmitProperties<FeeArgs, "operation">) {
-    return super.fetchFinalFee({
-      ...args,
-      operation: "withdraw",
-    });
   }
 
   /**
