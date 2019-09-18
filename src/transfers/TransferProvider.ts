@@ -9,7 +9,6 @@ import {
   SimpleFee,
   Transaction,
   TransactionArgs,
-  TransactionStatus,
   WithdrawInfo,
 } from "../types";
 
@@ -73,24 +72,28 @@ export abstract class TransferProvider {
 
     if (!assetInfo) {
       throw new Error(
-        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+        `Asset ${args.asset_code} is not supported by ${this.transferServer}`,
       );
     }
 
-    // stub
-    return [
-      this.operation === "deposit"
-        ? {
-            id: "test",
-            kind: "deposit",
-            status: TransactionStatus.completed,
-          }
-        : {
-            id: "test",
-            kind: "withdrawal",
-            status: TransactionStatus.completed,
-          },
-    ];
+    // if the asset requires authentication, require an auth_token
+    if (assetInfo.authentication_required && !args.auth_token) {
+      throw new Error(
+        `Asset ${
+          args.asset_code
+        } requires authentication, but auth_token param not supplied.`,
+      );
+    }
+
+    const response = await fetch(
+      `${this.transferServer}/transactions?${queryString.stringify(
+        args as any,
+      )}`,
+    );
+
+    const { transactions } = await response.json();
+
+    return transactions as Transaction[];
   }
 
   public async fetchFinalFee(args: FeeArgs): Promise<number> {

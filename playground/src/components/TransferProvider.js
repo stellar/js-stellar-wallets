@@ -16,7 +16,9 @@ class TransferProvider extends Component {
     url: "",
     isTestnet: false,
     assetCode: "",
+    authToken: null,
     transactions: null,
+    transactionError: null,
     info: null,
   };
 
@@ -47,8 +49,12 @@ class TransferProvider extends Component {
       isTestnet,
       assetCode,
       transactions,
+      transactionError,
     } = this.state;
-    const { accountKey } = this.props;
+    const { dataProvider, keyManager } = this.props;
+
+    const accountKey = dataProvider.getAccountKey();
+
     return (
       <div>
         <h2>Deposit provider</h2>
@@ -104,7 +110,10 @@ class TransferProvider extends Component {
                         account: accountKey,
                         asset_code: assetCode,
                       })
-                      .then((transactions) => this.setState({ transactions }))
+                      .then((transactions) =>
+                        this.setState({ transactions, transactionError: null }),
+                      )
+                      .catch((e) => this.setState({ transactionError: e }))
                   }
                 >
                   Fetch deposits
@@ -113,6 +122,7 @@ class TransferProvider extends Component {
                 <p>Enter an account key before proceeding!</p>
               ))}
 
+            {transactionError && <p>Error: {transactionError}</p>}
             {transactions && <Json src={transactions} />}
           </>
         )}
@@ -122,7 +132,8 @@ class TransferProvider extends Component {
 }
 
 TransferProvider.propTypes = {
-  accountKey: PropTypes.string.isRequired,
+  dataProvider: PropTypes.object.isRequired,
+  keyManager: PropTypes.object.isRequired,
 };
 
 export default TransferProvider;

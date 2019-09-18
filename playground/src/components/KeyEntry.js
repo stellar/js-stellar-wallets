@@ -7,7 +7,7 @@ import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 
 export default class KeyEntry extends Component {
   state = {
-    key: null,
+    keyMetadata: null,
     keyInput: "",
     keyManager: null,
     error: null,
@@ -30,6 +30,14 @@ export default class KeyEntry extends Component {
     window.ExampleKeyManager = keyManager;
 
     this.setState({ keyManager });
+
+    this.props.onSetKeyManager(keyManager);
+
+    // try to fill the auth server from memory
+    const localAuthServer = localStorage.getItem("authServer");
+    if (localAuthServer) {
+      this.setState({ authServer: localAuthServer });
+    }
   }
 
   _setKey = async (privateKey, password) => {
@@ -54,7 +62,7 @@ export default class KeyEntry extends Component {
         encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
       });
 
-      this.setState({ key: keyMetadata });
+      this.setState({ keyMetadata: keyMetadata });
 
       this.props.onSetKey(key.publicKey, this.state.isTestnet);
     } catch (e) {
@@ -63,12 +71,13 @@ export default class KeyEntry extends Component {
   };
 
   _getAuthToken = async (authServer) => {
-    const { keyManager, password, key } = this.state;
+    const { keyManager, password, keyMetadata } = this.state;
     this.setState({ authToken: null });
+    localStorage.setItem("authServer", authServer);
 
     try {
       const authToken = await keyManager.getAuthToken({
-        publicKey: key.publicKey,
+        id: keyMetadata.id,
         password,
         authServer,
       });
@@ -84,7 +93,7 @@ export default class KeyEntry extends Component {
       authServer,
       authToken,
       authTokenError,
-      key,
+      keyMetadata,
       keyInput,
       password,
       error,
@@ -93,13 +102,13 @@ export default class KeyEntry extends Component {
 
     const localKey = localStorage.getItem("key");
 
-    if (key) {
+    if (keyMetadata) {
       return (
         <>
           {isTestnet ? <p>Testnet</p> : <p>Mainnet</p>}
           <p>Password: {password}</p>
 
-          <pre>{JSON.stringify(key, null, 2)}</pre>
+          <pre>{JSON.stringify(keyMetadata, null, 2)}</pre>
 
           <form
             onSubmit={(ev) => {
@@ -121,7 +130,7 @@ export default class KeyEntry extends Component {
             <button>Get auth token</button>
 
             {authToken && <p>Auth token: {authToken}</p>}
-            {authTokenError && <p>Auth token: {authTokenError}</p>}
+            {authTokenError && <p>Error: {authTokenError}</p>}
           </form>
 
           <button onClick={() => this.setState({ key: null })}>
@@ -177,5 +186,6 @@ export default class KeyEntry extends Component {
 }
 
 KeyEntry.propTypes = {
-  onSetKey: PropTypes.func,
+  onSetKey: PropTypes.func.isRequired,
+  onSetKeyManager: PropTypes.func.isRequired,
 };

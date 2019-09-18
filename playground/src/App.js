@@ -36,16 +36,13 @@ class App extends Component {
       accountOrKey: publicKey,
     });
 
-    console.log("data provider: ", dataProvider);
-    console.log("key: ", publicKey);
-
     this.setState({
       dataProvider,
     });
   };
 
   render() {
-    const { dataProvider } = this.state;
+    const { dataProvider, keyManager } = this.state;
 
     return (
       <div>
@@ -53,7 +50,10 @@ class App extends Component {
 
         <h2>Key Data</h2>
 
-        <KeyEntry onSetKey={this._setKey} />
+        <KeyEntry
+          onSetKey={this._setKey}
+          onSetKeyManager={(keyManager) => this.setState({ keyManager })}
+        />
 
         {dataProvider && !dataProvider.isValidKey() && (
           <p>That's an invalid key!</p>
@@ -71,7 +71,10 @@ class App extends Component {
             </El>
             <h2>Transfers</h2>
 
-            <TransferProvider accountKey={dataProvider.getAccountKey()} />
+            <TransferProvider
+              dataProvider={dataProvider}
+              keyManager={keyManager}
+            />
           </>
         )}
       </div>
