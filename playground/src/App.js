@@ -20,6 +20,7 @@ const El = styled.div`
 class App extends Component {
   state = {
     dataProvider: null,
+    authToken: null,
     isTestnet: false,
   };
 
@@ -42,7 +43,7 @@ class App extends Component {
   };
 
   render() {
-    const { dataProvider, keyManager } = this.state;
+    const { dataProvider, authToken } = this.state;
 
     return (
       <div>
@@ -52,7 +53,7 @@ class App extends Component {
 
         <KeyEntry
           onSetKey={this._setKey}
-          onSetKeyManager={(keyManager) => this.setState({ keyManager })}
+          onGetAuthToken={(authToken) => this.setState({ authToken })}
         />
 
         {dataProvider && !dataProvider.isValidKey() && (
@@ -61,6 +62,13 @@ class App extends Component {
 
         {dataProvider && dataProvider.isValidKey() && (
           <>
+            <h2>Transfers</h2>
+
+            <TransferProvider
+              dataProvider={dataProvider}
+              authToken={authToken}
+            />
+
             <El>
               <AccountDetails dataProvider={dataProvider} />
               <div>
@@ -69,12 +77,6 @@ class App extends Component {
                 <Trades dataProvider={dataProvider} />
               </div>
             </El>
-            <h2>Transfers</h2>
-
-            <TransferProvider
-              dataProvider={dataProvider}
-              keyManager={keyManager}
-            />
           </>
         )}
       </div>

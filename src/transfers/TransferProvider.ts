@@ -76,8 +76,10 @@ export abstract class TransferProvider {
       );
     }
 
+    const isAuthRequired = assetInfo.authentication_required;
+
     // if the asset requires authentication, require an auth_token
-    if (assetInfo.authentication_required && !args.auth_token) {
+    if (isAuthRequired && !this.bearerToken) {
       throw new Error(
         `Asset ${
           args.asset_code
@@ -89,6 +91,9 @@ export abstract class TransferProvider {
       `${this.transferServer}/transactions?${queryString.stringify(
         args as any,
       )}`,
+      {
+        headers: isAuthRequired ? this.getHeaders() : undefined,
+      },
     );
 
     const { transactions } = await response.json();

@@ -16,7 +16,7 @@ class TransferProvider extends Component {
     url: "",
     isTestnet: false,
     assetCode: "",
-    authToken: null,
+
     transactions: null,
     transactionError: null,
     info: null,
@@ -51,7 +51,7 @@ class TransferProvider extends Component {
       transactions,
       transactionError,
     } = this.state;
-    const { dataProvider, keyManager } = this.props;
+    const { dataProvider, authToken } = this.props;
 
     const accountKey = dataProvider.getAccountKey();
 
@@ -100,27 +100,33 @@ class TransferProvider extends Component {
               </Select>
             </label>
 
-            {assetCode &&
-              (accountKey ? (
-                <Button
-                  theme={ButtonThemes.primary}
-                  onClick={() =>
-                    depositProvider
-                      .fetchTransactions({
-                        account: accountKey,
-                        asset_code: assetCode,
-                      })
-                      .then((transactions) =>
-                        this.setState({ transactions, transactionError: null }),
-                      )
-                      .catch((e) => this.setState({ transactionError: e }))
+            {assetCode && !authToken && (
+              <p>Fetch an auth token above before continuing!</p>
+            )}
+
+            {assetCode && authToken && (
+              <Button
+                theme={ButtonThemes.primary}
+                onClick={() => {
+                  if (authToken) {
+                    depositProvider.setBearerToken(authToken);
                   }
-                >
-                  Fetch deposits
-                </Button>
-              ) : (
-                <p>Enter an account key before proceeding!</p>
-              ))}
+                  depositProvider
+                    .fetchTransactions({
+                      account: accountKey,
+                      asset_code: assetCode,
+                    })
+                    .then((transactions) =>
+                      this.setState({ transactions, transactionError: null }),
+                    )
+                    .catch((e) =>
+                      this.setState({ transactionError: e.toString() }),
+                    );
+                }}
+              >
+                Fetch deposits
+              </Button>
+            )}
 
             {transactionError && <p>Error: {transactionError}</p>}
             {transactions && <Json src={transactions} />}
@@ -133,7 +139,7 @@ class TransferProvider extends Component {
 
 TransferProvider.propTypes = {
   dataProvider: PropTypes.object.isRequired,
-  keyManager: PropTypes.object.isRequired,
+  authToken: PropTypes.string,
 };
 
 export default TransferProvider;

@@ -288,7 +288,6 @@ export type Transaction = DepositTransaction | WithdrawTransaction;
 export interface TransactionArgs {
   asset_code: string;
   account: string;
-  auth_token?: string;
   no_older_than?: string;
   limit?: number;
   kind?: string;

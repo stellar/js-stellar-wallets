@@ -31,8 +31,6 @@ export default class KeyEntry extends Component {
 
     this.setState({ keyManager });
 
-    this.props.onSetKeyManager(keyManager);
-
     // try to fill the auth server from memory
     const localAuthServer = localStorage.getItem("authServer");
     if (localAuthServer) {
@@ -89,6 +87,7 @@ export default class KeyEntry extends Component {
       });
 
       this.setState({ authToken });
+      this.props.onGetAuthToken(authToken);
     } catch (e) {
       this.setState({ authTokenError: e.toString() });
     }
@@ -193,5 +192,5 @@ export default class KeyEntry extends Component {
 
 KeyEntry.propTypes = {
   onSetKey: PropTypes.func.isRequired,
-  onSetKeyManager: PropTypes.func.isRequired,
+  onGetAuthToken: PropTypes.func.isRequired,
 };
