@@ -50,12 +50,18 @@ export default class KeyEntry extends Component {
         privateKey: account.secret(),
         type: KeyType.plaintextKey,
       };
+      localStorage.setItem("key", key.privateKey);
     } catch (e) {
       this.setState({ error: "That wasn't a valid secret key." });
       return;
     }
 
     try {
+      this.state.keyManager.setDefaultNetworkPassphrase(
+        this.state.isTestnet
+          ? StellarSdk.Networks.TESTNET
+          : StellarSdk.Networks.PUBLIC,
+      );
       const keyMetadata = await this.state.keyManager.storeKey({
         key,
         password,

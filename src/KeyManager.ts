@@ -115,6 +115,14 @@ export class KeyManager {
   }
 
   /**
+   * Set the default network passphrase
+   * @param {string} defaultNetworkPassphrase
+   */
+  public setDefaultNetworkPassphrase(passphrase: string) {
+    this.defaultNetworkPassphrase = passphrase;
+  }
+
+  /**
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @async
