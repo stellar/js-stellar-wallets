@@ -98,7 +98,12 @@ export abstract class TransferProvider {
 
     const { transactions } = await response.json();
 
-    return transactions as Transaction[];
+    return transactions.filter(
+      (transaction: Transaction) =>
+        args.show_all_transactions ||
+        (this.operation === "deposit" && transaction.kind === "deposit") ||
+        (this.operation === "withdraw" && transaction.kind === "withdrawal"),
+    ) as Transaction[];
   }
 
   public async fetchFinalFee(args: FeeArgs): Promise<number> {
