@@ -65,6 +65,11 @@ export abstract class TransferProvider {
     );
   }
 
+  /**
+   * Set the bearer token fetched by KeyManager's fetchAuthToken function.
+   * (setBearerToken and fetchAuthToken are in two different classes because
+   * fetchAuthToken requires signing keys, which requires KeyManager's helpers.)
+   */
   public setBearerToken(token: string) {
     this.bearerToken = token;
   }
