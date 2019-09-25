@@ -285,7 +285,12 @@ export interface WithdrawTransaction extends BaseTransaction {
 
 export type Transaction = DepositTransaction | WithdrawTransaction;
 
-export interface TransactionArgs {
+export interface GetAuthStatusArgs {
+  asset_code: string;
+  account: string;
+}
+
+export interface TransactionsArgs {
   asset_code: string;
   account: string;
   show_all_transactions?: boolean;
@@ -293,4 +298,10 @@ export interface TransactionArgs {
   limit?: number;
   kind?: string;
   paging_id?: string;
+}
+
+export interface TransactionArgs {
+  asset_code: string;
+  account: string;
+  id: string;
 }

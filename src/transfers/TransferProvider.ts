@@ -4,11 +4,13 @@ import {
   DepositInfo,
   Fee,
   FeeArgs,
+  GetAuthStatusArgs,
   Info,
   RawInfoResponse,
   SimpleFee,
   Transaction,
   TransactionArgs,
+  TransactionsArgs,
   WithdrawInfo,
 } from "../types";
 
@@ -54,38 +56,17 @@ export abstract class TransferProvider {
     | Promise<WithdrawInfo>
     | Promise<DepositInfo>;
 
+  /**
+   * Fetch the list of transactions for a given account / asset code from the
+   * transfer server.
+   */
   public async fetchTransactions(
-    args: TransactionArgs,
+    args: TransactionsArgs,
   ): Promise<Transaction[]> {
-    if (!args.asset_code) {
-      throw new Error("Required parameter `asset_code` not provided!");
-    }
-    if (!args.account) {
-      throw new Error("Required parameter `account` not provided!");
-    }
-
-    if (!this.info || !this.info[this.operation]) {
-      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
-    }
-
-    const assetInfo = this.info[this.operation][args.asset_code];
-
-    if (!assetInfo) {
-      throw new Error(
-        `Asset ${args.asset_code} is not supported by ${this.transferServer}`,
-      );
-    }
-
-    const isAuthRequired = assetInfo.authentication_required;
-
-    // if the asset requires authentication, require an auth_token
-    if (isAuthRequired && !this.bearerToken) {
-      throw new Error(
-        `Asset ${
-          args.asset_code
-        } requires authentication, but auth_token param not supplied.`,
-      );
-    }
+    const isAuthRequired = this.getAuthStatus("fetchTransactions", {
+      asset_code: args.asset_code,
+      account: args.account,
+    });
 
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify(
@@ -104,6 +85,33 @@ export abstract class TransferProvider {
         (this.operation === "deposit" && transaction.kind === "deposit") ||
         (this.operation === "withdraw" && transaction.kind === "withdrawal"),
     ) as Transaction[];
+  }
+
+  /**
+   * Fetch the information of a single transaction from the transfer server.
+   */
+  public async fetchTransaction(
+    { asset_code, account, id }: TransactionArgs,
+    isWatching: boolean,
+  ): Promise<Transaction> {
+    const isAuthRequired = this.getAuthStatus(
+      isWatching ? "watchTransaction" : "fetchTransaction",
+      {
+        asset_code,
+        account,
+      },
+    );
+
+    const response = await fetch(
+      `${this.transferServer}/transaction?${queryString.stringify({ id })}`,
+      {
+        headers: isAuthRequired ? this.getHeaders() : undefined,
+      },
+    );
+
+    const transaction: Transaction = await response.json();
+
+    return transaction;
   }
 
   public async fetchFinalFee(args: FeeArgs): Promise<number> {
@@ -142,5 +150,50 @@ export abstract class TransferProvider {
           }' but expected one of 'none', 'simple', 'complex'`,
         );
     }
+  }
+
+  /**
+   * Return whether or not auth is required on a token. Throw an error if no
+   * asset_code or account was provided, or supported assets weren't fetched,
+   * or the asset isn't supported by the transfer server.
+   */
+  private getAuthStatus(
+    functionName: string,
+    { asset_code, account }: GetAuthStatusArgs,
+  ): boolean {
+    if (!asset_code) {
+      throw new Error("Required parameter `asset_code` not provided!");
+    }
+    if (!account) {
+      throw new Error("Required parameter `account` not provided!");
+    }
+
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error(
+        `Run fetchSupportedAssets before running ${functionName}!`,
+      );
+    }
+
+    const assetInfo = this.info[this.operation][asset_code];
+
+    if (!assetInfo) {
+      throw new Error(
+        `Asset ${asset_code} is not supported by ${this.transferServer}`,
+      );
+    }
+
+    const isAuthRequired = !!assetInfo.authentication_required;
+
+    // if the asset requires authentication, require an auth_token
+    if (isAuthRequired && !this.bearerToken) {
+      throw new Error(
+        `
+        Asset ${asset_code} requires authentication. Run KeyManager's 
+        getAuthToken function, then run setBearerToken to set it.
+        `,
+      );
+    }
+
+    return isAuthRequired;
   }
 }
