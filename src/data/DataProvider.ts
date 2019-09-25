@@ -11,6 +11,7 @@ import {
   Offer,
   Trade,
   Transfer,
+  WatcherParams,
 } from "../types";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
@@ -21,11 +22,6 @@ import { makeDisplayableTransfers } from "./makeDisplayableTransfers";
 export interface DataProviderParams {
   serverUrl: string;
   accountOrKey: Account | string;
-}
-
-export interface WatcherParams {
-  onMessage: (accountDetails: AccountDetails) => void;
-  onError: (error: any) => void;
 }
 
 function isAccount(obj: any): obj is Account {
@@ -188,7 +184,9 @@ export class DataProvider {
    * If the account doesn't exist yet, it will re-check it every 2 seconds.
    * Returns a function you can execute to stop the watcher.
    */
-  public watchAccountDetails(params: WatcherParams): () => void {
+  public watchAccountDetails(
+    params: WatcherParams<AccountDetails>,
+  ): () => void {
     const { onMessage, onError } = params;
 
     this.fetchAccountDetails()

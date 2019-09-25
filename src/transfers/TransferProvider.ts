@@ -10,6 +10,8 @@ import {
   Transaction,
   TransactionArgs,
   TransactionsArgs,
+  TransactionStatus,
+  WatchTransactionArgs,
   WithdrawInfo,
 } from "../types";
 
@@ -24,6 +26,8 @@ export abstract class TransferProvider {
   public account: string;
   public info?: Info;
   public authToken?: string;
+
+  protected _transactionWatcher?: number;
 
   constructor(
     transferServer: string,
@@ -131,6 +135,53 @@ export abstract class TransferProvider {
     const transaction: Transaction = await response.json();
 
     return transaction;
+  }
+
+  /**
+   * Watch a transaction until it stops pending. Takes three callbacks:
+   * * onMessage - When the transaction comes back as pending.
+   * * onSuccess - When the transaction comes back as completed.
+   * * onError - When there's a runtime error, or the transaction is incomplete
+   * / no_market / too_small / too_large / error.
+   */
+  public watchTransaction({
+    asset_code,
+    id,
+    onMessage,
+    onSuccess,
+    onError,
+    timeout = 5000,
+  }: WatchTransactionArgs): () => void {
+    this._transactionWatcher = setTimeout(async () => {
+      try {
+        const transaction = await this.fetchTransaction(
+          { asset_code, id },
+          true,
+        );
+
+        if (transaction.status.indexOf("pending") === 0) {
+          this.watchTransaction({
+            asset_code,
+            id,
+            onMessage,
+            onSuccess,
+            onError,
+            timeout,
+          });
+          onMessage(transaction);
+        } else if (transaction.status === TransactionStatus.completed) {
+          onSuccess(transaction);
+        } else {
+          onError(transaction);
+        }
+      } catch (e) {
+        onError(e);
+      }
+    }, 1000) as any;
+
+    return () => {
+      clearTimeout(this._transactionWatcher);
+    };
   }
 
   public async fetchFinalFee(args: FeeArgs): Promise<number> {
