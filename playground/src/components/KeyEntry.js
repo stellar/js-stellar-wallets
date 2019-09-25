@@ -74,13 +74,13 @@ export default class KeyEntry extends Component {
     }
   };
 
-  _getAuthToken = async (authServer) => {
+  _fetchAuthToken = async (authServer) => {
     const { keyManager, password, keyMetadata } = this.state;
     this.setState({ authToken: null });
     localStorage.setItem("authServer", authServer);
 
     try {
-      const authToken = await keyManager.getAuthToken({
+      const authToken = await keyManager.fetchAuthToken({
         id: keyMetadata.id,
         password,
         authServer,
@@ -118,7 +118,7 @@ export default class KeyEntry extends Component {
           <form
             onSubmit={(ev) => {
               ev.preventDefault();
-              this._getAuthToken(authServer);
+              this._fetchAuthToken(authServer);
             }}
           >
             <label>

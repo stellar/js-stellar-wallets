@@ -197,7 +197,7 @@ export abstract class TransferProvider {
       throw new Error(
         `
         Asset ${asset_code} requires authentication. Run KeyManager's 
-        getAuthToken function, then run setBearerToken to set it.
+        fetchAuthToken function, then run setBearerToken to set it.
         `,
       );
     }
