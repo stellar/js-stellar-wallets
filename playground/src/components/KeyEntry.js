@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import StellarSdk from "stellar-sdk";
 import { Input, Checkbox } from "@stellar/elements";
 
@@ -6,7 +7,7 @@ import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
 
 export default class KeyEntry extends Component {
   state = {
-    key: null,
+    keyMetadata: null,
     keyInput: "",
     keyManager: null,
     error: null,
@@ -29,6 +30,12 @@ export default class KeyEntry extends Component {
     window.ExampleKeyManager = keyManager;
 
     this.setState({ keyManager });
+
+    // try to fill the auth server from memory
+    const localAuthServer = localStorage.getItem("authServer");
+    if (localAuthServer) {
+      this.setState({ authServer: localAuthServer });
+    }
   }
 
   _setKey = async (privateKey, password) => {
@@ -41,38 +48,46 @@ export default class KeyEntry extends Component {
         privateKey: account.secret(),
         type: KeyType.plaintextKey,
       };
+      localStorage.setItem("key", key.privateKey);
     } catch (e) {
       this.setState({ error: "That wasn't a valid secret key." });
       return;
     }
 
     try {
+      this.state.keyManager.setDefaultNetworkPassphrase(
+        this.state.isTestnet
+          ? StellarSdk.Networks.TESTNET
+          : StellarSdk.Networks.PUBLIC,
+      );
       const keyMetadata = await this.state.keyManager.storeKey({
         key,
         password,
         encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
       });
 
-      this.setState({ key: keyMetadata });
+      this.setState({ keyMetadata: keyMetadata });
 
-      this.props.onSetKey(keyMetadata.publicKey, this.state.isTestnet);
+      this.props.onSetKey(key.publicKey, this.state.isTestnet);
     } catch (e) {
       this.setState({ error: e.toString() });
     }
   };
 
   _getAuthToken = async (authServer) => {
-    const { keyManager, password, key } = this.state;
+    const { keyManager, password, keyMetadata } = this.state;
     this.setState({ authToken: null });
+    localStorage.setItem("authServer", authServer);
 
     try {
       const authToken = await keyManager.getAuthToken({
-        publicKey: key.publicKey,
+        id: keyMetadata.id,
         password,
         authServer,
       });
 
       this.setState({ authToken });
+      this.props.onGetAuthToken(authToken);
     } catch (e) {
       this.setState({ authTokenError: e.toString() });
     }
@@ -83,7 +98,7 @@ export default class KeyEntry extends Component {
       authServer,
       authToken,
       authTokenError,
-      key,
+      keyMetadata,
       keyInput,
       password,
       error,
@@ -92,13 +107,13 @@ export default class KeyEntry extends Component {
 
     const localKey = localStorage.getItem("key");
 
-    if (key) {
+    if (keyMetadata) {
       return (
         <>
           {isTestnet ? <p>Testnet</p> : <p>Mainnet</p>}
           <p>Password: {password}</p>
 
-          <pre>{JSON.stringify(key, null, 2)}</pre>
+          <pre>{JSON.stringify(keyMetadata, null, 2)}</pre>
 
           <form
             onSubmit={(ev) => {
@@ -120,7 +135,7 @@ export default class KeyEntry extends Component {
             <button>Get auth token</button>
 
             {authToken && <p>Auth token: {authToken}</p>}
-            {authTokenError && <p>Auth token: {authTokenError}</p>}
+            {authTokenError && <p>Error: {authTokenError}</p>}
           </form>
 
           <button onClick={() => this.setState({ key: null })}>
@@ -175,4 +190,7 @@ export default class KeyEntry extends Component {
   }
 }
 
-KeyEntry.propTypes = {};
+KeyEntry.propTypes = {
+  onSetKey: PropTypes.func.isRequired,
+  onGetAuthToken: PropTypes.func.isRequired,
+};

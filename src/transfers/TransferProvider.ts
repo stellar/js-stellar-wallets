@@ -7,6 +7,8 @@ import {
   Info,
   RawInfoResponse,
   SimpleFee,
+  Transaction,
+  TransactionArgs,
   WithdrawInfo,
 } from "../types";
 
@@ -17,11 +19,13 @@ import { parseInfo } from "./parseInfo";
  */
 export abstract class TransferProvider {
   public transferServer: string;
+  public operation: "deposit" | "withdraw";
   public info?: Info;
   public bearerToken?: string;
 
-  constructor(transferServer: string) {
+  constructor(transferServer: string, operation: "deposit" | "withdraw") {
     this.transferServer = transferServer;
+    this.operation = operation;
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -50,12 +54,64 @@ export abstract class TransferProvider {
     | Promise<WithdrawInfo>
     | Promise<DepositInfo>;
 
-  protected async fetchFinalFee(args: FeeArgs): Promise<number> {
-    if (!this.info || !this.info[args.operation]) {
+  public async fetchTransactions(
+    args: TransactionArgs,
+  ): Promise<Transaction[]> {
+    if (!args.asset_code) {
+      throw new Error("Required parameter `asset_code` not provided!");
+    }
+    if (!args.account) {
+      throw new Error("Required parameter `account` not provided!");
+    }
+
+    if (!this.info || !this.info[this.operation]) {
       throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
     }
 
-    const assetInfo = this.info[args.operation][args.asset_code];
+    const assetInfo = this.info[this.operation][args.asset_code];
+
+    if (!assetInfo) {
+      throw new Error(
+        `Asset ${args.asset_code} is not supported by ${this.transferServer}`,
+      );
+    }
+
+    const isAuthRequired = assetInfo.authentication_required;
+
+    // if the asset requires authentication, require an auth_token
+    if (isAuthRequired && !this.bearerToken) {
+      throw new Error(
+        `Asset ${
+          args.asset_code
+        } requires authentication, but auth_token param not supplied.`,
+      );
+    }
+
+    const response = await fetch(
+      `${this.transferServer}/transactions?${queryString.stringify(
+        args as any,
+      )}`,
+      {
+        headers: isAuthRequired ? this.getHeaders() : undefined,
+      },
+    );
+
+    const { transactions } = await response.json();
+
+    return transactions.filter(
+      (transaction: Transaction) =>
+        args.show_all_transactions ||
+        (this.operation === "deposit" && transaction.kind === "deposit") ||
+        (this.operation === "withdraw" && transaction.kind === "withdrawal"),
+    ) as Transaction[];
+  }
+
+  public async fetchFinalFee(args: FeeArgs): Promise<number> {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
+    }
+
+    const assetInfo = this.info[this.operation][args.asset_code];
 
     if (!assetInfo) {
       throw new Error(

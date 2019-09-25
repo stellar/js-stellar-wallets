@@ -5,11 +5,11 @@ import * as WalletSdk from "@stellar/wallet-sdk";
 import StellarSdk from "stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
-import Authorization from "components/Authorization";
 import KeyEntry from "components/KeyEntry";
 import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Transfers from "components/Transfers";
+import TransferProvider from "components/TransferProvider";
 
 const El = styled.div`
   display: flex;
@@ -20,6 +20,7 @@ const El = styled.div`
 class App extends Component {
   state = {
     dataProvider: null,
+    authToken: null,
     isTestnet: false,
   };
 
@@ -42,7 +43,7 @@ class App extends Component {
   };
 
   render() {
-    const { dataProvider } = this.state;
+    const { dataProvider, authToken } = this.state;
 
     return (
       <div>
@@ -50,26 +51,34 @@ class App extends Component {
 
         <h2>Key Data</h2>
 
-        <KeyEntry onSetKey={this._setKey} />
+        <KeyEntry
+          onSetKey={this._setKey}
+          onGetAuthToken={(authToken) => this.setState({ authToken })}
+        />
 
         {dataProvider && !dataProvider.isValidKey() && (
           <p>That's an invalid key!</p>
         )}
 
         {dataProvider && dataProvider.isValidKey() && (
-          <El>
-            <AccountDetails dataProvider={dataProvider} />
-            <div>
-              <Transfers dataProvider={dataProvider} />
-              <Offers dataProvider={dataProvider} />
-              <Trades dataProvider={dataProvider} />
-            </div>
-          </El>
+          <>
+            <h2>Transfers</h2>
+
+            <TransferProvider
+              dataProvider={dataProvider}
+              authToken={authToken}
+            />
+
+            <El>
+              <AccountDetails dataProvider={dataProvider} />
+              <div>
+                <Transfers dataProvider={dataProvider} />
+                <Offers dataProvider={dataProvider} />
+                <Trades dataProvider={dataProvider} />
+              </div>
+            </El>
+          </>
         )}
-
-        <h2>Transfers</h2>
-
-        <Authorization />
       </div>
     );
   }

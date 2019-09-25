@@ -115,6 +115,14 @@ export class KeyManager {
   }
 
   /**
+   * Set the default network passphrase
+   * @param {string} defaultNetworkPassphrase
+   */
+  public setDefaultNetworkPassphrase(passphrase: string) {
+    this.defaultNetworkPassphrase = passphrase;
+  }
+
+  /**
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @async
@@ -300,8 +308,10 @@ export class KeyManager {
 
     const keyHandler = this.keyHandlerMap[key.type];
 
+    const firstTransaction = new Transaction(transaction, keyNetwork);
+
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: new Transaction(transaction, keyNetwork),
+      transaction: firstTransaction,
       key,
     });
 
@@ -320,7 +330,12 @@ export class KeyManager {
       },
     });
 
-    const { token } = await responseRes.json();
+    const { token, message, status } = await responseRes.json();
+
+    // if we get a false status message, error out
+    if (status === false && message) {
+      throw new Error(message);
+    }
 
     return token;
   }

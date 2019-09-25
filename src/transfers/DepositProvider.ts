@@ -3,12 +3,10 @@ import queryString from "query-string";
 import {
   DepositInfo,
   DepositRequest,
-  FeeArgs,
   InteractiveKycNeededResponse,
   TransferError,
   TransferResponse,
 } from "../types";
-import { OmitProperties } from "../util";
 
 import { fetchKycInBrowser } from "./fetchKycInBrowser";
 import { TransferProvider } from "./TransferProvider";
@@ -73,6 +71,10 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class DepositProvider extends TransferProvider {
+  constructor(transferServer: string) {
+    super(transferServer, "deposit");
+  }
+
   /**
    * Make a deposit request.
    *
@@ -122,16 +124,6 @@ export class DepositProvider extends TransferProvider {
   public async fetchSupportedAssets(): Promise<DepositInfo> {
     const { deposit } = await this.fetchInfo();
     return deposit;
-  }
-
-  /**
-   * Calculate the real fee for a deposit.
-   */
-  public async fetchFinalFee(args: OmitProperties<FeeArgs, "operation">) {
-    return super.fetchFinalFee({
-      ...args,
-      operation: "deposit",
-    });
   }
 
   /**
