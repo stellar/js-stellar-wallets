@@ -1,3 +1,4 @@
+import StellarSdk from "stellar-sdk";
 import { DepositProvider } from "./DepositProvider";
 
 import { DepositInfo } from "../types";
@@ -22,7 +23,10 @@ describe("fetchFinalFee", () => {
       },
     };
 
-    const provider = new DepositProvider("test");
+    const provider = new DepositProvider(
+      "test",
+      StellarSdk.Keypair.random().publicKey(),
+    );
 
     // manually set info
     provider.info = { deposit: info, withdraw: {} };
@@ -53,7 +57,10 @@ describe("fetchFinalFee", () => {
       },
     };
 
-    const provider = new DepositProvider("test");
+    const provider = new DepositProvider(
+      "test",
+      StellarSdk.Keypair.random().publicKey(),
+    );
 
     provider.info = { deposit: info, withdraw: {} };
 

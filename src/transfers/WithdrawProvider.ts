@@ -21,7 +21,7 @@ import { TransferProvider } from "./TransferProvider";
  *  - If KYC is needed, you'll have to do some additional logic.
  *
  * ```js
- * const withdrawProvider = new WithdrawProvider(transferServerUrl);
+ * const withdrawProvider = new WithdrawProvider(transferServerUrl, account);
  * const asset = await withdrawProvider.fetchSupportedAssets();
  *
  * // user provides information, picks asset
@@ -72,8 +72,8 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class WithdrawProvider extends TransferProvider {
-  constructor(transferServer: string) {
-    super(transferServer, "withdraw");
+  constructor(transferServer: string, account: string) {
+    super(transferServer, account, "withdraw");
   }
 
   /**
@@ -83,21 +83,8 @@ export class WithdrawProvider extends TransferProvider {
    * servers expect)!
    */
   public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
-    if (!this.info || !this.info.withdraw) {
-      throw new Error("Run fetchSupportedAssets before running withdraw!");
-    }
-
-    const search = queryString.stringify(args);
-    const isAuthRequired = this.info.withdraw[args.asset_code]
-      .authentication_required;
-
-    if (isAuthRequired && !this.bearerToken) {
-      throw new Error(
-        `${
-          args.asset_code
-        } requires authentication, please authorize with setBearerToken.`,
-      );
-    }
+    const isAuthRequired = this.getAuthStatus("withdraw", args.asset_code);
+    const search = queryString.stringify({ ...args, account: this.account });
 
     const response = await fetch(`${this.transferServer}/withdraw?${search}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,

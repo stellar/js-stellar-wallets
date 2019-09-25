@@ -107,7 +107,6 @@ export interface WithdrawRequest {
   asset_code: string;
   dest: string;
   dest_extra: string;
-  account?: string;
   memo?: Memo;
   memoType?: string;
   [key: string]: any;
@@ -115,7 +114,6 @@ export interface WithdrawRequest {
 
 export interface DepositRequest {
   asset_code: string;
-  account: string;
   memo?: Memo;
   memoType?: string;
   emailAddress?: string;
@@ -287,12 +285,10 @@ export type Transaction = DepositTransaction | WithdrawTransaction;
 
 export interface GetAuthStatusArgs {
   asset_code: string;
-  account: string;
 }
 
 export interface TransactionsArgs {
   asset_code: string;
-  account: string;
   show_all_transactions?: boolean;
   no_older_than?: string;
   limit?: number;
@@ -302,6 +298,5 @@ export interface TransactionsArgs {
 
 export interface TransactionArgs {
   asset_code: string;
-  account: string;
   id: string;
 }

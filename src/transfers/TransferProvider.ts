@@ -4,7 +4,6 @@ import {
   DepositInfo,
   Fee,
   FeeArgs,
-  GetAuthStatusArgs,
   Info,
   RawInfoResponse,
   SimpleFee,
@@ -22,12 +21,30 @@ import { parseInfo } from "./parseInfo";
 export abstract class TransferProvider {
   public transferServer: string;
   public operation: "deposit" | "withdraw";
+  public account: string;
   public info?: Info;
   public bearerToken?: string;
 
-  constructor(transferServer: string, operation: "deposit" | "withdraw") {
+  constructor(
+    transferServer: string,
+    account: string,
+    operation: "deposit" | "withdraw",
+  ) {
+    if (!transferServer) {
+      throw new Error("Required parameter `transferServer` missing!");
+    }
+
+    if (!account) {
+      throw new Error("Required parameter `account` missing!");
+    }
+
+    if (!operation) {
+      throw new Error("Required parameter `operation` missing!");
+    }
+
     this.transferServer = transferServer;
     this.operation = operation;
+    this.account = account;
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -63,10 +80,10 @@ export abstract class TransferProvider {
   public async fetchTransactions(
     args: TransactionsArgs,
   ): Promise<Transaction[]> {
-    const isAuthRequired = this.getAuthStatus("fetchTransactions", {
-      asset_code: args.asset_code,
-      account: args.account,
-    });
+    const isAuthRequired = this.getAuthStatus(
+      "fetchTransactions",
+      args.asset_code,
+    );
 
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify(
@@ -91,15 +108,12 @@ export abstract class TransferProvider {
    * Fetch the information of a single transaction from the transfer server.
    */
   public async fetchTransaction(
-    { asset_code, account, id }: TransactionArgs,
+    { asset_code, id }: TransactionArgs,
     isWatching: boolean,
   ): Promise<Transaction> {
     const isAuthRequired = this.getAuthStatus(
       isWatching ? "watchTransaction" : "fetchTransaction",
-      {
-        asset_code,
-        account,
-      },
+      asset_code,
     );
 
     const response = await fetch(
@@ -157,15 +171,9 @@ export abstract class TransferProvider {
    * asset_code or account was provided, or supported assets weren't fetched,
    * or the asset isn't supported by the transfer server.
    */
-  private getAuthStatus(
-    functionName: string,
-    { asset_code, account }: GetAuthStatusArgs,
-  ): boolean {
+  protected getAuthStatus(functionName: string, asset_code: string): boolean {
     if (!asset_code) {
       throw new Error("Required parameter `asset_code` not provided!");
-    }
-    if (!account) {
-      throw new Error("Required parameter `account` not provided!");
     }
 
     if (!this.info || !this.info[this.operation]) {
