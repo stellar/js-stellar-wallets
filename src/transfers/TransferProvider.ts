@@ -23,7 +23,7 @@ export abstract class TransferProvider {
   public operation: "deposit" | "withdraw";
   public account: string;
   public info?: Info;
-  public bearerToken?: string;
+  public authToken?: string;
 
   constructor(
     transferServer: string,
@@ -57,9 +57,9 @@ export abstract class TransferProvider {
 
   protected getHeaders(): Headers {
     return new Headers(
-      this.bearerToken
+      this.authToken
         ? {
-            Authorization: `Bearer ${this.bearerToken}`,
+            Authorization: `Bearer ${this.authToken}`,
           }
         : {},
     );
@@ -67,11 +67,11 @@ export abstract class TransferProvider {
 
   /**
    * Set the bearer token fetched by KeyManager's fetchAuthToken function.
-   * (setBearerToken and fetchAuthToken are in two different classes because
+   * (setAuthToken and fetchAuthToken are in two different classes because
    * fetchAuthToken requires signing keys, which requires KeyManager's helpers.)
    */
-  public setBearerToken(token: string) {
-    this.bearerToken = token;
+  public setAuthToken(token: string) {
+    this.authToken = token;
   }
 
   public abstract fetchSupportedAssets():
@@ -198,11 +198,11 @@ export abstract class TransferProvider {
     const isAuthRequired = !!assetInfo.authentication_required;
 
     // if the asset requires authentication, require an auth_token
-    if (isAuthRequired && !this.bearerToken) {
+    if (isAuthRequired && !this.authToken) {
       throw new Error(
         `
         Asset ${asset_code} requires authentication. Run KeyManager's 
-        fetchAuthToken function, then run setBearerToken to set it.
+        fetchAuthToken function, then run setAuthToken to set it.
         `,
       );
     }

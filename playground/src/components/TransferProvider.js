@@ -110,7 +110,7 @@ class TransferProvider extends Component {
                 theme={ButtonThemes.primary}
                 onClick={() => {
                   if (authToken) {
-                    depositProvider.setBearerToken(authToken);
+                    depositProvider.setAuthToken(authToken);
                   }
                   depositProvider
                     .fetchTransactions({
