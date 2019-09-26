@@ -10,7 +10,7 @@ export { Types };
  */
 export { EffectType } from "./constants/data";
 export { KeyType } from "./constants/keys";
-export { TransferResponseType } from "./constants/transfers";
+export { TransferResponseType, TransactionStatus } from "./constants/transfers";
 
 /**
  * Data

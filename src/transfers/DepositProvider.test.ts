@@ -2,7 +2,8 @@ import sinon from "sinon";
 import StellarSdk from "stellar-sdk";
 import { DepositProvider } from "./DepositProvider";
 
-import { DepositInfo, Transaction, TransactionStatus } from "../types";
+import { TransactionStatus } from "../constants/transfers";
+import { DepositInfo, Transaction } from "../types";
 
 const originalSetTimeout = global.setTimeout;
 

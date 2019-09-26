@@ -10,10 +10,11 @@ import {
   Transaction,
   TransactionArgs,
   TransactionsArgs,
-  TransactionStatus,
   WatchTransactionArgs,
   WithdrawInfo,
 } from "../types";
+
+import { TransactionStatus } from "../constants/transfers";
 
 import { parseInfo } from "./parseInfo";
 
