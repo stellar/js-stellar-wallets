@@ -95,9 +95,10 @@ export abstract class TransferProvider {
     );
 
     const response = await fetch(
-      `${this.transferServer}/transactions?${queryString.stringify(
-        args as any,
-      )}`,
+      `${this.transferServer}/transactions?${queryString.stringify({
+        ...args,
+        account: this.account,
+      })}`,
       {
         headers: isAuthRequired ? this.getHeaders() : undefined,
       },
