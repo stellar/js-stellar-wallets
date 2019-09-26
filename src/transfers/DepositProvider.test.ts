@@ -4,6 +4,14 @@ import { DepositProvider } from "./DepositProvider";
 
 import { DepositInfo, Transaction, TransactionStatus } from "../types";
 
+const originalSetTimeout = global.setTimeout;
+
+function sleep(time: number) {
+  return new Promise((resolve) => {
+    originalSetTimeout(resolve, time);
+  });
+}
+
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
     const info: DepositInfo = {
@@ -77,16 +85,7 @@ describe("fetchFinalFee", () => {
 
 describe("watchTransaction", () => {
   let clock: sinon.SinonFakeTimers;
-
-  beforeEach(() => {
-    clock = sinon.useFakeTimers(0);
-    // @ts-ignore
-    fetch.resetMocks();
-  });
-
-  afterEach(() => {
-    clock.restore();
-  });
+  let provider: DepositProvider;
 
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
@@ -146,28 +145,39 @@ describe("watchTransaction", () => {
     status: TransactionStatus.error,
   };
 
-  test("One success", async (done) => {
-    const provider = new DepositProvider(
+  beforeEach(async () => {
+    clock = sinon.useFakeTimers(0);
+    // @ts-ignore
+    fetch.resetMocks();
+
+    // first, mock fetching info
+    // @ts-ignore
+    fetch.mockResponseOnce(JSON.stringify(info));
+
+    provider = new DepositProvider(
       transferServer,
       StellarSdk.Keypair.random().publicKey(),
     );
 
+    await provider.fetchSupportedAssets();
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
+  test("One success", async (done) => {
     const onMessage = sinon.spy((transaction) => {
-      done("onMessage incorrectly called with", transaction);
+      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
     });
     const onSuccess = sinon.spy(() => {
       done();
     });
     const onError = sinon.spy((e) => {
-      done("onMessage incorrectly called with", e);
+      done(`onError incorrectly called with ${e.toString}`);
     });
 
-    // first, mock fetching info
-    // @ts-ignore
-    fetch.mockResponseOnce(JSON.stringify(info));
-    await provider.fetchSupportedAssets();
-
-    // then, queue up a success
+    // queue up a success
     // @ts-ignore
     fetch.mockResponses([JSON.stringify(successfulTransaction)]);
 
@@ -186,32 +196,22 @@ describe("watchTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back success
+    // wait a second, then done will call back
     clock.next();
   });
 
   test("One pending message", async (done) => {
-    const provider = new DepositProvider(
-      transferServer,
-      StellarSdk.Keypair.random().publicKey(),
-    );
-
     const onMessage = sinon.spy(() => {
       done();
     });
     const onSuccess = sinon.spy((transaction) => {
-      done("onSuccess incorrectly called with", transaction);
+      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
     });
     const onError = sinon.spy((e) => {
-      done("onMessage incorrectly called with", e);
+      done(`onError incorrectly called with ${JSON.stringify(e)}`);
     });
 
-    // first, mock fetching info
-    // @ts-ignore
-    fetch.mockResponseOnce(JSON.stringify(info));
-    await provider.fetchSupportedAssets();
-
-    // then, queue up a success
+    // queue up a success
     // @ts-ignore
     fetch.mockResponses([JSON.stringify(pendingTransaction)]);
 
@@ -235,25 +235,15 @@ describe("watchTransaction", () => {
   });
 
   test("One error", async (done) => {
-    const provider = new DepositProvider(
-      transferServer,
-      StellarSdk.Keypair.random().publicKey(),
-    );
-
     const onMessage = sinon.spy((transaction) => {
-      done("onMessage incorrectly called with", transaction);
+      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
     });
     const onSuccess = sinon.spy((transaction) => {
-      done("onSuccess incorrectly called with", transaction);
+      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
     });
     const onError = sinon.spy(() => {
       done();
     });
-
-    // first, mock fetching info
-    // @ts-ignore
-    fetch.mockResponseOnce(JSON.stringify(info));
-    await provider.fetchSupportedAssets();
 
     // then, queue up a success
     // @ts-ignore
@@ -274,7 +264,248 @@ describe("watchTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back success
+    // wait a second, then done will call back
     clock.next();
+  });
+
+  test("Several pending transactions", async (done) => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(5);
+    });
+    const onSuccess = sinon.spy((transaction) => {
+      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    });
+    const onError = sinon.spy((transaction) => {
+      done(`onError incorrectly called with ${JSON.stringify(transaction)}`);
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses(
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+    );
+
+    // start watching
+    provider.watchTransaction({
+      asset_code: "SMX",
+      id: successfulTransaction.id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    // wait a second, then done will call back success
+
+    clock.next();
+    await sleep(10);
+
+    clock.next();
+    await sleep(10);
+
+    clock.next();
+    await sleep(10);
+
+    clock.next();
+    await sleep(10);
+
+    done();
+  });
+
+  test("One pending, one success, no more after that", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(2);
+    });
+    const onSuccess = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(2);
+    });
+    const onError = sinon.spy((transaction) => {
+      expect(transaction).toBeUndefined();
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses(
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(successfulTransaction), { status: 200 }],
+      [JSON.stringify(successfulTransaction), { status: 200 }],
+      [JSON.stringify(successfulTransaction), { status: 200 }],
+    );
+
+    // start watching
+    provider.watchTransaction({
+      asset_code: "SMX",
+      id: successfulTransaction.id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // wait a second, then the pending should resolve
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // the second time, a success should happen
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // the third time, nothing should change or run again
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
+  });
+
+  test("One pending, one error, no more after that", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(2);
+    });
+    const onSuccess = sinon.spy((transaction) => {
+      expect(transaction).toBeUndefined();
+    });
+    const onError = sinon.spy(() => {
+      expect(onError.callCount).toBeLessThan(2);
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses(
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+    );
+
+    // start watching
+    provider.watchTransaction({
+      asset_code: "SMX",
+      id: successfulTransaction.id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // wait a second, then the pending should resolve
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // the second time, a success should happen
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
+
+    clock.next();
+    await sleep(10);
+
+    // the third time, nothing should change or run again
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
+  });
+
+  test("Two pending, one error, no more after that", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(3);
+    });
+    const onSuccess = sinon.spy((transaction) => {
+      expect(transaction).toBeUndefined();
+    });
+    const onError = sinon.spy(() => {
+      expect(onError.callCount).toBeLessThan(2);
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses(
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(failedTransaction), { status: 200 }],
+    );
+
+    // start watching
+    provider.watchTransaction({
+      asset_code: "SMX",
+      id: successfulTransaction.id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // wait a second, then the pending should resolve
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // the next time, another pending
+    expect(onMessage.callCount).toBe(2);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    clock.next();
+    await sleep(10);
+
+    // the next time, an error
+    expect(onMessage.callCount).toBe(2);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
+
+    clock.next();
+    await sleep(10);
+
+    // the next time, nothing should change or run again
+    expect(onMessage.callCount).toBe(2);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
   });
 });
