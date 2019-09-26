@@ -21,7 +21,7 @@ import { TransferProvider } from "./TransferProvider";
  *  - If KYC is needed, you'll have to do some additional logic.
  *
  * ```js
- * const depositProvider = new DepositProvider(transferServerUrl);
+ * const depositProvider = new DepositProvider(transferServerUrl, account);
  * const asset = await depositProvider.fetchSupportedAssets();
  *
  * // user provides information, picks asset
@@ -36,7 +36,6 @@ import { TransferProvider } from "./TransferProvider";
  *
  * const depositResult = await depositProvider.deposit({
  *   asset_code,
- *   account,
  *   // more optional properties
  * });
  *
@@ -71,8 +70,8 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class DepositProvider extends TransferProvider {
-  constructor(transferServer: string) {
-    super(transferServer, "deposit");
+  constructor(transferServer: string, account: string) {
+    super(transferServer, account, "deposit");
   }
 
   /**
@@ -82,22 +81,8 @@ export class DepositProvider extends TransferProvider {
    * servers expect)!
    */
   public async deposit(args: DepositRequest): Promise<TransferResponse> {
-    if (!this.info || !this.info.deposit) {
-      throw new Error("Run fetchSupportedAssets before running deposit!");
-    }
-
-    const search = queryString.stringify(args);
-
-    const isAuthRequired = this.info.deposit[args.asset_code]
-      .authentication_required;
-
-    if (isAuthRequired && !this.bearerToken) {
-      throw new Error(
-        `${
-          args.asset_code
-        } requires authentication, please authorize with setBearerToken.`,
-      );
-    }
+    const isAuthRequired = this.getAuthStatus("withdraw", args.asset_code);
+    const search = queryString.stringify({ ...args, account: this.account });
 
     const response = await fetch(`${this.transferServer}/deposit?${search}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,

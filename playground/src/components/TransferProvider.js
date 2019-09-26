@@ -30,7 +30,10 @@ class TransferProvider extends Component {
   }
 
   _setUrl = (url) => {
-    const depositProvider = new WalletSdk.DepositProvider(url);
+    const depositProvider = new WalletSdk.DepositProvider(
+      url,
+      this.props.dataProvider.getAccountKey(),
+    );
 
     this.setState({
       depositProvider,
@@ -51,9 +54,7 @@ class TransferProvider extends Component {
       transactions,
       transactionError,
     } = this.state;
-    const { dataProvider, authToken } = this.props;
-
-    const accountKey = dataProvider.getAccountKey();
+    const { authToken } = this.props;
 
     return (
       <div>
@@ -109,11 +110,10 @@ class TransferProvider extends Component {
                 theme={ButtonThemes.primary}
                 onClick={() => {
                   if (authToken) {
-                    depositProvider.setBearerToken(authToken);
+                    depositProvider.setAuthToken(authToken);
                   }
                   depositProvider
                     .fetchTransactions({
-                      account: accountKey,
                       asset_code: assetCode,
                     })
                     .then((transactions) =>

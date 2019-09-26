@@ -250,7 +250,7 @@ export class KeyManager {
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
-  public async getAuthToken({
+  public async fetchAuthToken({
     id,
     password,
     authServer,

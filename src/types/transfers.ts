@@ -1,4 +1,5 @@
 import { TransferResponseType } from "../constants/transfers";
+import { WatcherParams } from "./watchers";
 
 export interface GetKycArgs {
   request: WithdrawRequest | DepositRequest;
@@ -107,7 +108,6 @@ export interface WithdrawRequest {
   asset_code: string;
   dest: string;
   dest_extra: string;
-  account?: string;
   memo?: Memo;
   memoType?: string;
   [key: string]: any;
@@ -115,7 +115,6 @@ export interface WithdrawRequest {
 
 export interface DepositRequest {
   asset_code: string;
-  account: string;
   memo?: Memo;
   memoType?: string;
   emailAddress?: string;
@@ -285,12 +284,27 @@ export interface WithdrawTransaction extends BaseTransaction {
 
 export type Transaction = DepositTransaction | WithdrawTransaction;
 
-export interface TransactionArgs {
+export interface GetAuthStatusArgs {
   asset_code: string;
-  account: string;
+}
+
+export interface TransactionsArgs {
+  asset_code: string;
   show_all_transactions?: boolean;
   no_older_than?: string;
   limit?: number;
   kind?: string;
   paging_id?: string;
+}
+
+export interface TransactionArgs {
+  asset_code: string;
+  id: string;
+}
+
+export interface WatchTransactionArgs
+  extends TransactionArgs,
+    WatcherParams<Transaction> {
+  onSuccess: (payload: Transaction) => void;
+  timeout?: number;
 }

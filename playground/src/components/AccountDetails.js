@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Json from "react-json-view";
 
 class AccountDetails extends Component {
   state = {
@@ -83,9 +84,7 @@ class AccountDetails extends Component {
                 <li key={time.toString()}>{time.toString()}</li>
               ))}
             </ul>
-            {accountDetails && (
-              <pre>{JSON.stringify(accountDetails, null, 2)}</pre>
-            )}
+            {accountDetails && <Json src={accountDetails} />}
           </>
         )}
 

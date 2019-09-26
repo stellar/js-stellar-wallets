@@ -22,7 +22,7 @@ class Authorization extends Component {
       "https://transfer-dot-jewel-api-dev.appspot.com",
     );
 
-    depositProvider.setBearerToken("testtesttest");
+    depositProvider.setAuthToken("testtesttest");
 
     this.setState({ depositProvider });
 

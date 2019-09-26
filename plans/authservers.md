@@ -28,5 +28,5 @@ interface GetAuthTokenParams {
   publicKey: PublicKey;
 }
 
-const jwt = await KeyManager.getAuthToken(params: GetAuthTokenParams);
+const jwt = await KeyManager.fetchAuthToken(params: GetAuthTokenParams);
 ```

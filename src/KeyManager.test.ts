@@ -106,7 +106,7 @@ describe("KeyManager", function() {
     ).toEqual(true);
   });
 
-  describe("getAuthToken", () => {
+  describe("fetchAuthToken", () => {
     beforeEach(() => {
       // @ts-ignore
       fetch.resetMocks();
@@ -120,7 +120,7 @@ describe("KeyManager", function() {
       });
       try {
         // @ts-ignore
-        await testKeyManager.getAuthToken({});
+        await testKeyManager.fetchAuthToken({});
         expect("This test failed").toBe(null);
       } catch (e) {
         expect(e).toBeTruthy();
@@ -163,7 +163,7 @@ describe("KeyManager", function() {
       });
 
       try {
-        await testKeyManager.getAuthToken({
+        await testKeyManager.fetchAuthToken({
           id: keyMetadata.id,
           password,
           authServer,
@@ -212,7 +212,7 @@ describe("KeyManager", function() {
       });
 
       try {
-        await testKeyManager.getAuthToken({
+        await testKeyManager.fetchAuthToken({
           id: keyMetadata.id,
           password,
           authServer,
