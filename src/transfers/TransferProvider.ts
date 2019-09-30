@@ -199,7 +199,7 @@ export abstract class TransferProvider {
               timeout,
               isRetry: true,
             });
-          }, 1000) as any;
+          }, timeout) as any;
           onMessage(transaction);
         } else if (transaction.status === TransactionStatus.completed) {
           onSuccess(transaction);
