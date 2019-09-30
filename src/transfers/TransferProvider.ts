@@ -18,6 +18,14 @@ import { TransactionStatus } from "../constants/transfers";
 
 import { parseInfo } from "./parseInfo";
 
+interface WatchRegistryAsset {
+  [asset_code: string]: boolean;
+}
+
+interface WatchRegistry {
+  [asset_code: string]: WatchRegistryAsset;
+}
+
 /**
  * TransferProvider is the base class for WithdrawProvider and DepositProvider.
  */
@@ -29,6 +37,7 @@ export abstract class TransferProvider {
   public authToken?: string;
 
   protected _transactionWatcher?: number;
+  protected _watchRegistry: WatchRegistry;
 
   constructor(
     transferServer: string,
@@ -50,6 +59,8 @@ export abstract class TransferProvider {
     this.transferServer = transferServer;
     this.operation = operation;
     this.account = account;
+
+    this._watchRegistry = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -153,36 +164,58 @@ export abstract class TransferProvider {
     onSuccess,
     onError,
     timeout = 5000,
+    isRetry = false,
   }: WatchTransactionArgs): () => void {
-    this._transactionWatcher = setTimeout(async () => {
-      try {
-        const transaction = await this.fetchTransaction(
-          { asset_code, id },
-          true,
-        );
+    // if it's a first blush, drop it in the registry
+    if (!isRetry) {
+      this._watchRegistry = {
+        [asset_code]: {
+          ...(this._watchRegistry[asset_code] || {}),
+          [id]: true,
+        },
+      };
+    }
+
+    // do this all asynchronously (since this func needs to return a cancel fun)
+    this.fetchTransaction({ asset_code, id }, true)
+      .then((transaction) => {
+        if (
+          !(
+            this._watchRegistry[asset_code] &&
+            this._watchRegistry[asset_code][id]
+          )
+        ) {
+          return;
+        }
 
         if (transaction.status.indexOf("pending") === 0) {
-          this.watchTransaction({
-            asset_code,
-            id,
-            onMessage,
-            onSuccess,
-            onError,
-            timeout,
-          });
+          this._transactionWatcher = setTimeout(async () => {
+            this.watchTransaction({
+              asset_code,
+              id,
+              onMessage,
+              onSuccess,
+              onError,
+              timeout,
+              isRetry: true,
+            });
+          }, timeout) as any;
           onMessage(transaction);
         } else if (transaction.status === TransactionStatus.completed) {
           onSuccess(transaction);
         } else {
           onError(transaction);
         }
-      } catch (e) {
+      })
+      .catch((e) => {
         onError(e);
-      }
-    }, 1000) as any;
+      });
 
     return () => {
-      clearTimeout(this._transactionWatcher);
+      if (this._transactionWatcher) {
+        this._watchRegistry[asset_code][id] = false;
+        clearTimeout(this._transactionWatcher);
+      }
     };
   }
 
