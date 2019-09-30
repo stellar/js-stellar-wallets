@@ -295,4 +295,5 @@ export interface WatchTransactionArgs
     WatcherParams<Transaction> {
   onSuccess: (payload: Transaction) => void;
   timeout?: number;
+  isRetry?: boolean;
 }
