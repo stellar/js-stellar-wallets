@@ -10,8 +10,8 @@ import {
   Transaction,
   TransactionArgs,
   TransactionsArgs,
-  WatchTransactionArgs,
-  WatchTransactionsArgs,
+  WatchAllTransactionsArgs,
+  WatchOneTransactionArgs,
   WithdrawInfo,
 } from "../types";
 
@@ -46,8 +46,8 @@ export abstract class TransferProvider {
   public authToken?: string;
 
   protected _transactionWatcher?: number;
-  protected _watchTransactionRegistry: WatchRegistry;
-  protected _watchTransactionsRegistry: WatchRegistry;
+  protected _watchOneTransactionRegistry: WatchRegistry;
+  protected _watchAllTransactionsRegistry: WatchRegistry;
   protected _transactionsRegistry: TransactionsRegistry;
 
   constructor(
@@ -71,8 +71,8 @@ export abstract class TransferProvider {
     this.operation = operation;
     this.account = account;
 
-    this._watchTransactionRegistry = {};
-    this._watchTransactionsRegistry = {};
+    this._watchOneTransactionRegistry = {};
+    this._watchAllTransactionsRegistry = {};
     this._transactionsRegistry = {};
   }
 
@@ -147,7 +147,7 @@ export abstract class TransferProvider {
     isWatching: boolean,
   ): Promise<Transaction> {
     const isAuthRequired = this.getAuthStatus(
-      isWatching ? "watchTransaction" : "fetchTransaction",
+      isWatching ? "watchOneTransaction" : "fetchTransaction",
       asset_code,
     );
 
@@ -174,11 +174,11 @@ export abstract class TransferProvider {
    *
    * * onMessage - Callback that takes a `transaction` parameter
    */
-  public watchTransactions({
+  public watchAllTransactions({
     asset_code,
     onMessage,
     onError,
-  }: WatchTransactionsArgs) {
+  }: WatchAllTransactionsArgs) {
     console.log(
       "asset code: ",
       asset_code,
@@ -196,7 +196,7 @@ export abstract class TransferProvider {
    * * onError - When there's a runtime error, or the transaction is incomplete
    * / no_market / too_small / too_large / error.
    */
-  public watchTransaction({
+  public watchOneTransaction({
     asset_code,
     id,
     onMessage,
@@ -204,12 +204,12 @@ export abstract class TransferProvider {
     onError,
     timeout = 5000,
     isRetry = false,
-  }: WatchTransactionArgs): () => void {
+  }: WatchOneTransactionArgs): () => void {
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
-      this._watchTransactionRegistry = {
+      this._watchOneTransactionRegistry = {
         [asset_code]: {
-          ...(this._watchTransactionRegistry[asset_code] || {}),
+          ...(this._watchOneTransactionRegistry[asset_code] || {}),
           [id]: true,
         },
       };
@@ -220,8 +220,8 @@ export abstract class TransferProvider {
       .then((transaction) => {
         if (
           !(
-            this._watchTransactionRegistry[asset_code] &&
-            this._watchTransactionRegistry[asset_code][id]
+            this._watchOneTransactionRegistry[asset_code] &&
+            this._watchOneTransactionRegistry[asset_code][id]
           )
         ) {
           return;
@@ -229,7 +229,7 @@ export abstract class TransferProvider {
 
         if (transaction.status.indexOf("pending") === 0) {
           this._transactionWatcher = setTimeout(async () => {
-            this.watchTransaction({
+            this.watchOneTransaction({
               asset_code,
               id,
               onMessage,
@@ -252,7 +252,7 @@ export abstract class TransferProvider {
 
     return () => {
       if (this._transactionWatcher) {
-        this._watchTransactionRegistry[asset_code][id] = false;
+        this._watchOneTransactionRegistry[asset_code][id] = false;
         clearTimeout(this._transactionWatcher);
       }
     };

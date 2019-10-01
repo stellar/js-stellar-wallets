@@ -84,7 +84,7 @@ describe("fetchFinalFee", () => {
   });
 });
 
-describe("watchTransaction", () => {
+describe("watchOneTransaction", () => {
   let clock: sinon.SinonFakeTimers;
   let provider: DepositProvider;
 
@@ -183,7 +183,7 @@ describe("watchTransaction", () => {
     fetch.mockResponses([JSON.stringify(successfulTransaction)]);
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -217,7 +217,7 @@ describe("watchTransaction", () => {
     fetch.mockResponses([JSON.stringify(pendingTransaction)]);
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -251,7 +251,7 @@ describe("watchTransaction", () => {
     fetch.mockResponses([JSON.stringify(failedTransaction)]);
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -290,7 +290,7 @@ describe("watchTransaction", () => {
     );
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -342,7 +342,7 @@ describe("watchTransaction", () => {
     );
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -402,7 +402,7 @@ describe("watchTransaction", () => {
     );
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,
@@ -463,7 +463,7 @@ describe("watchTransaction", () => {
     );
 
     // start watching
-    provider.watchTransaction({
+    provider.watchOneTransaction({
       asset_code: "SMX",
       id: successfulTransaction.id,
       onMessage,

@@ -290,13 +290,13 @@ export interface TransactionArgs {
   id: string;
 }
 
-export interface WatchTransactionsArgs extends WatcherParams<Transaction> {
+export interface WatchAllTransactionsArgs extends WatcherParams<Transaction> {
   asset_code: string;
   timeout?: number;
   isRetry?: boolean;
 }
 
-export interface WatchTransactionArgs
+export interface WatchOneTransactionArgs
   extends TransactionArgs,
     WatcherParams<Transaction> {
   onSuccess: (payload: Transaction) => void;

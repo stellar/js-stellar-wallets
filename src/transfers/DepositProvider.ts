@@ -111,10 +111,10 @@ export class DepositProvider extends TransferProvider {
 
     // seed internal registry objects with supported assets
     Object.keys(deposit).forEach((code) => {
-      this._watchTransactionRegistry[code] =
-        this._watchTransactionRegistry[code] || {};
-      this._watchTransactionsRegistry[code] =
-        this._watchTransactionsRegistry[code] || {};
+      this._watchOneTransactionRegistry[code] =
+        this._watchOneTransactionRegistry[code] || {};
+      this._watchAllTransactionsRegistry[code] =
+        this._watchAllTransactionsRegistry[code] || {};
       this._transactionsRegistry[code] = this._transactionsRegistry[code] || {};
     });
 
