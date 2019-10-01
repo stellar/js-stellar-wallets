@@ -1,3 +1,4 @@
+import isEqual from "lodash/isEqual";
 import queryString from "query-string";
 
 import {
@@ -23,8 +24,12 @@ interface WatchRegistryAsset {
   [id: string]: boolean;
 }
 
-interface WatchRegistry {
+interface WatchOneTransactionRegistry {
   [asset_code: string]: WatchRegistryAsset;
+}
+
+interface WatchAllTransactionsRegistry {
+  [asset_code: string]: boolean;
 }
 
 interface TransactionsRegistryAsset {
@@ -45,9 +50,12 @@ export abstract class TransferProvider {
   public info?: Info;
   public authToken?: string;
 
-  protected _transactionWatcher?: number;
-  protected _watchOneTransactionRegistry: WatchRegistry;
-  protected _watchAllTransactionsRegistry: WatchRegistry;
+  // This type monstrosity courtesy of https://stackoverflow.com/a/56239226
+  protected _oneTransactionWatcher?: ReturnType<typeof setTimeout>;
+  protected _allTransactionsWatcher?: ReturnType<typeof setTimeout>;
+
+  protected _watchOneTransactionRegistry: WatchOneTransactionRegistry;
+  protected _watchAllTransactionsRegistry: WatchAllTransactionsRegistry;
   protected _transactionsRegistry: TransactionsRegistry;
 
   constructor(
@@ -178,15 +186,77 @@ export abstract class TransferProvider {
     asset_code,
     onMessage,
     onError,
+    timeout = 5000,
+    isRetry = false,
   }: WatchAllTransactionsArgs) {
-    console.log(
-      "asset code: ",
-      asset_code,
-      "onMessage",
-      onMessage,
-      "onError",
-      onError,
-    );
+    // if it's a first run, drop it in the registry
+    if (!isRetry) {
+      this._watchAllTransactionsRegistry = {
+        ...this._watchAllTransactionsRegistry,
+        [asset_code]: true,
+      };
+    }
+
+    this.fetchTransactions({ asset_code })
+      .then((transactions: Transaction[]) => {
+        // make sure we're still watchign
+        if (!this._watchAllTransactionsRegistry[asset_code]) {
+          return;
+        }
+
+        const newTransactions = transactions.filter(
+          (transaction: Transaction) => {
+            const isPending = transaction.status.indexOf("pending") === 0;
+            const registeredTransaction = this._transactionsRegistry[
+              asset_code
+            ][transaction.id];
+
+            // if this is the first watch, only keep the pending ones
+            if (isRetry) {
+              return isPending;
+            }
+
+            // always use pending transactions
+            if (isPending) {
+              return true;
+            }
+
+            // then, only use transactions that have changed
+            if (
+              registeredTransaction &&
+              !isEqual(registeredTransaction, transaction)
+            ) {
+              return true;
+            }
+
+            return false;
+          },
+        );
+
+        newTransactions.forEach(onMessage);
+
+        // call it again
+        this._allTransactionsWatcher = setTimeout(() => {
+          this.watchAllTransactions({
+            asset_code,
+            onMessage,
+            onError,
+            timeout,
+            isRetry: true,
+          });
+        }, timeout);
+      })
+
+      .catch((e) => {
+        onError(e);
+      });
+
+    return () => {
+      if (this._allTransactionsWatcher) {
+        this._watchAllTransactionsRegistry[asset_code] = false;
+        clearTimeout(this._allTransactionsWatcher);
+      }
+    };
   }
 
   /**
@@ -208,6 +278,7 @@ export abstract class TransferProvider {
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
       this._watchOneTransactionRegistry = {
+        ...this._watchOneTransactionRegistry,
         [asset_code]: {
           ...(this._watchOneTransactionRegistry[asset_code] || {}),
           [id]: true,
@@ -217,7 +288,7 @@ export abstract class TransferProvider {
 
     // do this all asynchronously (since this func needs to return a cancel fun)
     this.fetchTransaction({ asset_code, id }, true)
-      .then((transaction) => {
+      .then((transaction: Transaction) => {
         if (
           !(
             this._watchOneTransactionRegistry[asset_code] &&
@@ -228,7 +299,7 @@ export abstract class TransferProvider {
         }
 
         if (transaction.status.indexOf("pending") === 0) {
-          this._transactionWatcher = setTimeout(async () => {
+          this._oneTransactionWatcher = setTimeout(() => {
             this.watchOneTransaction({
               asset_code,
               id,
@@ -238,7 +309,7 @@ export abstract class TransferProvider {
               timeout,
               isRetry: true,
             });
-          }, timeout) as any;
+          }, timeout);
           onMessage(transaction);
         } else if (transaction.status === TransactionStatus.completed) {
           onSuccess(transaction);
@@ -251,9 +322,9 @@ export abstract class TransferProvider {
       });
 
     return () => {
-      if (this._transactionWatcher) {
+      if (this._oneTransactionWatcher) {
         this._watchOneTransactionRegistry[asset_code][id] = false;
-        clearTimeout(this._transactionWatcher);
+        clearTimeout(this._oneTransactionWatcher);
       }
     };
   }

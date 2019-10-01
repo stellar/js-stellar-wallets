@@ -113,8 +113,7 @@ export class DepositProvider extends TransferProvider {
     Object.keys(deposit).forEach((code) => {
       this._watchOneTransactionRegistry[code] =
         this._watchOneTransactionRegistry[code] || {};
-      this._watchAllTransactionsRegistry[code] =
-        this._watchAllTransactionsRegistry[code] || {};
+      this._watchAllTransactionsRegistry[code] = false;
       this._transactionsRegistry[code] = this._transactionsRegistry[code] || {};
     });
 
