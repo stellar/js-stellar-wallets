@@ -12,6 +12,7 @@ import {
   TransactionArgs,
   TransactionsArgs,
   WatchAllTransactionsArgs,
+  WatcherResponse,
   WatchOneTransactionArgs,
   WithdrawInfo,
 } from "../types";
@@ -188,7 +189,7 @@ export abstract class TransferProvider {
     onError,
     timeout = 5000,
     isRetry = false,
-  }: WatchAllTransactionsArgs) {
+  }: WatchAllTransactionsArgs): WatcherResponse {
     // if it's a first run, drop it in the registry
     if (!isRetry) {
       this._watchAllTransactionsRegistry = {
@@ -199,7 +200,7 @@ export abstract class TransferProvider {
 
     this.fetchTransactions({ asset_code })
       .then((transactions: Transaction[]) => {
-        // make sure we're still watchign
+        // make sure we're still watching
         if (!this._watchAllTransactionsRegistry[asset_code]) {
           return;
         }
@@ -236,6 +237,9 @@ export abstract class TransferProvider {
         newTransactions.forEach(onMessage);
 
         // call it again
+        if (this._allTransactionsWatcher) {
+          clearTimeout(this._allTransactionsWatcher);
+        }
         this._allTransactionsWatcher = setTimeout(() => {
           this.watchAllTransactions({
             asset_code,
@@ -251,11 +255,30 @@ export abstract class TransferProvider {
         onError(e);
       });
 
-    return () => {
-      if (this._allTransactionsWatcher) {
-        this._watchAllTransactionsRegistry[asset_code] = false;
-        clearTimeout(this._allTransactionsWatcher);
-      }
+    return {
+      refresh: () => {
+        // don't do that if we stopped watching
+        if (!this._watchAllTransactionsRegistry[asset_code]) {
+          return;
+        }
+
+        if (this._allTransactionsWatcher) {
+          clearTimeout(this._allTransactionsWatcher);
+        }
+        this.watchAllTransactions({
+          asset_code,
+          onMessage,
+          onError,
+          timeout,
+          isRetry: true,
+        });
+      },
+      stop: () => {
+        if (this._allTransactionsWatcher) {
+          this._watchAllTransactionsRegistry[asset_code] = false;
+          clearTimeout(this._allTransactionsWatcher);
+        }
+      },
     };
   }
 
@@ -274,7 +297,7 @@ export abstract class TransferProvider {
     onError,
     timeout = 5000,
     isRetry = false,
-  }: WatchOneTransactionArgs): () => void {
+  }: WatchOneTransactionArgs): WatcherResponse {
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
       this._watchOneTransactionRegistry = {
@@ -299,6 +322,10 @@ export abstract class TransferProvider {
         }
 
         if (transaction.status.indexOf("pending") === 0) {
+          if (this._oneTransactionWatcher) {
+            clearTimeout(this._oneTransactionWatcher);
+          }
+
           this._oneTransactionWatcher = setTimeout(() => {
             this.watchOneTransaction({
               asset_code,
@@ -321,11 +348,38 @@ export abstract class TransferProvider {
         onError(e);
       });
 
-    return () => {
-      if (this._oneTransactionWatcher) {
-        this._watchOneTransactionRegistry[asset_code][id] = false;
-        clearTimeout(this._oneTransactionWatcher);
-      }
+    return {
+      refresh: () => {
+        // don't do that if we stopped watching
+        if (
+          !(
+            this._watchOneTransactionRegistry[asset_code] &&
+            this._watchOneTransactionRegistry[asset_code][id]
+          )
+        ) {
+          return;
+        }
+
+        if (this._oneTransactionWatcher) {
+          clearTimeout(this._oneTransactionWatcher);
+        }
+
+        this.watchOneTransaction({
+          asset_code,
+          id,
+          onMessage,
+          onSuccess,
+          onError,
+          timeout,
+          isRetry: true,
+        });
+      },
+      stop: () => {
+        if (this._oneTransactionWatcher) {
+          this._watchOneTransactionRegistry[asset_code][id] = false;
+          clearTimeout(this._oneTransactionWatcher);
+        }
+      },
     };
   }
 
