@@ -205,36 +205,41 @@ export abstract class TransferProvider {
           return;
         }
 
-        const newTransactions = transactions.filter(
-          (transaction: Transaction) => {
-            const isPending = transaction.status.indexOf("pending") === 0;
-            const registeredTransaction = this._transactionsRegistry[
-              asset_code
-            ][transaction.id];
+        try {
+          const newTransactions = transactions.filter(
+            (transaction: Transaction) => {
+              const isPending = transaction.status.indexOf("pending") === 0;
+              const registeredTransaction = this._transactionsRegistry[
+                asset_code
+              ][transaction.id];
 
-            // if this is the first watch, only keep the pending ones
-            if (isRetry) {
-              return isPending;
-            }
+              // if this is the first watch, only keep the pending ones
+              if (isRetry) {
+                return isPending;
+              }
 
-            // always use pending transactions
-            if (isPending) {
-              return true;
-            }
+              // always use pending transactions
+              if (isPending) {
+                return true;
+              }
 
-            // then, only use transactions that have changed
-            if (
-              registeredTransaction &&
-              !isEqual(registeredTransaction, transaction)
-            ) {
-              return true;
-            }
+              // then, only use transactions that have changed
+              if (
+                registeredTransaction &&
+                !isEqual(registeredTransaction, transaction)
+              ) {
+                return true;
+              }
 
-            return false;
-          },
-        );
+              return false;
+            },
+          );
 
-        newTransactions.forEach(onMessage);
+          newTransactions.forEach(onMessage);
+        } catch (e) {
+          onError(e);
+          return;
+        }
 
         // call it again
         if (this._allTransactionsWatcher) {

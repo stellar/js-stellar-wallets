@@ -2,6 +2,9 @@ import sinon from "sinon";
 import StellarSdk from "stellar-sdk";
 import { DepositProvider } from "./DepositProvider";
 
+import { TransactionsResponse } from "../fixtures/TransactionsResponse";
+import { SMXTransferInfo } from "../fixtures/TransferInfoResponse";
+
 import { TransactionStatus } from "../constants/transfers";
 import { DepositInfo, Transaction } from "../types";
 
@@ -90,45 +93,6 @@ describe("watchOneTransaction", () => {
 
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
-  const info: any = {
-    deposit: {
-      SMX: {
-        enabled: true,
-        fee_fixed: 0,
-        fee_percent: 0,
-        min_amount: 1500,
-        max_amount: 1000000,
-        fields: {
-          email_address: {
-            description: "your email address for transaction status updates",
-            optional: true,
-          },
-          amount: { description: "amount in cents that you plan to deposit" },
-          type: {
-            description: "type of deposit to make",
-            choices: ["SPEI", "cash"],
-          },
-        },
-      },
-    },
-    withdraw: {
-      SMX: {
-        enabled: true,
-        fee_fixed: 0,
-        fee_percent: 0,
-        min_amount: 0.1,
-        max_amount: 1000000,
-        types: {
-          bank_account: {
-            fields: { dest: { description: "your bank account number" } },
-          },
-        },
-      },
-    },
-    fee: { enabled: false },
-    transactions: { enabled: true },
-    transaction: { enabled: true },
-  };
 
   const pendingTransaction: Transaction = {
     kind: "deposit",
@@ -153,7 +117,7 @@ describe("watchOneTransaction", () => {
 
     // first, mock fetching info
     // @ts-ignore
-    fetch.mockResponseOnce(JSON.stringify(info));
+    fetch.mockResponseOnce(JSON.stringify(SMXTransferInfo));
 
     provider = new DepositProvider(
       transferServer,
@@ -508,5 +472,118 @@ describe("watchOneTransaction", () => {
     expect(onMessage.callCount).toBe(2);
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(1);
+  });
+});
+
+describe("watchAllTransactions", () => {
+  let clock: sinon.SinonFakeTimers;
+  let provider: DepositProvider;
+
+  // suite-wide consts
+  const transferServer = "https://www.stellar.org/transfers";
+
+  beforeEach(async () => {
+    clock = sinon.useFakeTimers(0);
+    // @ts-ignore
+    fetch.resetMocks();
+
+    // first, mock fetching info
+    // @ts-ignore
+    fetch.mockResponseOnce(JSON.stringify(SMXTransferInfo));
+
+    provider = new DepositProvider(
+      transferServer,
+      StellarSdk.Keypair.random().publicKey(),
+    );
+
+    await provider.fetchSupportedAssets();
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
+  test("Return only pending", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(3);
+    });
+
+    const onError = sinon.spy((e) => {
+      expect(e).toBeUndefined();
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses([JSON.stringify(TransactionsResponse)]);
+
+    // start watching
+    provider.watchAllTransactions({
+      asset_code: "SMX",
+      onMessage,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(2);
+    expect(onError.callCount).toBe(0);
+  });
+
+  test("Return one changed thing", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(4);
+    });
+
+    const onError = sinon.spy((e) => {
+      expect(e).toBeUndefined();
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses([JSON.stringify(TransactionsResponse)]);
+
+    // start watching
+    provider.watchAllTransactions({
+      asset_code: "SMX",
+      onMessage,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(2);
+    expect(onError.callCount).toBe(0);
+
+    // change one thing to "Successful"
+    const [firstResponse, ...rest] = TransactionsResponse.transactions;
+    // @ts-ignore
+    fetch.mockResponses([
+      JSON.stringify({
+        ...TransactionsResponse,
+        transactions: [
+          {
+            ...firstResponse,
+            status: TransactionStatus.completed,
+          },
+          ...rest,
+        ],
+      }),
+    ]);
+
+    clock.next();
+    await sleep(10);
+
+    expect(onMessage.callCount).toBe(3);
+    expect(onError.callCount).toBe(0);
   });
 });

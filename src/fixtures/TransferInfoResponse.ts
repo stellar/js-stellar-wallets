@@ -124,3 +124,43 @@ export const ApayTransferInfo = {
   },
   transactions: { enabled: false },
 };
+
+export const SMXTransferInfo = {
+  deposit: {
+    SMX: {
+      enabled: true,
+      fee_fixed: 0,
+      fee_percent: 0,
+      min_amount: 1500,
+      max_amount: 1000000,
+      fields: {
+        email_address: {
+          description: "your email address for transaction status updates",
+          optional: true,
+        },
+        amount: { description: "amount in cents that you plan to deposit" },
+        type: {
+          description: "type of deposit to make",
+          choices: ["SPEI", "cash"],
+        },
+      },
+    },
+  },
+  withdraw: {
+    SMX: {
+      enabled: true,
+      fee_fixed: 0,
+      fee_percent: 0,
+      min_amount: 0.1,
+      max_amount: 1000000,
+      types: {
+        bank_account: {
+          fields: { dest: { description: "your bank account number" } },
+        },
+      },
+    },
+  },
+  fee: { enabled: false },
+  transactions: { enabled: true },
+  transaction: { enabled: true },
+};
