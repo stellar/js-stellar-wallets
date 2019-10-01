@@ -11,6 +11,7 @@ import {
   TransactionArgs,
   TransactionsArgs,
   WatchTransactionArgs,
+  WatchTransactionsArgs,
   WithdrawInfo,
 } from "../types";
 
@@ -19,11 +20,19 @@ import { TransactionStatus } from "../constants/transfers";
 import { parseInfo } from "./parseInfo";
 
 interface WatchRegistryAsset {
-  [asset_code: string]: boolean;
+  [id: string]: boolean;
 }
 
 interface WatchRegistry {
   [asset_code: string]: WatchRegistryAsset;
+}
+
+interface TransactionsRegistryAsset {
+  [id: string]: Transaction;
+}
+
+interface TransactionsRegistry {
+  [asset_code: string]: TransactionsRegistryAsset;
 }
 
 /**
@@ -37,7 +46,9 @@ export abstract class TransferProvider {
   public authToken?: string;
 
   protected _transactionWatcher?: number;
-  protected _watchRegistry: WatchRegistry;
+  protected _watchTransactionRegistry: WatchRegistry;
+  protected _watchTransactionsRegistry: WatchRegistry;
+  protected _transactionsRegistry: TransactionsRegistry;
 
   constructor(
     transferServer: string,
@@ -60,7 +71,9 @@ export abstract class TransferProvider {
     this.operation = operation;
     this.account = account;
 
-    this._watchRegistry = {};
+    this._watchTransactionRegistry = {};
+    this._watchTransactionsRegistry = {};
+    this._transactionsRegistry = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -151,6 +164,32 @@ export abstract class TransferProvider {
   }
 
   /**
+   * Watch all transactions returned from a transfer server. When new or
+   * updated transactions come in, run an `onMessage` callback.
+   *
+   * On initial load, it'll return ALL pending transactions via onMessage.
+   * Subsequent messages will be any one of these events:
+   *  * Any new transaction appears
+   *  * Any of the initial pending transactions change any state
+   *
+   * * onMessage - Callback that takes a `transaction` parameter
+   */
+  public watchTransactions({
+    asset_code,
+    onMessage,
+    onError,
+  }: WatchTransactionsArgs) {
+    console.log(
+      "asset code: ",
+      asset_code,
+      "onMessage",
+      onMessage,
+      "onError",
+      onError,
+    );
+  }
+
+  /**
    * Watch a transaction until it stops pending. Takes three callbacks:
    * * onMessage - When the transaction comes back as pending.
    * * onSuccess - When the transaction comes back as completed.
@@ -168,9 +207,9 @@ export abstract class TransferProvider {
   }: WatchTransactionArgs): () => void {
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
-      this._watchRegistry = {
+      this._watchTransactionRegistry = {
         [asset_code]: {
-          ...(this._watchRegistry[asset_code] || {}),
+          ...(this._watchTransactionRegistry[asset_code] || {}),
           [id]: true,
         },
       };
@@ -181,8 +220,8 @@ export abstract class TransferProvider {
       .then((transaction) => {
         if (
           !(
-            this._watchRegistry[asset_code] &&
-            this._watchRegistry[asset_code][id]
+            this._watchTransactionRegistry[asset_code] &&
+            this._watchTransactionRegistry[asset_code][id]
           )
         ) {
           return;
@@ -213,7 +252,7 @@ export abstract class TransferProvider {
 
     return () => {
       if (this._transactionWatcher) {
-        this._watchRegistry[asset_code][id] = false;
+        this._watchTransactionRegistry[asset_code][id] = false;
         clearTimeout(this._transactionWatcher);
       }
     };

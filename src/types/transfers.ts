@@ -290,6 +290,12 @@ export interface TransactionArgs {
   id: string;
 }
 
+export interface WatchTransactionsArgs extends WatcherParams<Transaction> {
+  asset_code: string;
+  timeout?: number;
+  isRetry?: boolean;
+}
+
 export interface WatchTransactionArgs
   extends TransactionArgs,
     WatcherParams<Transaction> {

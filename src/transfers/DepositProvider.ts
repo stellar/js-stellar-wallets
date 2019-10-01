@@ -108,6 +108,16 @@ export class DepositProvider extends TransferProvider {
    */
   public async fetchSupportedAssets(): Promise<DepositInfo> {
     const { deposit } = await this.fetchInfo();
+
+    // seed internal registry objects with supported assets
+    Object.keys(deposit).forEach((code) => {
+      this._watchTransactionRegistry[code] =
+        this._watchTransactionRegistry[code] || {};
+      this._watchTransactionsRegistry[code] =
+        this._watchTransactionsRegistry[code] || {};
+      this._transactionsRegistry[code] = this._transactionsRegistry[code] || {};
+    });
+
     return deposit;
   }
 
