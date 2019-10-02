@@ -1,16 +1,19 @@
+import isEqual from "lodash/isEqual";
 import queryString from "query-string";
 
 import {
   DepositInfo,
   Fee,
-  FeeArgs,
+  FeeParams,
   Info,
   RawInfoResponse,
   SimpleFee,
   Transaction,
-  TransactionArgs,
-  TransactionsArgs,
-  WatchTransactionArgs,
+  TransactionParams,
+  TransactionsParams,
+  WatchAllTransactionsParams,
+  WatcherResponse,
+  WatchOneTransactionParams,
   WithdrawInfo,
 } from "../types";
 
@@ -19,11 +22,23 @@ import { TransactionStatus } from "../constants/transfers";
 import { parseInfo } from "./parseInfo";
 
 interface WatchRegistryAsset {
+  [id: string]: boolean;
+}
+
+interface WatchOneTransactionRegistry {
+  [asset_code: string]: WatchRegistryAsset;
+}
+
+interface WatchAllTransactionsRegistry {
   [asset_code: string]: boolean;
 }
 
-interface WatchRegistry {
-  [asset_code: string]: WatchRegistryAsset;
+interface TransactionsRegistryAsset {
+  [id: string]: Transaction;
+}
+
+interface TransactionsRegistry {
+  [asset_code: string]: TransactionsRegistryAsset;
 }
 
 /**
@@ -36,8 +51,13 @@ export abstract class TransferProvider {
   public info?: Info;
   public authToken?: string;
 
-  protected _transactionWatcher?: number;
-  protected _watchRegistry: WatchRegistry;
+  // This type monstrosity courtesy of https://stackoverflow.com/a/56239226
+  protected _oneTransactionWatcher?: ReturnType<typeof setTimeout>;
+  protected _allTransactionsWatcher?: ReturnType<typeof setTimeout>;
+
+  protected _watchOneTransactionRegistry: WatchOneTransactionRegistry;
+  protected _watchAllTransactionsRegistry: WatchAllTransactionsRegistry;
+  protected _transactionsRegistry: TransactionsRegistry;
 
   constructor(
     transferServer: string,
@@ -60,7 +80,9 @@ export abstract class TransferProvider {
     this.operation = operation;
     this.account = account;
 
-    this._watchRegistry = {};
+    this._watchOneTransactionRegistry = {};
+    this._watchAllTransactionsRegistry = {};
+    this._transactionsRegistry = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -99,16 +121,16 @@ export abstract class TransferProvider {
    * transfer server.
    */
   public async fetchTransactions(
-    args: TransactionsArgs,
+    params: TransactionsParams,
   ): Promise<Transaction[]> {
     const isAuthRequired = this.getAuthStatus(
       "fetchTransactions",
-      args.asset_code,
+      params.asset_code,
     );
 
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify({
-        ...args,
+        ...params,
         account: this.account,
       })}`,
       {
@@ -120,7 +142,7 @@ export abstract class TransferProvider {
 
     return transactions.filter(
       (transaction: Transaction) =>
-        args.show_all_transactions ||
+        params.show_all_transactions ||
         (this.operation === "deposit" && transaction.kind === "deposit") ||
         (this.operation === "withdraw" && transaction.kind === "withdrawal"),
     ) as Transaction[];
@@ -130,11 +152,12 @@ export abstract class TransferProvider {
    * Fetch the information of a single transaction from the transfer server.
    */
   public async fetchTransaction(
-    { asset_code, id }: TransactionArgs,
+    params: TransactionParams,
     isWatching: boolean,
   ): Promise<Transaction> {
+    const { asset_code, id } = params;
     const isAuthRequired = this.getAuthStatus(
-      isWatching ? "watchTransaction" : "fetchTransaction",
+      isWatching ? "watchOneTransaction" : "fetchTransaction",
       asset_code,
     );
 
@@ -151,26 +174,149 @@ export abstract class TransferProvider {
   }
 
   /**
+   * Watch all transactions returned from a transfer server. When new or
+   * updated transactions come in, run an `onMessage` callback.
+   *
+   * On initial load, it'll return ALL pending transactions via onMessage.
+   * Subsequent messages will be any one of these events:
+   *  * Any new transaction appears
+   *  * Any of the initial pending transactions change any state
+   *
+   * * onMessage - Callback that takes a `transaction` parameter
+   */
+  public watchAllTransactions(
+    params: WatchAllTransactionsParams,
+  ): WatcherResponse {
+    const {
+      asset_code,
+      onMessage,
+      onError,
+      timeout = 5000,
+      isRetry = false,
+    } = params;
+
+    // if it's a first run, drop it in the registry
+    if (!isRetry) {
+      this._watchAllTransactionsRegistry = {
+        ...this._watchAllTransactionsRegistry,
+        [asset_code]: true,
+      };
+    }
+
+    this.fetchTransactions({ asset_code })
+      .then((transactions: Transaction[]) => {
+        // make sure we're still watching
+        if (!this._watchAllTransactionsRegistry[asset_code]) {
+          return;
+        }
+
+        try {
+          const newTransactions = transactions.filter(
+            (transaction: Transaction) => {
+              const isPending = transaction.status.indexOf("pending") === 0;
+              const registeredTransaction = this._transactionsRegistry[
+                asset_code
+              ][transaction.id];
+
+              // if this is the first watch, only keep the pending ones
+              if (isRetry) {
+                return isPending;
+              }
+
+              // always use pending transactions
+              if (isPending) {
+                return true;
+              }
+
+              // then, only use transactions that have changed
+              if (
+                registeredTransaction &&
+                !isEqual(registeredTransaction, transaction)
+              ) {
+                return true;
+              }
+
+              return false;
+            },
+          );
+
+          newTransactions.forEach(onMessage);
+        } catch (e) {
+          onError(e);
+          return;
+        }
+
+        // call it again
+        if (this._allTransactionsWatcher) {
+          clearTimeout(this._allTransactionsWatcher);
+        }
+        this._allTransactionsWatcher = setTimeout(() => {
+          this.watchAllTransactions({
+            asset_code,
+            onMessage,
+            onError,
+            timeout,
+            isRetry: true,
+          });
+        }, timeout);
+      })
+
+      .catch((e) => {
+        onError(e);
+      });
+
+    return {
+      refresh: () => {
+        // don't do that if we stopped watching
+        if (!this._watchAllTransactionsRegistry[asset_code]) {
+          return;
+        }
+
+        if (this._allTransactionsWatcher) {
+          clearTimeout(this._allTransactionsWatcher);
+        }
+        this.watchAllTransactions({
+          asset_code,
+          onMessage,
+          onError,
+          timeout,
+          isRetry: true,
+        });
+      },
+      stop: () => {
+        if (this._allTransactionsWatcher) {
+          this._watchAllTransactionsRegistry[asset_code] = false;
+          clearTimeout(this._allTransactionsWatcher);
+        }
+      },
+    };
+  }
+
+  /**
    * Watch a transaction until it stops pending. Takes three callbacks:
    * * onMessage - When the transaction comes back as pending.
    * * onSuccess - When the transaction comes back as completed.
    * * onError - When there's a runtime error, or the transaction is incomplete
    * / no_market / too_small / too_large / error.
    */
-  public watchTransaction({
-    asset_code,
-    id,
-    onMessage,
-    onSuccess,
-    onError,
-    timeout = 5000,
-    isRetry = false,
-  }: WatchTransactionArgs): () => void {
+  public watchOneTransaction(
+    params: WatchOneTransactionParams,
+  ): WatcherResponse {
+    const {
+      asset_code,
+      id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout = 5000,
+      isRetry = false,
+    } = params;
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
-      this._watchRegistry = {
+      this._watchOneTransactionRegistry = {
+        ...this._watchOneTransactionRegistry,
         [asset_code]: {
-          ...(this._watchRegistry[asset_code] || {}),
+          ...(this._watchOneTransactionRegistry[asset_code] || {}),
           [id]: true,
         },
       };
@@ -178,19 +324,23 @@ export abstract class TransferProvider {
 
     // do this all asynchronously (since this func needs to return a cancel fun)
     this.fetchTransaction({ asset_code, id }, true)
-      .then((transaction) => {
+      .then((transaction: Transaction) => {
         if (
           !(
-            this._watchRegistry[asset_code] &&
-            this._watchRegistry[asset_code][id]
+            this._watchOneTransactionRegistry[asset_code] &&
+            this._watchOneTransactionRegistry[asset_code][id]
           )
         ) {
           return;
         }
 
         if (transaction.status.indexOf("pending") === 0) {
-          this._transactionWatcher = setTimeout(async () => {
-            this.watchTransaction({
+          if (this._oneTransactionWatcher) {
+            clearTimeout(this._oneTransactionWatcher);
+          }
+
+          this._oneTransactionWatcher = setTimeout(() => {
+            this.watchOneTransaction({
               asset_code,
               id,
               onMessage,
@@ -199,7 +349,7 @@ export abstract class TransferProvider {
               timeout,
               isRetry: true,
             });
-          }, timeout) as any;
+          }, timeout);
           onMessage(transaction);
         } else if (transaction.status === TransactionStatus.completed) {
           onSuccess(transaction);
@@ -211,24 +361,51 @@ export abstract class TransferProvider {
         onError(e);
       });
 
-    return () => {
-      if (this._transactionWatcher) {
-        this._watchRegistry[asset_code][id] = false;
-        clearTimeout(this._transactionWatcher);
-      }
+    return {
+      refresh: () => {
+        // don't do that if we stopped watching
+        if (
+          !(
+            this._watchOneTransactionRegistry[asset_code] &&
+            this._watchOneTransactionRegistry[asset_code][id]
+          )
+        ) {
+          return;
+        }
+
+        if (this._oneTransactionWatcher) {
+          clearTimeout(this._oneTransactionWatcher);
+        }
+
+        this.watchOneTransaction({
+          asset_code,
+          id,
+          onMessage,
+          onSuccess,
+          onError,
+          timeout,
+          isRetry: true,
+        });
+      },
+      stop: () => {
+        if (this._oneTransactionWatcher) {
+          this._watchOneTransactionRegistry[asset_code][id] = false;
+          clearTimeout(this._oneTransactionWatcher);
+        }
+      },
     };
   }
 
-  public async fetchFinalFee(args: FeeArgs): Promise<number> {
+  public async fetchFinalFee(params: FeeParams): Promise<number> {
     if (!this.info || !this.info[this.operation]) {
       throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
     }
 
-    const assetInfo = this.info[this.operation][args.asset_code];
+    const assetInfo = this.info[this.operation][params.asset_code];
 
     if (!assetInfo) {
       throw new Error(
-        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+        `Can't get fee for an unsupported asset, '${params.asset_code}`,
       );
     }
     const { fee } = assetInfo;
@@ -238,12 +415,12 @@ export abstract class TransferProvider {
       case "simple":
         const simpleFee = fee as SimpleFee;
         return (
-          ((simpleFee.percent || 0) / 100) * Number(args.amount) +
+          ((simpleFee.percent || 0) / 100) * Number(params.amount) +
           (simpleFee.fixed || 0)
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(args as any)}`,
+          `${this.transferServer}/fee?${queryString.stringify(params as any)}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

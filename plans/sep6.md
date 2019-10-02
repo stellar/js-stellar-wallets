@@ -31,9 +31,9 @@ The high-level flow is:
 ### Types
 
 ```ts
-type getKycUrl = (args: GetKycArgs) => string;
+type getKycUrl = (params: GetKycParams) => string;
 
-interface GetKycArgs {
+interface GetKycParams {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeeded;
   callbackUrl: string;
@@ -42,7 +42,7 @@ interface GetKycArgs {
 class TransferProvider {
   constructor(transferServer) {}
   fetchSupportedAssets: () => Promise<WithdrawInfo> | Promise<DepositInfo>;
-  fetchFinalFee: (args: FeeArgs) => Promise<number>;
+  fetchFinalFee: (params: FeeParams) => Promise<number>;
   fetchKycInBrowser: ({
     response: InteractiveKycNeeded,
     window: Window,
@@ -50,14 +50,14 @@ class TransferProvider {
 }
 
 class WithdrawProvider extends TransferProvider {
-  withdraw: (args: WithdrawRequest) => Promise<TransferResponse>;
+  withdraw: (params: WithdrawRequest) => Promise<TransferResponse>;
 }
 
 class DepositProvider extends TransferProvider {
-  deposit: (args: DepositRequest) => Promise<TransferResponse>;
+  deposit: (params: DepositRequest) => Promise<TransferResponse>;
 }
 
-interface FeeArgs {
+interface FeeParams {
   assetCode: string;
   amount: string;
   operation: "withdraw" | "deposit";

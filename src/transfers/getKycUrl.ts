@@ -7,19 +7,19 @@ import {
   WithdrawRequest,
 } from "../types";
 
-interface PostMessageArgs {
+interface PostMessageParams {
   response: InteractiveKycNeededResponse;
   callback_url: "postMessage";
 }
-interface CallbackUrlArgs {
+interface CallbackUrlParams {
   response: InteractiveKycNeededResponse;
   callback_url: string;
   request: DepositRequest | WithdrawRequest;
 }
-export type KycUrlArgs = PostMessageArgs | CallbackUrlArgs;
+export type KycUrlParams = PostMessageParams | CallbackUrlParams;
 
-const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
-  args.callback_url === "postMessage";
+const isPostMessage = (params: KycUrlParams): params is PostMessageParams =>
+  params.callback_url === "postMessage";
 
 /**
  * `getKycUrl` takes in the original request object, a response object, and a
@@ -44,26 +44,26 @@ const isPostMessage = (args: KycUrlArgs): args is PostMessageArgs =>
  * similar to e.g. OAuth flows.
  * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
  *
- * @param {KycUrlArgs} args An object with 3 properties
- * @param {DepositRequest | WithdrawRequest} args.request The original request
+ * @param {KycUrlParams} params An object with 3 properties
+ * @param {DepositRequest | WithdrawRequest} params.request The original request
  * that needs KYC information.
- * @param {InteractiveKycNeededResponse} args.response The complete response.
- * @param {string} args.callback_url A url that the anchor should send
+ * @param {InteractiveKycNeededResponse} params.response The complete response.
+ * @param {string} params.callback_url A url that the anchor should send
  * information to once KYC information has been received.
  * @returns {string} A URL to open so users can complete their KYC information.
  */
-export function getKycUrl(args: KycUrlArgs) {
-  if (isPostMessage(args)) {
-    return `${args.response.url}&callback=postMessage`;
+export function getKycUrl(params: KycUrlParams) {
+  if (isPostMessage(params)) {
+    return `${params.response.url}&callback=postMessage`;
   } else {
     // If the callback arg is a URL, add the original request to it as a
     // querystring argument.
-    const url = new URL(args.callback_url);
+    const url = new URL(params.callback_url);
     const search = { ...queryString.parse(url.search) };
-    search.request = encodeURIComponent(JSON.stringify(args.request));
+    search.request = encodeURIComponent(JSON.stringify(params.request));
     url.search = queryString.stringify(search);
 
-    return `${args.response.url}&callback=${encodeURIComponent(
+    return `${params.response.url}&callback=${encodeURIComponent(
       url.toString(),
     )}`;
   }

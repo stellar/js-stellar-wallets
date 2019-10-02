@@ -25,7 +25,6 @@
     "mode": "modules",
     "exclude": ["**/*.test.ts", "**/node_modules/**"],
     "excludePrivate": true,
-    "excludeNotExported": true,
     "includeDeclarations": true,
     "json": "dist/docs.json"
   }

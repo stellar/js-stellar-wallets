@@ -2,6 +2,12 @@ import scrypt from "scrypt-async";
 import nacl from "tweetnacl";
 import naclutil from "tweetnacl-util";
 
+export interface ScryptPassParams {
+  password: string;
+  salt: string;
+  dkLen?: number;
+}
+
 export interface EncryptParams {
   phrase: string;
   password: string;
@@ -38,15 +44,8 @@ export const KEY_LEN = nacl.secretbox.keyLength; // 32 bytes
  * @param {number} param.dkLen length of the derived key to output
  * @returns {Uint8Array} bytes of the derived key
  */
-function scryptPass({
-  password,
-  salt,
-  dkLen = KEY_LEN,
-}: {
-  password: string;
-  salt: string;
-  dkLen?: number;
-}): Promise<Uint8Array> {
+function scryptPass(params: ScryptPassParams): Promise<Uint8Array> {
+  const { password, salt, dkLen = KEY_LEN } = params;
   const [N, r, p] = [32768, 8, 1];
   return new Promise((resolve, reject) => {
     scrypt(
@@ -77,12 +76,8 @@ function generateSalt(): string {
  * @param {string} [params.salt] A static salt. Use only for unit tests.
  * @param {string} [params.nonce] A static nonce. Use only for unit tests.
  */
-export async function encrypt({
-  phrase,
-  password,
-  salt,
-  nonce,
-}: EncryptParams): Promise<EncryptResponse> {
+export async function encrypt(params: EncryptParams): Promise<EncryptResponse> {
+  const { phrase, password, salt, nonce } = params;
   const secretboxSalt = salt || generateSalt();
 
   const secretboxNonce = nonce || nacl.randomBytes(NONCE_BYTES);
@@ -107,11 +102,8 @@ export async function encrypt({
   };
 }
 
-export async function decrypt({
-  phrase,
-  password,
-  salt,
-}: DecryptParams): Promise<string> {
+export async function decrypt(params: DecryptParams): Promise<string> {
+  const { phrase, password, salt } = params;
   const scryptedPass = await scryptPass({ password, salt });
 
   const bundle = naclutil.decodeBase64(phrase);

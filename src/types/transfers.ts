@@ -4,13 +4,19 @@ import {
 } from "../constants/transfers";
 import { WatcherParams } from "./watchers";
 
-export interface GetKycArgs {
+export interface GetKycParams {
   request: WithdrawRequest | DepositRequest;
   response: InteractiveKycNeededResponse;
   callback_url: string;
 }
 
-export interface FeeArgs {
+export interface FetchKycInBrowserParams<T> {
+  response: InteractiveKycNeededResponse;
+  request: T;
+  window: Window;
+}
+
+export interface FeeParams {
   asset_code: string;
   amount: string;
   type: string;
@@ -272,11 +278,11 @@ export interface WithdrawTransaction extends BaseTransaction {
 
 export type Transaction = DepositTransaction | WithdrawTransaction;
 
-export interface GetAuthStatusArgs {
+export interface GetAuthStatusParams {
   asset_code: string;
 }
 
-export interface TransactionsArgs {
+export interface TransactionsParams {
   asset_code: string;
   show_all_transactions?: boolean;
   no_older_than?: string;
@@ -285,13 +291,19 @@ export interface TransactionsArgs {
   paging_id?: string;
 }
 
-export interface TransactionArgs {
+export interface TransactionParams {
   asset_code: string;
   id: string;
 }
 
-export interface WatchTransactionArgs
-  extends TransactionArgs,
+export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
+  asset_code: string;
+  timeout?: number;
+  isRetry?: boolean;
+}
+
+export interface WatchOneTransactionParams
+  extends TransactionParams,
     WatcherParams<Transaction> {
   onSuccess: (payload: Transaction) => void;
   timeout?: number;

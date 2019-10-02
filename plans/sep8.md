@@ -5,7 +5,8 @@ Approval service API for transacting with an anchor's regulated assets.
 The high-level flow is:
 
 - User signs a transaction
-- Parse transaction for assets involved, detect whether any assets involved are regulated
+- Parse transaction for assets involved, detect whether any assets involved are
+  regulated
 - If regulated, notify user submitting request for transaction approval
 - Submit transaction to approval server, and depending on response:
   - if success
@@ -25,13 +26,12 @@ The high-level flow is:
     - "approval failed"
     - Display error
 
-
 ### Types
 
 ```ts
-type getActionUrl = (args: GetActionArgs) => string;
+type getActionUrl = (params: GetActionParams) => string;
 
-interface GetActionArgs {
+interface GetActionParams {
   request: ApprovalRequest;
   response: ActionRequired;
   callbackUrl: string;
@@ -39,8 +39,8 @@ interface GetActionArgs {
 
 class ApprovalProvider {
   constructor(approvalServer, regulatedAssets) {}
-  approve: (args: ApprovalRequest) => Promise<ApprovalResponse>;
-  needsApproval: (args: Transaction) => boolean;
+  approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
+  needsApproval: (params: Transaction) => boolean;
   fetchActionInBrowser: ({
     response: ActionRequired,
     window: Window,
@@ -52,12 +52,7 @@ interface ApprovalRequest {
 }
 
 interface ApprovalResponse {
-  status:
-    | "success"
-    | "revised"
-    | "pending"
-    | "action_required"
-    | "rejected";
+  status: "success" | "revised" | "pending" | "action_required" | "rejected";
 }
 
 interface TransactionApproved extends ApprovalResponse {
@@ -101,12 +96,15 @@ interface TransactionRejected extends ApprovalResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
-  getActionUrl
+  getActionUrl,
 } from "wallet-sdk";
 
 // approvalServerUrl and regulatedAssets fetched from stellar.toml
 // regulatedAssets is a map of `${asset.code}-${asset.issuer}` to 'stellar-base' Asset
-const approvalProvider = new ApprovalProvider(approvalServerUrl, regulatedAssets);
+const approvalProvider = new ApprovalProvider(
+  approvalServerUrl,
+  regulatedAssets,
+);
 
 // Parse transaction to check if involves regulated assets
 const needsApproval = approvalProvider.needsApproval(transaction);
@@ -121,7 +119,10 @@ showUser(needsApproval);
 
 // Deconstruct to transaction envelope then submit to approval server
 // TODO: Maybe provider helper for deconstruct/reconstruct of tx <-> Transaction?
-const tx = transaction.toEnvelope().toXDR().toString('base64');
+const tx = transaction
+  .toEnvelope()
+  .toXDR()
+  .toString("base64");
 const approvalResponse = await approvalProvider.approve({ tx });
 
 switch (approvalResponse.status) {
@@ -159,7 +160,7 @@ switch (approvalResponse.status) {
       // if action succeeded, submit transaction
       if (actionResult.status === "success") {
         transaction = new Transaction(actionResult.tx);
-        submitPayment(transaction);  
+        submitPayment(transaction);
       }
     } else if (isServerEnv || isNativeEnv) {
       const actionRedirect = getActionUrl({
@@ -168,20 +169,20 @@ switch (approvalResponse.status) {
         callbackUrl,
       });
       /**
-      * On e.g. react native, the client will have to open a webview manually
-      * and pass a callback URL that the app has "claimed." This is very similar
-      * to e.g. OAuth flows.
-      * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
-      * Include the original request so it can be provided as a querystring to
-      * the callback URL.
-      */
-   }
-   break;
+       * On e.g. react native, the client will have to open a webview manually
+       * and pass a callback URL that the app has "claimed." This is very similar
+       * to e.g. OAuth flows.
+       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
+       * Include the original request so it can be provided as a querystring to
+       * the callback URL.
+       */
+    }
+    break;
   case ApprovalResponseStatus.rejected:
     // Notify user of the rejection
     showUser(approvalResponse);
     break;
   default:
-    // There was an error
+  // There was an error
 }
 ```

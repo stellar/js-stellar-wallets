@@ -24,11 +24,15 @@ const encryptedKey: EncryptedKey = {
 };
 
 it("encrypts to itself", async () => {
-  expect(await IdentityEncrypter.encryptKey({ key })).toEqual(encryptedKey);
+  expect(await IdentityEncrypter.encryptKey({ key, password: "" })).toEqual(
+    encryptedKey,
+  );
 });
 
 it("decrypts to itself", async () => {
-  expect(await IdentityEncrypter.decryptKey({ encryptedKey })).toEqual(key);
+  expect(
+    await IdentityEncrypter.decryptKey({ encryptedKey, password: "" }),
+  ).toEqual(key);
 });
 
 it("passes PluginTesting", async () => {

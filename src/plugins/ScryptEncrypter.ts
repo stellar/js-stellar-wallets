@@ -1,5 +1,10 @@
 import { decrypt, encrypt } from "../helpers/ScryptEncryption";
-import { EncryptedKey, Encrypter, Key } from "../types";
+import {
+  DecryptParams,
+  EncryptedKey,
+  Encrypter,
+  EncryptParams,
+} from "../types";
 
 const NAME = "ScryptEncrypter";
 
@@ -8,13 +13,8 @@ const NAME = "ScryptEncrypter";
  */
 export const ScryptEncrypter: Encrypter = {
   name: NAME,
-  async encryptKey({
-    key,
-    password,
-  }: {
-    key: Key;
-    password: string;
-  }): Promise<EncryptedKey> {
+  async encryptKey(params: EncryptParams): Promise<EncryptedKey> {
+    const { key, password } = params;
     const { privateKey, path, extra, publicKey, type, ...props } = key;
 
     const { encryptedPhrase, salt } = await encrypt({
@@ -30,13 +30,8 @@ export const ScryptEncrypter: Encrypter = {
     };
   },
 
-  async decryptKey({
-    encryptedKey,
-    password,
-  }: {
-    encryptedKey: EncryptedKey;
-    password: string;
-  }) {
+  async decryptKey(params: DecryptParams) {
+    const { encryptedKey, password } = params;
     const { encrypterName, salt, encryptedBlob, ...props } = encryptedKey;
 
     const data = JSON.parse(

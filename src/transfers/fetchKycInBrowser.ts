@@ -1,14 +1,16 @@
-import { InteractiveKycNeededResponse, KycPromptStatus } from "../types";
+import {
+  DepositRequest,
+  FetchKycInBrowserParams,
+  KycPromptStatus,
+  WithdrawRequest,
+} from "../types";
 
 import { getKycUrl } from "./getKycUrl";
 
-export function fetchKycInBrowser({
-  response,
-  window: windowContext,
-}: {
-  response: InteractiveKycNeededResponse;
-  window: Window;
-}): Promise<KycPromptStatus> {
+export function fetchKycInBrowser(
+  params: FetchKycInBrowserParams<DepositRequest | WithdrawRequest>,
+): Promise<KycPromptStatus> {
+  const { response, window: windowContext } = params;
   const { origin } = new URL(response.url);
   return new Promise((resolve, reject) => {
     const handleMessage = (e: MessageEvent) => {

@@ -114,14 +114,6 @@ export const App = () => {
     {},
   );
 
-  const itemsByKind = items.reduce(
-    (memo, item) => ({
-      ...memo,
-      [item.kindString]: item,
-    }),
-    {},
-  );
-
   /*
     We want the index to display:
     - the kind names in KINDS_TO_DISPLAY 
@@ -148,7 +140,11 @@ export const App = () => {
     .filter((item) => !LIBRARY_EXPORTS[item.name])
     .filter(
       (item) =>
-        item.kindString === "Interface" || item.kindString === "Type alias",
+        item.kindString === "Class" ||
+        item.kindString === "Interface" ||
+        item.kindString === "Type alias" ||
+        item.kindString === "Enumeration" ||
+        item.kindString === "Object literal",
     )
     .reduce((memo, item) => {
       const arm = getArmName(item.sources[0].fileName);
@@ -171,9 +167,9 @@ export const App = () => {
             </li>
           </ul>
           <TocHeaderEl>Library exports</TocHeaderEl>
-          <TableOfContents itemsByKind={libraryExports} />
+          <TableOfContents items={libraryExports} />
           <TocHeaderEl>Types</TocHeaderEl>
-          <TableOfContents itemsByKind={interfacesAndTypes} />
+          <TableOfContents items={interfacesAndTypes} />
         </TableOfContentsEl>
 
         <BodyEl>

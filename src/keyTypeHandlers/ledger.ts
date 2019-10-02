@@ -1,21 +1,16 @@
 import LedgerStr from "@ledgerhq/hw-app-str";
 import LedgerTransport from "@ledgerhq/hw-transport-u2f";
-import { Transaction } from "stellar-base";
 import StellarSdk from "stellar-sdk";
 
-import { Key, KeyTypeHandler } from "../types";
+import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
 import { KeyType } from "../constants/keys";
 
 export const ledgerHandler: KeyTypeHandler = {
   keyType: KeyType.ledger,
-  async signTransaction({
-    transaction,
-    key,
-  }: {
-    transaction: Transaction;
-    key: Key;
-  }) {
+  async signTransaction(params: HandlerSignTransactionParams) {
+    const { transaction, key } = params;
+
     if (key.privateKey !== "") {
       throw new Error(
         `Non-ledger key sent to ledger handler: ${JSON.stringify(

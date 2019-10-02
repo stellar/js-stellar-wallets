@@ -51,12 +51,12 @@ export interface KeyMetadata {
 
 export interface EncryptParams {
   key: Key;
-  password?: string;
+  password: string;
 }
 
 export interface DecryptParams {
   encryptedKey: EncryptedKey;
-  password?: string;
+  password: string;
 }
 
 /**
@@ -142,7 +142,7 @@ export interface KeyStore {
   loadAllKeys(): Promise<EncryptedKey[]>;
 }
 
-interface HandlerSignTransactionArgs {
+export interface HandlerSignTransactionParams {
   transaction: Transaction;
   key: Key;
 }
@@ -157,10 +157,7 @@ interface HandlerSignTransactionArgs {
  */
 export interface KeyTypeHandler {
   keyType: KeyType;
-  signTransaction({
-    transaction,
-    key,
-  }: HandlerSignTransactionArgs): Promise<Transaction>;
+  signTransaction(params: HandlerSignTransactionParams): Promise<Transaction>;
 }
 
 export type AuthToken = string;
