@@ -182,7 +182,8 @@ export abstract class TransferProvider {
    *  * Any new transaction appears
    *  * Any of the initial pending transactions change any state
    *
-   * * onMessage - Callback that takes a `transaction` parameter
+   * You may also provide an array of transaction ids, `watchlist`, and this
+   * watcher will always react to transactions whose ids are in the watchlist.
    */
   public watchAllTransactions(
     params: WatchAllTransactionsParams,
@@ -191,9 +192,16 @@ export abstract class TransferProvider {
       asset_code,
       onMessage,
       onError,
+      watchlist = [],
       timeout = 5000,
       isRetry = false,
     } = params;
+
+    // make an object map out of watchlist
+    const watchlistMap: any = watchlist.reduce(
+      (memo: any, id: string) => ({ ...memo, [id]: true }),
+      {},
+    );
 
     // if it's a first run, drop it in the registry
     if (!isRetry) {
@@ -213,6 +221,11 @@ export abstract class TransferProvider {
         try {
           const newTransactions = transactions.filter(
             (transaction: Transaction) => {
+              // always show transactions on the watchlist
+              if (watchlistMap[transaction.id]) {
+                return true;
+              }
+
               const isPending = transaction.status.indexOf("pending") === 0;
               const registeredTransaction = this._transactionsRegistry[
                 asset_code

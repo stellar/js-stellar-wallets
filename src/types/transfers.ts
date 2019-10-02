@@ -298,6 +298,7 @@ export interface TransactionParams {
 
 export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
   asset_code: string;
+  watchlist?: string[];
   timeout?: number;
   isRetry?: boolean;
 }
