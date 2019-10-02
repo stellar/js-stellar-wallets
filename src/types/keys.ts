@@ -142,7 +142,7 @@ export interface KeyStore {
   loadAllKeys(): Promise<EncryptedKey[]>;
 }
 
-interface HandlerSignTransactionArgs {
+interface HandlerSignTransactionParams {
   transaction: Transaction;
   key: Key;
 }
@@ -160,7 +160,7 @@ export interface KeyTypeHandler {
   signTransaction({
     transaction,
     key,
-  }: HandlerSignTransactionArgs): Promise<Transaction>;
+  }: HandlerSignTransactionParams): Promise<Transaction>;
 }
 
 export type AuthToken = string;

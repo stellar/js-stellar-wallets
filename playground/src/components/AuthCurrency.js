@@ -9,7 +9,7 @@ const El = styled.div``;
 class AuthCurrency extends Component {
   state = {
     amount: "",
-    args: {},
+    params: {},
     res: null,
     error: null,
     fee: null,
@@ -56,7 +56,7 @@ class AuthCurrency extends Component {
         account,
         asset_code,
         authentication_required,
-        ...this.state.args,
+        ...this.state.params,
       })
       .then((res) => this.setState({ res }))
       .catch((e) => {
@@ -66,7 +66,7 @@ class AuthCurrency extends Component {
 
   render() {
     const { asset_code, min_amount, max_amount, fields } = this.props;
-    const { args, amount, error, fee } = this.state;
+    const { params, amount, error, fee } = this.state;
     const amountFloat = parseFloat(amount);
 
     return (
@@ -99,7 +99,7 @@ class AuthCurrency extends Component {
                 <Select
                   onChange={(ev) =>
                     this.setState({
-                      args: { ...args, [name]: ev.target.value },
+                      params: { ...params, [name]: ev.target.value },
                     })
                   }
                 >

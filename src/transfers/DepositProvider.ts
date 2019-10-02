@@ -3,7 +3,7 @@ import queryString from "query-string";
 import {
   DepositInfo,
   DepositRequest,
-  InteractiveKycNeededResponse,
+  FetchKycInBrowserParams,
   TransferError,
   TransferResponse,
 } from "../types";
@@ -80,9 +80,9 @@ export class DepositProvider extends TransferProvider {
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async deposit(args: DepositRequest): Promise<TransferResponse> {
-    const isAuthRequired = this.getAuthStatus("withdraw", args.asset_code);
-    const search = queryString.stringify({ ...args, account: this.account });
+  public async deposit(params: DepositRequest): Promise<TransferResponse> {
+    const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
+    const search = queryString.stringify({ ...params, account: this.account });
 
     const response = await fetch(`${this.transferServer}/deposit?${search}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
@@ -162,15 +162,10 @@ export class DepositProvider extends TransferProvider {
    * succeeds, this will be the information needed to complete a deposit. If it
    * fails, it will contain information about the KYC failure from the anchor.
    */
-  public async fetchKycInBrowser({
-    response,
-    request,
-    window: windowContext,
-  }: {
-    response: InteractiveKycNeededResponse;
-    request: DepositRequest;
-    window: Window;
-  }) {
+  public async fetchKycInBrowser(
+    params: FetchKycInBrowserParams<DepositRequest>,
+  ) {
+    const { response, request, window: windowContext } = params;
     const kycResult = await fetchKycInBrowser({
       response,
       window: windowContext,

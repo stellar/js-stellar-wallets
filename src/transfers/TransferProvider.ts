@@ -4,16 +4,16 @@ import queryString from "query-string";
 import {
   DepositInfo,
   Fee,
-  FeeArgs,
+  FeeParams,
   Info,
   RawInfoResponse,
   SimpleFee,
   Transaction,
-  TransactionArgs,
-  TransactionsArgs,
-  WatchAllTransactionsArgs,
+  TransactionParams,
+  TransactionsParams,
+  WatchAllTransactionsParams,
   WatcherResponse,
-  WatchOneTransactionArgs,
+  WatchOneTransactionParams,
   WithdrawInfo,
 } from "../types";
 
@@ -121,16 +121,16 @@ export abstract class TransferProvider {
    * transfer server.
    */
   public async fetchTransactions(
-    args: TransactionsArgs,
+    params: TransactionsParams,
   ): Promise<Transaction[]> {
     const isAuthRequired = this.getAuthStatus(
       "fetchTransactions",
-      args.asset_code,
+      params.asset_code,
     );
 
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify({
-        ...args,
+        ...params,
         account: this.account,
       })}`,
       {
@@ -142,7 +142,7 @@ export abstract class TransferProvider {
 
     return transactions.filter(
       (transaction: Transaction) =>
-        args.show_all_transactions ||
+        params.show_all_transactions ||
         (this.operation === "deposit" && transaction.kind === "deposit") ||
         (this.operation === "withdraw" && transaction.kind === "withdrawal"),
     ) as Transaction[];
@@ -152,9 +152,10 @@ export abstract class TransferProvider {
    * Fetch the information of a single transaction from the transfer server.
    */
   public async fetchTransaction(
-    { asset_code, id }: TransactionArgs,
+    params: TransactionParams,
     isWatching: boolean,
   ): Promise<Transaction> {
+    const { asset_code, id } = params;
     const isAuthRequired = this.getAuthStatus(
       isWatching ? "watchOneTransaction" : "fetchTransaction",
       asset_code,
@@ -183,13 +184,17 @@ export abstract class TransferProvider {
    *
    * * onMessage - Callback that takes a `transaction` parameter
    */
-  public watchAllTransactions({
-    asset_code,
-    onMessage,
-    onError,
-    timeout = 5000,
-    isRetry = false,
-  }: WatchAllTransactionsArgs): WatcherResponse {
+  public watchAllTransactions(
+    params: WatchAllTransactionsParams,
+  ): WatcherResponse {
+    const {
+      asset_code,
+      onMessage,
+      onError,
+      timeout = 5000,
+      isRetry = false,
+    } = params;
+
     // if it's a first run, drop it in the registry
     if (!isRetry) {
       this._watchAllTransactionsRegistry = {
@@ -302,7 +307,7 @@ export abstract class TransferProvider {
     onError,
     timeout = 5000,
     isRetry = false,
-  }: WatchOneTransactionArgs): WatcherResponse {
+  }: WatchOneTransactionParams): WatcherResponse {
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
       this._watchOneTransactionRegistry = {
@@ -388,16 +393,16 @@ export abstract class TransferProvider {
     };
   }
 
-  public async fetchFinalFee(args: FeeArgs): Promise<number> {
+  public async fetchFinalFee(params: FeeParams): Promise<number> {
     if (!this.info || !this.info[this.operation]) {
       throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
     }
 
-    const assetInfo = this.info[this.operation][args.asset_code];
+    const assetInfo = this.info[this.operation][params.asset_code];
 
     if (!assetInfo) {
       throw new Error(
-        `Can't get fee for an unsupported asset, '${args.asset_code}`,
+        `Can't get fee for an unsupported asset, '${params.asset_code}`,
       );
     }
     const { fee } = assetInfo;
@@ -407,12 +412,12 @@ export abstract class TransferProvider {
       case "simple":
         const simpleFee = fee as SimpleFee;
         return (
-          ((simpleFee.percent || 0) / 100) * Number(args.amount) +
+          ((simpleFee.percent || 0) / 100) * Number(params.amount) +
           (simpleFee.fixed || 0)
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(args as any)}`,
+          `${this.transferServer}/fee?${queryString.stringify(params as any)}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

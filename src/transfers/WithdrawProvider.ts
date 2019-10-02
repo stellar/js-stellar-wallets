@@ -1,7 +1,7 @@
 import queryString from "query-string";
 
 import {
-  InteractiveKycNeededResponse,
+  FetchKycInBrowserParams,
   TransferError,
   TransferResponse,
   WithdrawInfo,
@@ -82,9 +82,9 @@ export class WithdrawProvider extends TransferProvider {
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async withdraw(args: WithdrawRequest): Promise<TransferResponse> {
-    const isAuthRequired = this.getAuthStatus("withdraw", args.asset_code);
-    const search = queryString.stringify({ ...args, account: this.account });
+  public async withdraw(params: WithdrawRequest): Promise<TransferResponse> {
+    const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
+    const search = queryString.stringify({ ...params, account: this.account });
 
     const response = await fetch(`${this.transferServer}/withdraw?${search}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
@@ -152,15 +152,10 @@ export class WithdrawProvider extends TransferProvider {
    * it fails, it will contain information about the KYC failure from the
    * anchor.
    */
-  public async fetchKycInBrowser({
-    response,
-    request,
-    window: windowContext,
-  }: {
-    response: InteractiveKycNeededResponse;
-    request: WithdrawRequest;
-    window: Window;
-  }) {
+  public async fetchKycInBrowser(
+    params: FetchKycInBrowserParams<WithdrawRequest>,
+  ) {
+    const { response, request, window: windowContext } = params;
     const kycResult = await fetchKycInBrowser({
       response,
       window: windowContext,
