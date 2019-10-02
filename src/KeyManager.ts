@@ -27,13 +27,13 @@ export interface KeyManagerParams {
 export interface StoreKeyParams {
   key: Key | UnstoredKey;
   encrypterName: string;
-  password?: string;
+  password: string;
 }
 
 export interface SignTransactionParams {
   transaction: Transaction;
   id: string;
-  password?: string;
+  password: string;
 }
 
 export interface ChangePasswordParams {
@@ -159,7 +159,7 @@ export class KeyManager {
    *
    * @returns a list of all stored keys
    */
-  public async loadAllKeys(password?: string): Promise<any[]> {
+  public async loadAllKeys(password: string): Promise<any[]> {
     const encryptedKeys: EncryptedKey[] = await this.keyStore.loadAllKeys();
     const keys = [];
 

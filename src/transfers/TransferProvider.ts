@@ -299,15 +299,18 @@ export abstract class TransferProvider {
    * * onError - When there's a runtime error, or the transaction is incomplete
    * / no_market / too_small / too_large / error.
    */
-  public watchOneTransaction({
-    asset_code,
-    id,
-    onMessage,
-    onSuccess,
-    onError,
-    timeout = 5000,
-    isRetry = false,
-  }: WatchOneTransactionParams): WatcherResponse {
+  public watchOneTransaction(
+    params: WatchOneTransactionParams,
+  ): WatcherResponse {
+    const {
+      asset_code,
+      id,
+      onMessage,
+      onSuccess,
+      onError,
+      timeout = 5000,
+      isRetry = false,
+    } = params;
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
       this._watchOneTransactionRegistry = {

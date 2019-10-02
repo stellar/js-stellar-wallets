@@ -168,6 +168,7 @@ export class DepositProvider extends TransferProvider {
     const { response, request, window: windowContext } = params;
     const kycResult = await fetchKycInBrowser({
       response,
+      request,
       window: windowContext,
     });
     switch (kycResult.status) {

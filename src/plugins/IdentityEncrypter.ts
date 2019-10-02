@@ -1,4 +1,4 @@
-import { EncryptedKey, Encrypter, Key } from "../types";
+import { DecryptParams, Encrypter, EncryptParams } from "../types";
 
 const NAME = "IdentityEncrypter";
 
@@ -7,7 +7,8 @@ const NAME = "IdentityEncrypter";
  */
 export const IdentityEncrypter: Encrypter = {
   name: NAME,
-  encryptKey({ key }: { key: Key }) {
+  encryptKey(params: EncryptParams) {
+    const { key } = params;
     const { type, privateKey, publicKey, path, extra, ...props } = key;
 
     return Promise.resolve({
@@ -24,7 +25,8 @@ export const IdentityEncrypter: Encrypter = {
     });
   },
 
-  decryptKey({ encryptedKey }: { encryptedKey: EncryptedKey }) {
+  decryptKey(params: DecryptParams) {
+    const { encryptedKey } = params;
     const {
       encrypterName,
       salt,
