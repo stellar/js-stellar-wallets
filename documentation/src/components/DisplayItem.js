@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Json from "react-json-view";
 
 import { Comment } from "components/Comment";
 import { DisplayInterface } from "components/DisplayInterface";
@@ -71,7 +72,7 @@ export const DisplayItem = ({ isRootElement, ...params }) => {
       break;
 
     default:
-      item = <pre>{JSON.stringify(params, null, 2)}</pre>;
+      item = <Json src={params} />;
       break;
   }
 
