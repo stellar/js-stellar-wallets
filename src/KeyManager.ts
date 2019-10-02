@@ -133,11 +133,8 @@ export class KeyManager {
    *
    * @returns The metadata of the key
    */
-  public async storeKey({
-    key,
-    password,
-    encrypterName,
-  }: StoreKeyParams): Promise<KeyMetadata> {
+  public async storeKey(params: StoreKeyParams): Promise<KeyMetadata> {
+    const { key, password, encrypterName } = params;
     const id = key.id || sha1(`${key.privateKey}${key.publicKey}`);
 
     const newKey: Key = {
@@ -204,11 +201,10 @@ export class KeyManager {
    *                    `sha1(private key + public key)`.
    * @returns Signed transaction
    */
-  public async signTransaction({
-    transaction,
-    id,
-    password,
-  }: SignTransactionParams): Promise<Transaction> {
+  public async signTransaction(
+    params: SignTransactionParams,
+  ): Promise<Transaction> {
+    const { transaction, id, password } = params;
     let key = this._readFromCache(id);
 
     if (!key) {
@@ -250,11 +246,8 @@ export class KeyManager {
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
-  public async fetchAuthToken({
-    id,
-    password,
-    authServer,
-  }: GetAuthTokenParams): Promise<AuthToken> {
+  public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
+    const { id, password, authServer } = params;
     // throw errors for missing params
     if (!id) {
       throw new Error("Required parameter `id` is missing!");
@@ -348,10 +341,10 @@ export class KeyManager {
    * @param newPassword the user's new password
    * @returns {Promise<KeyMetadata[]>}
    */
-  public async changePassword({
-    oldPassword,
-    newPassword,
-  }: ChangePasswordParams): Promise<KeyMetadata[]> {
+  public async changePassword(
+    params: ChangePasswordParams,
+  ): Promise<KeyMetadata[]> {
+    const { oldPassword, newPassword } = params;
     const oldKeys = await this.keyStore.loadAllKeys();
     const newKeys = await Promise.all(
       oldKeys.map(async (encryptedKey: EncryptedKey) => {

@@ -45,6 +45,7 @@ export const DisplayInterface = (params) => {
 
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)
+        .filter(({ flags }) => !flags.isProtected && !flags.isPrivate)
         .map((child) => (
           <Block key={child.id}>
             <DisplayItem {...child} />
