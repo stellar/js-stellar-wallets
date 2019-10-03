@@ -221,18 +221,18 @@ export abstract class TransferProvider {
         try {
           const newTransactions = transactions.filter(
             (transaction: Transaction) => {
-              // always show transactions on the watchlist
-              if (watchlistMap[transaction.id]) {
-                return true;
-              }
-
               const isPending = transaction.status.indexOf("pending") === 0;
               const registeredTransaction = this._transactionsRegistry[
                 asset_code
               ][transaction.id];
 
               // if this is the first watch, only keep the pending ones
-              if (isRetry) {
+              if (!isRetry) {
+                // always show transactions on the watchlist
+                if (watchlistMap[transaction.id]) {
+                  return true;
+                }
+
                 return isPending;
               }
 
@@ -253,7 +253,12 @@ export abstract class TransferProvider {
             },
           );
 
-          newTransactions.forEach(onMessage);
+          newTransactions.forEach((transaction) => {
+            this._transactionsRegistry[asset_code][
+              transaction.id
+            ] = transaction;
+            onMessage(transaction);
+          });
         } catch (e) {
           onError(e);
           return;
@@ -346,6 +351,17 @@ export abstract class TransferProvider {
         ) {
           return;
         }
+
+        // don't report on something that's been registered already
+        const registeredTransaction = this._transactionsRegistry[asset_code][
+          transaction.id
+        ];
+
+        if (isEqual(registeredTransaction, transaction)) {
+          return;
+        }
+
+        this._transactionsRegistry[asset_code][transaction.id] = transaction;
 
         if (transaction.status.indexOf("pending") === 0) {
           if (this._oneTransactionWatcher) {
