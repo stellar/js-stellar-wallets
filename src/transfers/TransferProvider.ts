@@ -236,16 +236,13 @@ export abstract class TransferProvider {
                 return isPending;
               }
 
-              // always use pending transactions
-              if (isPending) {
-                return true;
+              // if we've had the transaction before, only report updates
+              if (registeredTransaction) {
+                return isEqual(registeredTransaction, transaction);
               }
 
-              // then, only use transactions that have changed
-              if (
-                registeredTransaction &&
-                !isEqual(registeredTransaction, transaction)
-              ) {
+              // always use pending transactions
+              if (isPending) {
                 return true;
               }
 

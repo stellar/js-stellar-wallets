@@ -94,20 +94,29 @@ describe("watchOneTransaction", () => {
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
 
-  const pendingTransaction: Transaction = {
-    kind: "deposit",
-    id: "TEST",
-    status: TransactionStatus.pending_anchor,
+  const pendingTransaction = (n: number = 0): Transaction => {
+    return {
+      kind: "deposit",
+      id: "TEST",
+      status: TransactionStatus.pending_anchor,
+      status_eta: n,
+    };
   };
-  const successfulTransaction: Transaction = {
-    kind: "deposit",
-    id: "TEST",
-    status: TransactionStatus.completed,
+  const successfulTransaction = (n: number = 0): Transaction => {
+    return {
+      kind: "deposit",
+      id: "TEST",
+      status: TransactionStatus.completed,
+      status_eta: n,
+    };
   };
-  const failedTransaction: Transaction = {
-    kind: "deposit",
-    id: "TEST",
-    status: TransactionStatus.error,
+  const failedTransaction = (n: number = 0): Transaction => {
+    return {
+      kind: "deposit",
+      id: "TEST",
+      status: TransactionStatus.error,
+      status_eta: n,
+    };
   };
 
   beforeEach(async () => {
@@ -144,12 +153,12 @@ describe("watchOneTransaction", () => {
 
     // queue up a success
     // @ts-ignore
-    fetch.mockResponses([JSON.stringify(successfulTransaction)]);
+    fetch.mockResponses([JSON.stringify(successfulTransaction())]);
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -178,12 +187,12 @@ describe("watchOneTransaction", () => {
 
     // queue up a success
     // @ts-ignore
-    fetch.mockResponses([JSON.stringify(pendingTransaction)]);
+    fetch.mockResponses([JSON.stringify(pendingTransaction(0))]);
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -212,12 +221,12 @@ describe("watchOneTransaction", () => {
 
     // then, queue up a success
     // @ts-ignore
-    fetch.mockResponses([JSON.stringify(failedTransaction)]);
+    fetch.mockResponses([JSON.stringify(failedTransaction(0))]);
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -247,16 +256,16 @@ describe("watchOneTransaction", () => {
     // queue up a success
     // @ts-ignore
     fetch.mockResponses(
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(pendingTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction(0)), { status: 200 }],
+      [JSON.stringify(pendingTransaction(1)), { status: 200 }],
+      [JSON.stringify(pendingTransaction(2)), { status: 200 }],
+      [JSON.stringify(pendingTransaction(3)), { status: 200 }],
     );
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -299,16 +308,16 @@ describe("watchOneTransaction", () => {
     // queue up a success
     // @ts-ignore
     fetch.mockResponses(
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(successfulTransaction), { status: 200 }],
-      [JSON.stringify(successfulTransaction), { status: 200 }],
-      [JSON.stringify(successfulTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction()), { status: 200 }],
+      [JSON.stringify(successfulTransaction()), { status: 200 }],
+      [JSON.stringify(successfulTransaction()), { status: 200 }],
+      [JSON.stringify(successfulTransaction()), { status: 200 }],
     );
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -359,16 +368,16 @@ describe("watchOneTransaction", () => {
     // queue up a success
     // @ts-ignore
     fetch.mockResponses(
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction()), { status: 200 }],
+      [JSON.stringify(failedTransaction()), { status: 200 }],
+      [JSON.stringify(failedTransaction()), { status: 200 }],
+      [JSON.stringify(failedTransaction()), { status: 200 }],
     );
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
@@ -419,17 +428,17 @@ describe("watchOneTransaction", () => {
     // queue up a success
     // @ts-ignore
     fetch.mockResponses(
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(pendingTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
-      [JSON.stringify(failedTransaction), { status: 200 }],
+      [JSON.stringify(pendingTransaction(0)), { status: 200 }],
+      [JSON.stringify(pendingTransaction(1)), { status: 200 }],
+      [JSON.stringify(failedTransaction(2)), { status: 200 }],
+      [JSON.stringify(failedTransaction(3)), { status: 200 }],
+      [JSON.stringify(failedTransaction(4)), { status: 200 }],
     );
 
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction.id,
+      id: successfulTransaction(0).id,
       onMessage,
       onSuccess,
       onError,
