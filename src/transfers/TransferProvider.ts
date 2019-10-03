@@ -238,7 +238,7 @@ export abstract class TransferProvider {
 
               // if we've had the transaction before, only report updates
               if (registeredTransaction) {
-                return isEqual(registeredTransaction, transaction);
+                return !isEqual(registeredTransaction, transaction);
               }
 
               // always use pending transactions
@@ -354,7 +354,10 @@ export abstract class TransferProvider {
           transaction.id
         ];
 
-        if (isEqual(registeredTransaction, transaction)) {
+        if (
+          registeredTransaction &&
+          isEqual(registeredTransaction, transaction)
+        ) {
           return;
         }
 
