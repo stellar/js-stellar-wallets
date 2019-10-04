@@ -3,7 +3,10 @@ export interface WatcherParams<T> {
   onError: (error: any) => void;
 }
 
+export type WatcherRefreshFunction = () => void;
+export type WatcherStopFunction = () => void;
+
 export interface WatcherResponse {
-  refresh: () => void;
-  stop: () => void;
+  refresh: WatcherRefreshFunction;
+  stop: WatcherStopFunction;
 }
