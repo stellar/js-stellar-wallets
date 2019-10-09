@@ -106,6 +106,17 @@ export class WithdrawProvider extends TransferProvider {
    */
   public async fetchSupportedAssets(): Promise<WithdrawInfo> {
     const { withdraw } = await this.fetchInfo();
+
+    // seed internal registry objects with supported assets
+    Object.keys(withdraw).forEach((code) => {
+      this._watchOneTransactionRegistry[code] =
+        this._watchOneTransactionRegistry[code] || {};
+      this._watchAllTransactionsRegistry[code] = false;
+      this._transactionsRegistry[code] = this._transactionsRegistry[code] || {};
+      this._transactionsIgnoredRegistry[code] =
+        this._transactionsIgnoredRegistry[code] || {};
+    });
+
     return withdraw;
   }
 

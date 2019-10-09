@@ -58,6 +58,7 @@ export abstract class TransferProvider {
   protected _watchOneTransactionRegistry: WatchOneTransactionRegistry;
   protected _watchAllTransactionsRegistry: WatchAllTransactionsRegistry;
   protected _transactionsRegistry: TransactionsRegistry;
+  protected _transactionsIgnoredRegistry: TransactionsRegistry;
 
   constructor(
     transferServer: string,
@@ -83,6 +84,7 @@ export abstract class TransferProvider {
     this._watchOneTransactionRegistry = {};
     this._watchAllTransactionsRegistry = {};
     this._transactionsRegistry = {};
+    this._transactionsIgnoredRegistry = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -316,6 +318,8 @@ export abstract class TransferProvider {
       stop: () => {
         if (this._allTransactionsWatcher) {
           this._watchAllTransactionsRegistry[asset_code] = false;
+          this._transactionsRegistry[asset_code] = {};
+          this._transactionsIgnoredRegistry[asset_code] = {};
           clearTimeout(this._allTransactionsWatcher);
         }
       },
