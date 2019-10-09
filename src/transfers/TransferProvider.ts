@@ -239,6 +239,13 @@ export abstract class TransferProvider {
                   return true;
                 }
 
+                // if we're not pending, then save this in an ignore reg
+                if (!isPending) {
+                  this._transactionsIgnoredRegistry[asset_code][
+                    transaction.id
+                  ] = transaction;
+                }
+
                 return isPending;
               }
 
@@ -253,7 +260,8 @@ export abstract class TransferProvider {
               if (
                 !registeredTransaction &&
                 transaction.status === TransactionStatus.completed &&
-                isRetry
+                isRetry &&
+                !this._transactionsIgnoredRegistry[asset_code][transaction.id]
               ) {
                 return true;
               }
