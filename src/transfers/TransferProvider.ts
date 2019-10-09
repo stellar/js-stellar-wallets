@@ -245,6 +245,17 @@ export abstract class TransferProvider {
                 return !isEqual(registeredTransaction, transaction);
               }
 
+              // if it's NOT a registered transaction, and it's not the first
+              // roll, maybe it's a new trans that completed immediately
+              // so register that!
+              if (
+                !registeredTransaction &&
+                transaction.status === TransactionStatus.completed &&
+                isRetry
+              ) {
+                return true;
+              }
+
               // always use pending transactions
               if (isPending) {
                 return true;
