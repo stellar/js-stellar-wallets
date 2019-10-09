@@ -81,7 +81,7 @@ export class DepositProvider extends TransferProvider {
    * servers expect)!
    */
   public async deposit(params: DepositRequest): Promise<TransferResponse> {
-    const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
+    const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
     const search = queryString.stringify({ ...params, account: this.account });
 
     const response = await fetch(`${this.transferServer}/deposit?${search}`, {
