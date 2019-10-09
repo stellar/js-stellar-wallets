@@ -128,10 +128,18 @@ export abstract class TransferProvider {
       params.asset_code,
     );
 
+    let kind;
+
+    if (!params.show_all_transactions) {
+      kind =
+        params.kind || this.operation === "deposit" ? "deposit" : "withdrawal";
+    }
+
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify({
         ...params,
         account: this.account,
+        kind,
       })}`,
       {
         headers: isAuthRequired ? this.getHeaders() : undefined,
@@ -140,12 +148,7 @@ export abstract class TransferProvider {
 
     const { transactions } = await response.json();
 
-    return transactions.filter(
-      (transaction: Transaction) =>
-        params.show_all_transactions ||
-        (this.operation === "deposit" && transaction.kind === "deposit") ||
-        (this.operation === "withdraw" && transaction.kind === "withdrawal"),
-    ) as Transaction[];
+    return transactions;
   }
 
   /**
@@ -195,6 +198,7 @@ export abstract class TransferProvider {
       watchlist = [],
       timeout = 5000,
       isRetry = false,
+      ...otherParams
     } = params;
 
     // make an object map out of watchlist
@@ -211,7 +215,7 @@ export abstract class TransferProvider {
       };
     }
 
-    this.fetchTransactions({ asset_code })
+    this.fetchTransactions({ asset_code, ...(otherParams || {}) })
       .then((transactions: Transaction[]) => {
         // make sure we're still watching
         if (!this._watchAllTransactionsRegistry[asset_code]) {
@@ -325,6 +329,7 @@ export abstract class TransferProvider {
       onError,
       timeout = 5000,
       isRetry = false,
+      ...otherParams
     } = params;
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
@@ -338,7 +343,7 @@ export abstract class TransferProvider {
     }
 
     // do this all asynchronously (since this func needs to return a cancel fun)
-    this.fetchTransaction({ asset_code, id }, true)
+    this.fetchTransaction({ asset_code, id, ...(otherParams || {}) }, true)
       .then((transaction: Transaction) => {
         if (
           !(
