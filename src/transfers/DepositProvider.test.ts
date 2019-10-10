@@ -595,4 +595,114 @@ describe("watchAllTransactions", () => {
     expect(onMessage.callCount).toBe(3);
     expect(onError.callCount).toBe(0);
   });
+
+  test("Immediate successes get messages", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBeLessThan(2);
+    });
+
+    const onError = sinon.spy((e) => {
+      expect(e).toBeUndefined();
+    });
+
+    // queue up a success
+    // @ts-ignore
+    fetch.mockResponses([
+      JSON.stringify({
+        status: true,
+        transactions: [],
+      }),
+    ]);
+
+    // start watching
+    provider.watchAllTransactions({
+      asset_code: "SMX",
+      onMessage,
+      onError,
+      timeout: 10,
+    });
+
+    // nothing should run at first
+    expect(onMessage.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    await sleep(1);
+
+    // still nothing
+    expect(onMessage.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
+
+    // add a new success message
+    // @ts-ignore
+    fetch.mockResponses([
+      JSON.stringify({
+        status: true,
+        transactions: [
+          {
+            id: 74,
+            order_id: "ord_2mPmw2EBF5iCN2nWv",
+            status: "completed",
+            receiving_account_number: "646180111812345678",
+            receiving_account_bank: "STP",
+            memo: null,
+            memo_type: null,
+            email_address: null,
+            type: "SPEI",
+            asset_code: "SMX",
+            expires_at: "1970-01-19T06:08:23.883Z",
+            created_at: "2019-09-26T19:58:03.856Z",
+            phone: "+14155099007",
+            amount: "25.00",
+            account: "GARBRF35ZWKO4MIEY7RPHHPQ74P45TWNMIQ5VKOTXF7KYVFJBGWW2IMQ",
+            transaction_id: "DI8AADD303D3686399",
+            external_transaction_id: "DI8AADD303D3686399",
+            kind: "deposit",
+          },
+        ],
+      }),
+    ]);
+
+    clock.next();
+    await sleep(10);
+
+    // should have a success
+    expect(onMessage.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
+
+    // getting the same thing again should change nothing
+    // @ts-ignore
+    fetch.mockResponses([
+      JSON.stringify({
+        status: true,
+        transactions: [
+          {
+            id: 74,
+            order_id: "ord_2mPmw2EBF5iCN2nWv",
+            status: "completed",
+            receiving_account_number: "646180111812345678",
+            receiving_account_bank: "STP",
+            memo: null,
+            memo_type: null,
+            email_address: null,
+            type: "SPEI",
+            asset_code: "SMX",
+            expires_at: "1970-01-19T06:08:23.883Z",
+            created_at: "2019-09-26T19:58:03.856Z",
+            phone: "+14155099007",
+            amount: "25.00",
+            account: "GARBRF35ZWKO4MIEY7RPHHPQ74P45TWNMIQ5VKOTXF7KYVFJBGWW2IMQ",
+            transaction_id: "DI8AADD303D3686399",
+            external_transaction_id: "DI8AADD303D3686399",
+            kind: "deposit",
+          },
+        ],
+      }),
+    ]);
+
+    clock.next();
+    await sleep(10);
+
+    expect(onMessage.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
+  });
 });

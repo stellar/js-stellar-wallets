@@ -58,6 +58,7 @@ export abstract class TransferProvider {
   protected _watchOneTransactionRegistry: WatchOneTransactionRegistry;
   protected _watchAllTransactionsRegistry: WatchAllTransactionsRegistry;
   protected _transactionsRegistry: TransactionsRegistry;
+  protected _transactionsIgnoredRegistry: TransactionsRegistry;
 
   constructor(
     transferServer: string,
@@ -83,6 +84,7 @@ export abstract class TransferProvider {
     this._watchOneTransactionRegistry = {};
     this._watchAllTransactionsRegistry = {};
     this._transactionsRegistry = {};
+    this._transactionsIgnoredRegistry = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -237,12 +239,31 @@ export abstract class TransferProvider {
                   return true;
                 }
 
+                // if we're not pending, then save this in an ignore reg
+                if (!isPending) {
+                  this._transactionsIgnoredRegistry[asset_code][
+                    transaction.id
+                  ] = transaction;
+                }
+
                 return isPending;
               }
 
               // if we've had the transaction before, only report updates
               if (registeredTransaction) {
                 return !isEqual(registeredTransaction, transaction);
+              }
+
+              // if it's NOT a registered transaction, and it's not the first
+              // roll, maybe it's a new trans that completed immediately
+              // so register that!
+              if (
+                !registeredTransaction &&
+                transaction.status === TransactionStatus.completed &&
+                isRetry &&
+                !this._transactionsIgnoredRegistry[asset_code][transaction.id]
+              ) {
+                return true;
               }
 
               // always use pending transactions
@@ -305,6 +326,8 @@ export abstract class TransferProvider {
       stop: () => {
         if (this._allTransactionsWatcher) {
           this._watchAllTransactionsRegistry[asset_code] = false;
+          this._transactionsRegistry[asset_code] = {};
+          this._transactionsIgnoredRegistry[asset_code] = {};
           clearTimeout(this._allTransactionsWatcher);
         }
       },

@@ -115,6 +115,8 @@ export class DepositProvider extends TransferProvider {
         this._watchOneTransactionRegistry[code] || {};
       this._watchAllTransactionsRegistry[code] = false;
       this._transactionsRegistry[code] = this._transactionsRegistry[code] || {};
+      this._transactionsIgnoredRegistry[code] =
+        this._transactionsIgnoredRegistry[code] || {};
     });
 
     return deposit;
