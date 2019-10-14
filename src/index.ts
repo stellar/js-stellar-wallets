@@ -15,7 +15,11 @@ export { TransferResponseType, TransactionStatus } from "./constants/transfers";
 /**
  * Data
  */
-export { getBalanceIdentifier, getTokenIdentifier } from "./data";
+export {
+  getBalanceIdentifier,
+  getTokenIdentifier,
+  getStellarSdkAsset,
+} from "./data";
 
 export { DataProvider } from "./data/DataProvider";
 
