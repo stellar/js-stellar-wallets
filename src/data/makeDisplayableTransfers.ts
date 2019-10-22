@@ -11,7 +11,7 @@ function isCreateAccount(
 }
 
 function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
-  return obj.type === "path_payment";
+  return obj.type === "path_payment" || obj.type === "path_payment_strict_send";
 }
 
 export function makeDisplayableTransfers(
