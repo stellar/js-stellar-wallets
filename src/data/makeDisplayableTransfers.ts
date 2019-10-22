@@ -11,7 +11,13 @@ function isCreateAccount(
 }
 
 function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
-  return obj.type === "path_payment" || obj.type === "path_payment_strict_send";
+  return (
+    // old, soon-to-be-deprecated name
+    obj.type === "path_payment" ||
+    // new names
+    obj.type === "path_payment_strict_send" ||
+    obj.type === "path_payment_strict_receive"
+  );
 }
 
 export function makeDisplayableTransfers(
