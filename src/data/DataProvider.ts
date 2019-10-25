@@ -30,10 +30,12 @@ function isAccount(obj: any): obj is Account {
 
 interface CallbacksObject {
   accountDetails?: () => void;
+  transfers?: () => void;
 }
 
 interface ErrorHandlersObject {
   accountDetails?: (error: any) => void;
+  transfers?: (error: any) => void;
 }
 
 interface WatcherTimeoutsObject {
@@ -236,22 +238,32 @@ export class DataProvider {
    * Fetch transfers, then re-fetch whenever the details update.
    * Returns a function you can execute to stop the watcher.
    */
-  public watchTransfers(
-    params: WatcherParams<Collection<Transfer>>,
-  ): () => void {
+  public watchTransfers(params: WatcherParams<Transfer[]>): () => void {
     const { onMessage, onError } = params;
+
+    let getNextTransfers: () => Promise<Collection<Transfer>>;
 
     this.fetchTransfers()
 
       // if the account is funded, watch for effects.
       .then((res) => {
-        onMessage(res);
-        this.callbacks.accountDetails = debounce(() => {
-          this.fetchTransfers()
-            .then(onMessage)
+        // reset the transfer cache
+        getNextTransfers = res.next;
+        onMessage(res.records);
+
+        this.callbacks.transfers = debounce(() => {
+          getNextTransfers()
+            .then((nextRes) => {
+              getNextTransfers = nextRes.next;
+
+              // get new things
+              if (nextRes.records.length) {
+                onMessage(nextRes.records);
+              }
+            })
             .catch(onError);
         }, 2000);
-        this.errorHandlers.accountDetails = onError;
+        this.errorHandlers.transfers = onError;
 
         this._startEffectWatcher().catch((err) => {
           onError(err);
