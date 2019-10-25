@@ -71,25 +71,27 @@ class Transfers extends Component {
       <div>
         <h2>Transfers</h2>
         <ul>
-          {transfers.map(({ transfer, updateTime }) => (
-            <li key={updateTime.toString()}>
-              Updated: {updateTime.toString()}
-              <br />
-              <ul>
-                <li>{moment.unix(transfer).format("LLL")}</li>
-                {transfer.isInitialFunding && <li>First funding</li>}
-                <li>
-                  {transfer.isRecipient ? "Received" : "Sent"} {transfer.amount}{" "}
-                  of {transfer.token.code}
-                </li>
-                <li>
-                  {transfer.isRecipient ? "From" : "To"}{" "}
-                  {transfer.otherAccount.publicKey}
-                </li>
-              </ul>
-              <Json src={transfer} />
-            </li>
-          ))}
+          {transfers
+            .sort((a, b) => b.transfer.timestamp - a.transfer.timestamp)
+            .map(({ transfer, updateTime }) => (
+              <li key={transfer.id}>
+                Updated: {updateTime.toString()}
+                <br />
+                <ul>
+                  <li>{moment.unix(transfer.timestamp).format("LLL")}</li>
+                  {transfer.isInitialFunding && <li>First funding</li>}
+                  <li>
+                    {transfer.isRecipient ? "Received" : "Sent"}{" "}
+                    {transfer.amount.toString()} {transfer.token.code}
+                  </li>
+                  <li>
+                    {transfer.isRecipient ? "From" : "To"}{" "}
+                    {transfer.otherAccount.publicKey}
+                  </li>
+                </ul>
+                {/* <Json src={transfer} /> */}
+              </li>
+            ))}
         </ul>
 
         {err && <p>Error: {err.toString()}</p>}

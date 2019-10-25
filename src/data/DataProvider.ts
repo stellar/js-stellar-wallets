@@ -248,7 +248,7 @@ export class DataProvider {
       // if the account is funded, watch for effects.
       .then((res) => {
         // reset the transfer cache
-        getNextTransfers = res.next;
+        getNextTransfers = res.prev;
 
         // onMessage each transfer separately
         res.records.forEach(onMessage);
@@ -256,7 +256,7 @@ export class DataProvider {
         this.callbacks.transfers = debounce(() => {
           getNextTransfers()
             .then((nextRes) => {
-              getNextTransfers = nextRes.next;
+              getNextTransfers = nextRes.prev;
 
               // get new things
               if (nextRes.records.length) {
@@ -310,8 +310,8 @@ export class DataProvider {
     const tradeResponses = await Promise.all(tradeRequests);
 
     return {
-      next: () => offers.next().then(this._processOpenOffers),
-      prev: () => offers.prev().then(this._processOpenOffers),
+      next: () => offers.next().then((res) => this._processOpenOffers(res)),
+      prev: () => offers.prev().then((res) => this._processOpenOffers(res)),
       records: makeDisplayableOffers(
         { publicKey: this.accountKey },
         {
@@ -329,8 +329,8 @@ export class DataProvider {
     trades: ServerApi.CollectionPage<ServerApi.TradeRecord>,
   ): Promise<Collection<Trade>> {
     return {
-      next: () => trades.next().then(this._processTrades),
-      prev: () => trades.prev().then(this._processTrades),
+      next: () => trades.next().then((res) => this._processTrades(res)),
+      prev: () => trades.prev().then((res) => this._processTrades(res)),
       records: makeDisplayableTrades(
         { publicKey: this.accountKey },
         trades.records,
@@ -346,8 +346,8 @@ export class DataProvider {
     >,
   ): Promise<Collection<Transfer>> {
     return {
-      next: () => transfers.next().then(this._processTransfers),
-      prev: () => transfers.prev().then(this._processTransfers),
+      next: () => transfers.next().then((res) => this._processTransfers(res)),
+      prev: () => transfers.prev().then((res) => this._processTransfers(res)),
       records: makeDisplayableTransfers(
         { publicKey: this.accountKey },
         transfers.records,
