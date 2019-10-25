@@ -30,16 +30,22 @@ function isAccount(obj: any): obj is Account {
 
 interface CallbacksObject {
   accountDetails?: () => void;
+  transfers?: () => void;
 }
 
 interface ErrorHandlersObject {
   accountDetails?: (error: any) => void;
+  transfers?: (error: any) => void;
+}
+
+interface WatcherTimeoutsObject {
+  [name: string]: ReturnType<typeof setTimeout>;
 }
 
 export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
-  private unfundedWatcherTimeout: any;
+  private _watcherTimeouts: WatcherTimeoutsObject;
 
   private effectStreamEnder?: () => void;
   private callbacks: CallbacksObject;
@@ -69,7 +75,7 @@ export class DataProvider {
     this.errorHandlers = {};
     this.serverUrl = params.serverUrl;
     this.accountKey = accountKey;
-    this.unfundedWatcherTimeout = null;
+    this._watcherTimeouts = {};
   }
 
   /**
@@ -209,7 +215,7 @@ export class DataProvider {
       // otherwise, if it's a 404, try again in a bit.
       .catch((err) => {
         if (err.isUnfunded) {
-          this.unfundedWatcherTimeout = setTimeout(() => {
+          this._watcherTimeouts.watchAccountDetails = setTimeout(() => {
             this.watchAccountDetails(params);
           }, 2000);
         } else {
@@ -219,8 +225,68 @@ export class DataProvider {
 
     // if they exec this function, don't make the balance callback do anything
     return () => {
-      if (this.unfundedWatcherTimeout) {
-        clearTimeout(this.unfundedWatcherTimeout);
+      if (this._watcherTimeouts.watchAccountDetails) {
+        clearTimeout(this._watcherTimeouts.watchAccountDetails);
+      }
+
+      delete this.callbacks.accountDetails;
+      delete this.errorHandlers.accountDetails;
+    };
+  }
+
+  /**
+   * Fetch transfers, then re-fetch whenever the details update.
+   * Returns a function you can execute to stop the watcher.
+   */
+  public watchTransfers(params: WatcherParams<Transfer>): () => void {
+    const { onMessage, onError } = params;
+
+    let getNextTransfers: () => Promise<Collection<Transfer>>;
+
+    this.fetchTransfers()
+
+      // if the account is funded, watch for effects.
+      .then((res) => {
+        // reset the transfer cache
+        getNextTransfers = res.prev;
+
+        // onMessage each transfer separately
+        res.records.forEach(onMessage);
+
+        this.callbacks.transfers = debounce(() => {
+          getNextTransfers()
+            .then((nextRes) => {
+              getNextTransfers = nextRes.prev;
+
+              // get new things
+              if (nextRes.records.length) {
+                nextRes.records.forEach(onMessage);
+              }
+            })
+            .catch(onError);
+        }, 2000);
+        this.errorHandlers.transfers = onError;
+
+        this._startEffectWatcher().catch((err) => {
+          onError(err);
+        });
+      })
+
+      // otherwise, if it's a 404, try again in a bit.
+      .catch((err) => {
+        if (err.isUnfunded) {
+          this._watcherTimeouts.watchTransfers = setTimeout(() => {
+            this.watchTransfers(params);
+          }, 2000);
+        } else {
+          onError(err);
+        }
+      });
+
+    // if they exec this function, don't make the balance callback do anything
+    return () => {
+      if (this._watcherTimeouts.watchTransfers) {
+        clearTimeout(this._watcherTimeouts.watchTransfers);
       }
 
       delete this.callbacks.accountDetails;
@@ -244,8 +310,8 @@ export class DataProvider {
     const tradeResponses = await Promise.all(tradeRequests);
 
     return {
-      next: () => offers.next().then(this._processOpenOffers),
-      prev: () => offers.prev().then(this._processOpenOffers),
+      next: () => offers.next().then((res) => this._processOpenOffers(res)),
+      prev: () => offers.prev().then((res) => this._processOpenOffers(res)),
       records: makeDisplayableOffers(
         { publicKey: this.accountKey },
         {
@@ -263,8 +329,8 @@ export class DataProvider {
     trades: ServerApi.CollectionPage<ServerApi.TradeRecord>,
   ): Promise<Collection<Trade>> {
     return {
-      next: () => trades.next().then(this._processTrades),
-      prev: () => trades.prev().then(this._processTrades),
+      next: () => trades.next().then((res) => this._processTrades(res)),
+      prev: () => trades.prev().then((res) => this._processTrades(res)),
       records: makeDisplayableTrades(
         { publicKey: this.accountKey },
         trades.records,
@@ -280,8 +346,8 @@ export class DataProvider {
     >,
   ): Promise<Collection<Transfer>> {
     return {
-      next: () => transfers.next().then(this._processTransfers),
-      prev: () => transfers.prev().then(this._processTransfers),
+      next: () => transfers.next().then((res) => this._processTransfers(res)),
+      prev: () => transfers.prev().then((res) => this._processTransfers(res)),
       records: makeDisplayableTransfers(
         { publicKey: this.accountKey },
         transfers.records,

@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import moment from "moment";
+import Json from "react-json-view";
 
 class Transfers extends Component {
   state = {
@@ -42,25 +44,25 @@ class Transfers extends Component {
       streamEnder: null,
     });
 
-    // const streamEnder = dataProvider.watchTransfers({
-    //   onMessage: (transfer) => {
-    //     this.setState({
-    //       transfers: [
-    //         { transfer, updateTime: new Date() },
-    //         ...this.state.transfers,
-    //       ],
-    //     });
-    //   },
-    //   onError: (err) => {
-    //     console.log("error: ", err);
-    //     this.setState({ err });
-    //     streamEnder();
-    //   },
-    // });
+    const streamEnder = dataProvider.watchTransfers({
+      onMessage: (transfer) => {
+        this.setState({
+          transfers: [
+            { transfer, updateTime: new Date() },
+            ...this.state.transfers,
+          ],
+        });
+      },
+      onError: (err) => {
+        console.log("error: ", err);
+        this.setState({ err });
+        streamEnder();
+      },
+    });
 
-    // this.setState({
-    //   streamEnder,
-    // });
+    this.setState({
+      streamEnder,
+    });
   };
 
   render() {
@@ -68,19 +70,28 @@ class Transfers extends Component {
     return (
       <div>
         <h2>Transfers</h2>
-
-        <p>
-          <em>not implemented yet</em>
-        </p>
-
         <ul>
-          {transfers.map(({ transfer, updateTime }) => (
-            <li key={updateTime.toString()}>
-              Updated: {updateTime.toString()}
-              <br />
-              <pre>{JSON.stringify(transfer, null, 2)}</pre>
-            </li>
-          ))}
+          {transfers
+            .sort((a, b) => b.transfer.timestamp - a.transfer.timestamp)
+            .map(({ transfer, updateTime }) => (
+              <li key={transfer.id}>
+                Updated: {updateTime.toString()}
+                <br />
+                <ul>
+                  <li>{moment.unix(transfer.timestamp).format("LLL")}</li>
+                  {transfer.isInitialFunding && <li>First funding</li>}
+                  <li>
+                    {transfer.isRecipient ? "Received" : "Sent"}{" "}
+                    {transfer.amount.toString()} {transfer.token.code}
+                  </li>
+                  <li>
+                    {transfer.isRecipient ? "From" : "To"}{" "}
+                    {transfer.otherAccount.publicKey}
+                  </li>
+                </ul>
+                {/* <Json src={transfer} /> */}
+              </li>
+            ))}
         </ul>
 
         {err && <p>Error: {err.toString()}</p>}
