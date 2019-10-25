@@ -5,6 +5,7 @@
   "dependencies": {
     "@stellar/elements": "^0.0.0",
     "lodash": "^4.17.14",
+    "moment": "^2.24.0",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
     "react-json-view": "^1.19.1",

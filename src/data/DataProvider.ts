@@ -238,7 +238,7 @@ export class DataProvider {
    * Fetch transfers, then re-fetch whenever the details update.
    * Returns a function you can execute to stop the watcher.
    */
-  public watchTransfers(params: WatcherParams<Transfer[]>): () => void {
+  public watchTransfers(params: WatcherParams<Transfer>): () => void {
     const { onMessage, onError } = params;
 
     let getNextTransfers: () => Promise<Collection<Transfer>>;
@@ -249,7 +249,9 @@ export class DataProvider {
       .then((res) => {
         // reset the transfer cache
         getNextTransfers = res.next;
-        onMessage(res.records);
+
+        // onMessage each transfer separately
+        res.records.forEach(onMessage);
 
         this.callbacks.transfers = debounce(() => {
           getNextTransfers()
@@ -258,7 +260,7 @@ export class DataProvider {
 
               // get new things
               if (nextRes.records.length) {
-                onMessage(nextRes.records);
+                nextRes.records.forEach(onMessage);
               }
             })
             .catch(onError);
