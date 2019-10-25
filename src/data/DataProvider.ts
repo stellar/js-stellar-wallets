@@ -247,7 +247,7 @@ export class DataProvider {
 
       // if the account is funded, watch for effects.
       .then((res) => {
-        // reset the transfer cache
+        // for the first page load, "prev" is the people we want to get next!
         getNextTransfers = res.prev;
 
         // onMessage each transfer separately
@@ -256,7 +256,8 @@ export class DataProvider {
         this.callbacks.transfers = debounce(() => {
           getNextTransfers()
             .then((nextRes) => {
-              getNextTransfers = nextRes.prev;
+              // afterwards, "next" will be the next person!
+              getNextTransfers = nextRes.next;
 
               // get new things
               if (nextRes.records.length) {
