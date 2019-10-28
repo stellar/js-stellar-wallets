@@ -25,7 +25,7 @@ export interface DataProviderParams {
 }
 
 function isAccount(obj: any): obj is Account {
-  return obj.publicKey !== undefined;
+  return obj && obj.publicKey !== undefined;
 }
 
 interface CallbacksObject {

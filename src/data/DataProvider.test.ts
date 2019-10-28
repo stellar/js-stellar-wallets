@@ -2,6 +2,20 @@ import { generatePlaintextKey } from "../fixtures/keys";
 import { DataProvider } from "./DataProvider";
 
 describe("Account validation", () => {
+  test("works with null values", () => {
+    try {
+      const provider = new DataProvider({
+        // @ts-ignore
+        accountOrKey: null,
+        serverUrl: "https://horizon.stellar.org",
+      });
+      expect(provider).not.toBeInstanceOf(DataProvider);
+    } catch (e) {
+      expect(e).toBeTruthy();
+      expect(e.toString()).toBe("Error: No account key provided.");
+    }
+  });
+
   test("works with real public keys", () => {
     try {
       const provider = new DataProvider({
