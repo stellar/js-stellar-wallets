@@ -45,6 +45,7 @@ interface WatcherTimeoutsObject {
 export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
+  private server: Server;
   private _watcherTimeouts: WatcherTimeoutsObject;
 
   private effectStreamEnder?: () => void;
@@ -74,6 +75,7 @@ export class DataProvider {
     this.callbacks = {};
     this.errorHandlers = {};
     this.serverUrl = params.serverUrl;
+    this.server = new Server(this.serverUrl);
     this.accountKey = accountKey;
     this._watcherTimeouts = {};
   }
@@ -91,6 +93,14 @@ export class DataProvider {
    */
   public getAccountKey(): string {
     return this.accountKey;
+  }
+
+  /**
+   * Return the server object, in case the consumer wants to call an
+   * unsupported function.
+   */
+  public getServer(): Server {
+    return this.server;
   }
 
   /**
@@ -112,7 +122,7 @@ export class DataProvider {
     params: CollectionParams = {},
   ): Promise<Collection<Offer>> {
     // first, fetch all offers
-    const offers = await new Server(this.serverUrl)
+    const offers = await this.server
       .offers("accounts", this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
@@ -128,7 +138,7 @@ export class DataProvider {
   public async fetchTrades(
     params: CollectionParams = {},
   ): Promise<Collection<Trade>> {
-    const trades = await new Server(this.serverUrl)
+    const trades = await this.server
       .trades()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
@@ -145,7 +155,7 @@ export class DataProvider {
   public async fetchTransfers(
     params: CollectionParams = {},
   ): Promise<Collection<Transfer>> {
-    const transfers = await new Server(this.serverUrl)
+    const transfers = await this.server
       .payments()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
@@ -161,7 +171,7 @@ export class DataProvider {
    */
   public async fetchAccountDetails(): Promise<AccountDetails> {
     try {
-      const accountSummary = await new Server(this.serverUrl)
+      const accountSummary = await this.server
         .accounts()
         .accountId(this.accountKey)
         .call();
@@ -302,7 +312,7 @@ export class DataProvider {
     const tradeRequests: Array<
       Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
     > = offers.records.map(({ id }: { id: string }) =>
-      new Server(this.serverUrl)
+      this.server
         .trades()
         .forOffer(id)
         .call(),
@@ -362,7 +372,7 @@ export class DataProvider {
     }
 
     // get the latest cursor
-    const recentEffect = await new Server(this.serverUrl)
+    const recentEffect = await this.server
       .effects()
       .forAccount(this.accountKey)
       .limit(1)
@@ -371,7 +381,7 @@ export class DataProvider {
 
     const cursor: string = recentEffect.records[0].paging_token;
 
-    this.effectStreamEnder = new Server(this.serverUrl)
+    this.effectStreamEnder = this.server
       .effects()
       .forAccount(this.accountKey)
       .cursor(cursor)
