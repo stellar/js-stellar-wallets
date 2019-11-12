@@ -30,12 +30,12 @@ function isAccount(obj: any): obj is Account {
 
 interface CallbacksObject {
   accountDetails?: () => void;
-  transfers?: () => void;
+  payments?: () => void;
 }
 
 interface ErrorHandlersObject {
   accountDetails?: (error: any) => void;
-  transfers?: (error: any) => void;
+  payments?: (error: any) => void;
 }
 
 interface WatcherTimeoutsObject {
@@ -140,12 +140,12 @@ export class DataProvider {
   }
 
   /**
-   * Fetch transfers (direct and path payments).
+   * Fetch payments (also includes path payments account creation).
    */
   public async fetchPayments(
     params: CollectionParams = {},
   ): Promise<Collection<Payment>> {
-    const transfers = await new Server(this.serverUrl)
+    const payments = await new Server(this.serverUrl)
       .payments()
       .forAccount(this.accountKey)
       .limit(params.limit || 10)
@@ -153,7 +153,7 @@ export class DataProvider {
       .cursor(params.cursor || "")
       .call();
 
-    return this._processPayments(transfers);
+    return this._processPayments(payments);
   }
 
   /**
@@ -235,7 +235,7 @@ export class DataProvider {
   }
 
   /**
-   * Fetch transfers, then re-fetch whenever the details update.
+   * Fetch payments, then re-fetch whenever the details update.
    * Returns a function you can execute to stop the watcher.
    */
   public watchPayments(params: WatcherParams<Payment>): () => void {
@@ -250,10 +250,10 @@ export class DataProvider {
         // for the first page load, "prev" is the people we want to get next!
         getNextPayments = res.prev;
 
-        // onMessage each transfer separately
+        // onMessage each payment separately
         res.records.forEach(onMessage);
 
-        this.callbacks.transfers = debounce(() => {
+        this.callbacks.payments = debounce(() => {
           getNextPayments()
             .then((nextRes) => {
               // afterwards, "next" will be the next person!
@@ -266,7 +266,7 @@ export class DataProvider {
             })
             .catch(onError);
         }, 2000);
-        this.errorHandlers.transfers = onError;
+        this.errorHandlers.payments = onError;
 
         this._startEffectWatcher().catch((err) => {
           onError(err);
@@ -340,18 +340,18 @@ export class DataProvider {
   }
 
   private async _processPayments(
-    transfers: ServerApi.CollectionPage<
+    payments: ServerApi.CollectionPage<
       | ServerApi.PaymentOperationRecord
       | ServerApi.CreateAccountOperationRecord
       | ServerApi.PathPaymentOperationRecord
     >,
   ): Promise<Collection<Payment>> {
     return {
-      next: () => transfers.next().then((res) => this._processPayments(res)),
-      prev: () => transfers.prev().then((res) => this._processPayments(res)),
+      next: () => payments.next().then((res) => this._processPayments(res)),
+      prev: () => payments.prev().then((res) => this._processPayments(res)),
       records: makeDisplayablePayments(
         { publicKey: this.accountKey },
-        transfers.records,
+        payments.records,
       ),
     };
   }
