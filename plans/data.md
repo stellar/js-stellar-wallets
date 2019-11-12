@@ -20,7 +20,7 @@ const StellarWallets = {
       Issuer,
       Offer,
       Trade,
-      Transfer,
+      Payment,
       Balance,
       NativeBalance,
     },
@@ -38,14 +38,14 @@ const StellarWallets = {
       // fetch functions
       fetchOpenOffers,
       fetchTrades,
-      fetchTransfers,
+      fetchPayments,
       fetchEffects,
       fetchAccountDetails,
 
       // watchers
       watchOpenOffers,
       watchTrades,
-      watchTransfers,
+      watchPayments,
       fetchEffects,
       watchAccountDetails,
     },
@@ -103,8 +103,8 @@ interface Trade extends Effect {}
 */
 interface Offer extends Effect {}
 
-interface Transfer extends Effect {
-  transferType: string; // or enum? basically, is this the "create account" transfer
+interface Payment extends Effect {
+  paymentType: string; // or enum? basically, is this the "create account" payment
 }
 
 interface Balance {
@@ -163,7 +163,7 @@ function watchOpenOffers({
 Data types:
 
 - Trades: Two people exchange tokens
-- Transfers: One person sends a token to another
+- Payments: One person sends a token to another
 - Effects: All operations that change an account (like changing trust, changing
   inflation destination, etc.)
 

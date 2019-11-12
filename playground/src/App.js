@@ -8,7 +8,7 @@ import AccountDetails from "components/AccountDetails";
 import KeyEntry from "components/KeyEntry";
 import Offers from "components/Offers";
 import Trades from "components/Trades";
-import Transfers from "components/Transfers";
+import Payments from "components/Payments";
 import TransferProvider from "components/TransferProvider";
 
 const El = styled.div`
@@ -72,7 +72,7 @@ class App extends Component {
             <El>
               <AccountDetails dataProvider={dataProvider} />
               <div>
-                <Transfers dataProvider={dataProvider} />
+                <Payments dataProvider={dataProvider} />
                 <Offers dataProvider={dataProvider} />
                 <Trades dataProvider={dataProvider} />
               </div>

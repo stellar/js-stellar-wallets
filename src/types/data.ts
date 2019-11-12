@@ -113,7 +113,7 @@ export interface Offer {
   resultingTrades: TradeId[];
 }
 
-export interface Transfer {
+export interface Payment {
   id: string;
   isInitialFunding: boolean;
   isRecipient: boolean;

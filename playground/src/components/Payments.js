@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import moment from "moment";
 import Json from "react-json-view";
 
-class Transfers extends Component {
+class Payments extends Component {
   state = {
-    transfers: [],
+    payments: [],
     err: null,
     streamEnder: null,
   };
 
   componentDidMount() {
     if (this.props.dataProvider) {
-      this._watchTransfers(this.props.dataProvider);
+      this._watchPayments(this.props.dataProvider);
     }
   }
 
@@ -21,7 +21,7 @@ class Transfers extends Component {
       this.props.dataProvider.getAccountKey() !==
         nextProps.dataProvider.getAccountKey()
     ) {
-      this._watchTransfers(nextProps.dataProvider);
+      this._watchPayments(nextProps.dataProvider);
     }
   }
 
@@ -31,7 +31,7 @@ class Transfers extends Component {
     }
   }
 
-  _watchTransfers = async (dataProvider) => {
+  _watchPayments = async (dataProvider) => {
     // if there was a previous data  provider, kill the
     if (this.state.streamEnder) {
       this.state.streamEnder();
@@ -39,17 +39,17 @@ class Transfers extends Component {
 
     this.setState({
       dataProvider,
-      transfers: [],
+      payments: [],
       err: null,
       streamEnder: null,
     });
 
-    const streamEnder = dataProvider.watchTransfers({
-      onMessage: (transfer) => {
+    const streamEnder = dataProvider.watchPayments({
+      onMessage: (payment) => {
         this.setState({
-          transfers: [
-            { transfer, updateTime: new Date() },
-            ...this.state.transfers,
+          payments: [
+            { payment, updateTime: new Date() },
+            ...this.state.payments,
           ],
         });
       },
@@ -66,30 +66,30 @@ class Transfers extends Component {
   };
 
   render() {
-    const { transfers, err } = this.state;
+    const { payments, err } = this.state;
     return (
       <div>
-        <h2>Transfers</h2>
+        <h2>Payments</h2>
         <ul>
-          {transfers
-            .sort((a, b) => b.transfer.timestamp - a.transfer.timestamp)
-            .map(({ transfer, updateTime }) => (
-              <li key={transfer.id}>
+          {payments
+            .sort((a, b) => b.payment.timestamp - a.payment.timestamp)
+            .map(({ payment, updateTime }) => (
+              <li key={payment.id}>
                 Updated: {updateTime.toString()}
                 <br />
                 <ul>
-                  <li>{moment.unix(transfer.timestamp).format("LLL")}</li>
-                  {transfer.isInitialFunding && <li>First funding</li>}
+                  <li>{moment.unix(payment.timestamp).format("LLL")}</li>
+                  {payment.isInitialFunding && <li>First funding</li>}
                   <li>
-                    {transfer.isRecipient ? "Received" : "Sent"}{" "}
-                    {transfer.amount.toString()} {transfer.token.code}
+                    {payment.isRecipient ? "Received" : "Sent"}{" "}
+                    {payment.amount.toString()} {payment.token.code}
                   </li>
                   <li>
-                    {transfer.isRecipient ? "From" : "To"}{" "}
-                    {transfer.otherAccount.publicKey}
+                    {payment.isRecipient ? "From" : "To"}{" "}
+                    {payment.otherAccount.publicKey}
                   </li>
                 </ul>
-                {/* <Json src={transfer} /> */}
+                {/* <Json src={payment} /> */}
               </li>
             ))}
         </ul>
@@ -100,4 +100,4 @@ class Transfers extends Component {
   }
 }
 
-export default Transfers;
+export default Payments;

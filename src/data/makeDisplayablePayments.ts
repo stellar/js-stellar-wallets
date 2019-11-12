@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
 import { ServerApi } from "stellar-sdk";
 
-import { Account, Token, Transfer } from "../types";
+import { Account, Payment, Token } from "../types";
 
 function isCreateAccount(
   obj: any,
@@ -20,21 +20,21 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   );
 }
 
-export function makeDisplayableTransfers(
+export function makeDisplayablePayments(
   subjectAccount: Account,
   payments: Array<
     | ServerApi.CreateAccountOperationRecord
     | ServerApi.PaymentOperationRecord
     | ServerApi.PathPaymentOperationRecord
   >,
-): Transfer[] {
+): Payment[] {
   return payments.map(
     (
       payment:
         | ServerApi.CreateAccountOperationRecord
         | ServerApi.PaymentOperationRecord
         | ServerApi.PathPaymentOperationRecord,
-    ): Transfer => {
+    ): Payment => {
       const isRecipient = payment.source_account !== subjectAccount.publicKey;
 
       let otherAccount: Account;
