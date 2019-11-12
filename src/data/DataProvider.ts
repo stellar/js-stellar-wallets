@@ -9,15 +9,15 @@ import {
   CollectionParams,
   FetchAccountError,
   Offer,
+  Payment,
   Trade,
-  Transfer,
   WatcherParams,
 } from "../types";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
+import { makeDisplayablePayments } from "./makeDisplayablePayments";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
-import { makeDisplayableTransfers } from "./makeDisplayableTransfers";
 
 export interface DataProviderParams {
   serverUrl: string;
@@ -142,9 +142,9 @@ export class DataProvider {
   /**
    * Fetch transfers (direct and path payments).
    */
-  public async fetchTransfers(
+  public async fetchPayments(
     params: CollectionParams = {},
-  ): Promise<Collection<Transfer>> {
+  ): Promise<Collection<Payment>> {
     const transfers = await new Server(this.serverUrl)
       .payments()
       .forAccount(this.accountKey)
@@ -153,7 +153,7 @@ export class DataProvider {
       .cursor(params.cursor || "")
       .call();
 
-    return this._processTransfers(transfers);
+    return this._processPayments(transfers);
   }
 
   /**
@@ -238,26 +238,26 @@ export class DataProvider {
    * Fetch transfers, then re-fetch whenever the details update.
    * Returns a function you can execute to stop the watcher.
    */
-  public watchTransfers(params: WatcherParams<Transfer>): () => void {
+  public watchPayments(params: WatcherParams<Payment>): () => void {
     const { onMessage, onError } = params;
 
-    let getNextTransfers: () => Promise<Collection<Transfer>>;
+    let getNextPayments: () => Promise<Collection<Payment>>;
 
-    this.fetchTransfers()
+    this.fetchPayments()
 
       // if the account is funded, watch for effects.
       .then((res) => {
         // for the first page load, "prev" is the people we want to get next!
-        getNextTransfers = res.prev;
+        getNextPayments = res.prev;
 
         // onMessage each transfer separately
         res.records.forEach(onMessage);
 
         this.callbacks.transfers = debounce(() => {
-          getNextTransfers()
+          getNextPayments()
             .then((nextRes) => {
               // afterwards, "next" will be the next person!
-              getNextTransfers = nextRes.next;
+              getNextPayments = nextRes.next;
 
               // get new things
               if (nextRes.records.length) {
@@ -276,8 +276,8 @@ export class DataProvider {
       // otherwise, if it's a 404, try again in a bit.
       .catch((err) => {
         if (err.isUnfunded) {
-          this._watcherTimeouts.watchTransfers = setTimeout(() => {
-            this.watchTransfers(params);
+          this._watcherTimeouts.watchPayments = setTimeout(() => {
+            this.watchPayments(params);
           }, 2000);
         } else {
           onError(err);
@@ -286,8 +286,8 @@ export class DataProvider {
 
     // if they exec this function, don't make the balance callback do anything
     return () => {
-      if (this._watcherTimeouts.watchTransfers) {
-        clearTimeout(this._watcherTimeouts.watchTransfers);
+      if (this._watcherTimeouts.watchPayments) {
+        clearTimeout(this._watcherTimeouts.watchPayments);
       }
 
       delete this.callbacks.accountDetails;
@@ -339,17 +339,17 @@ export class DataProvider {
     };
   }
 
-  private async _processTransfers(
+  private async _processPayments(
     transfers: ServerApi.CollectionPage<
       | ServerApi.PaymentOperationRecord
       | ServerApi.CreateAccountOperationRecord
       | ServerApi.PathPaymentOperationRecord
     >,
-  ): Promise<Collection<Transfer>> {
+  ): Promise<Collection<Payment>> {
     return {
-      next: () => transfers.next().then((res) => this._processTransfers(res)),
-      prev: () => transfers.prev().then((res) => this._processTransfers(res)),
-      records: makeDisplayableTransfers(
+      next: () => transfers.next().then((res) => this._processPayments(res)),
+      prev: () => transfers.prev().then((res) => this._processPayments(res)),
+      records: makeDisplayablePayments(
         { publicKey: this.accountKey },
         transfers.records,
       ),
