@@ -58,7 +58,7 @@
     "prettier": "^1.17.0",
     "regenerator-runtime": "^0.13.2",
     "sinon": "^7.3.1",
-    "stellar-sdk": "^2.3.0",
+    "stellar-sdk": "^3.2.0",
     "tsc-watch": "^2.1.2",
     "tslint": "^5.14.0",
     "typedoc": "^0.14.2",
