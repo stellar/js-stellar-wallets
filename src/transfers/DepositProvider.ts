@@ -1,7 +1,7 @@
 import queryString from "query-string";
 
 import {
-  DepositInfo,
+  DepositAssetInfoMap,
   DepositRequest,
   FetchKycInBrowserParams,
   TransferError,
@@ -106,7 +106,7 @@ export class DepositProvider extends TransferProvider {
    * Fetch the assets that the deposit provider supports, along with details
    * about depositing that asset.
    */
-  public async fetchSupportedAssets(): Promise<DepositInfo> {
+  public async fetchSupportedAssets(): Promise<DepositAssetInfoMap> {
     const { deposit } = await this.fetchInfo();
 
     // seed internal registry objects with supported assets

@@ -4,7 +4,7 @@ import {
   FetchKycInBrowserParams,
   TransferError,
   TransferResponse,
-  WithdrawInfo,
+  WithdrawAssetInfoMap,
   WithdrawRequest,
 } from "../types";
 
@@ -104,7 +104,7 @@ export class WithdrawProvider extends TransferProvider {
    * Fetch the assets that the deposit provider supports, along with details
    * about depositing that asset.
    */
-  public async fetchSupportedAssets(): Promise<WithdrawInfo> {
+  public async fetchSupportedAssets(): Promise<WithdrawAssetInfoMap> {
     const { withdraw } = await this.fetchInfo();
 
     // seed internal registry objects with supported assets

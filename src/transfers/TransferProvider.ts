@@ -2,7 +2,7 @@ import isEqual from "lodash/isEqual";
 import queryString from "query-string";
 
 import {
-  DepositInfo,
+  DepositAssetInfoMap,
   Fee,
   FeeParams,
   Info,
@@ -14,7 +14,7 @@ import {
   WatchAllTransactionsParams,
   WatcherResponse,
   WatchOneTransactionParams,
-  WithdrawInfo,
+  WithdrawAssetInfoMap,
 } from "../types";
 
 import { TransactionStatus } from "../constants/transfers";
@@ -115,8 +115,8 @@ export abstract class TransferProvider {
   }
 
   public abstract fetchSupportedAssets():
-    | Promise<WithdrawInfo>
-    | Promise<DepositInfo>;
+    | Promise<WithdrawAssetInfoMap>
+    | Promise<DepositAssetInfoMap>;
 
   /**
    * Fetch the list of transactions for a given account / asset code from the

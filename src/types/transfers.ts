@@ -73,8 +73,8 @@ export interface RawType {
 }
 
 export interface Info {
-  withdraw: WithdrawInfo;
-  deposit: DepositInfo;
+  withdraw: WithdrawAssetInfoMap;
+  deposit: DepositAssetInfoMap;
   fee?: {
     enabled: boolean;
   };
@@ -95,7 +95,7 @@ export interface WithdrawAssetInfo {
   authentication_required?: boolean;
 }
 
-export interface WithdrawInfo {
+export interface WithdrawAssetInfoMap {
   [asset_code: string]: WithdrawAssetInfo;
 }
 
@@ -108,7 +108,7 @@ export interface DepositAssetInfo {
   authentication_required?: boolean;
 }
 
-export interface DepositInfo {
+export interface DepositAssetInfoMap {
   [asset_code: string]: DepositAssetInfo;
 }
 

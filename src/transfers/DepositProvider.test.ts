@@ -6,7 +6,7 @@ import { TransactionsResponse } from "../fixtures/TransactionsResponse";
 import { SMXTransferInfo } from "../fixtures/TransferInfoResponse";
 
 import { TransactionStatus } from "../constants/transfers";
-import { DepositInfo, Transaction } from "../types";
+import { DepositAssetInfoMap, Transaction } from "../types";
 
 const originalSetTimeout = global.setTimeout;
 
@@ -18,7 +18,7 @@ function sleep(time: number) {
 
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
-    const info: DepositInfo = {
+    const info: DepositAssetInfoMap = {
       USD: {
         asset_code: "USD",
         fee: { type: "simple", fixed: 5, percent: 1 },
@@ -54,7 +54,7 @@ describe("fetchFinalFee", () => {
   });
 
   test("EUR from Nucleo staging", async () => {
-    const info: DepositInfo = {
+    const info: DepositAssetInfoMap = {
       EUR: {
         asset_code: "EUR",
         fee: { type: "simple", percent: 0.5 },
