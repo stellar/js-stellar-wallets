@@ -47,6 +47,9 @@ export default class KeyEntry extends Component {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
         type: KeyType.plaintextKey,
+        network: this.state.isTestnet
+          ? StellarSdk.Networks.TESTNET
+          : StellarSdk.Networks.PUBLIC,
       };
       localStorage.setItem("key", key.privateKey);
     } catch (e) {
