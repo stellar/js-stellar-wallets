@@ -4,6 +4,7 @@ import {
   FetchKycInBrowserParams,
   TransferError,
   TransferResponse,
+  WithdrawAssetInfo,
   WithdrawAssetInfoMap,
   WithdrawRequest,
 } from "../types";
@@ -120,6 +121,21 @@ export class WithdrawProvider extends TransferProvider {
     });
 
     return withdraw;
+  }
+
+  /**
+   * Get one supported asset by code.
+   */
+  public getAsset(asset_code: string): WithdrawAssetInfo {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error(`Run fetchSupportedAssets before running getAsset!`);
+    }
+
+    if (!this.info[this.operation][asset_code]) {
+      throw new Error(`Asset not supported: ${asset_code}`);
+    }
+
+    return (this.info[this.operation] as WithdrawAssetInfoMap)[asset_code];
   }
 
   /**
