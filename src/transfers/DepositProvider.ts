@@ -1,5 +1,6 @@
 import queryString from "query-string";
 
+import { TransferResponseType } from "../constants/transfers";
 import {
   DepositAssetInfo,
   DepositAssetInfoMap,
@@ -107,6 +108,24 @@ export class DepositProvider extends TransferProvider {
       );
       error.originalResponse = json;
       throw error;
+    }
+
+    // if this was an auth-required token, insert the JWT
+    if (
+      isAuthRequired &&
+      json.type === TransferResponseType.interactive_customer_info_needed &&
+      json.url &&
+      json.url.indexOf("jwt") === -1
+    ) {
+      // tslint:disable-next-line prefer-const
+      let [url, hash] = json.url.split("#");
+      url = `${url}${url.indexOf("?") === -1 ? "?" : "&"}jwt=${this.authToken}`;
+
+      if (hash) {
+        url = `${url}#${hash}`;
+      }
+
+      json.url = url;
     }
 
     return json;
