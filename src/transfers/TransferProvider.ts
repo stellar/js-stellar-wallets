@@ -465,6 +465,7 @@ export abstract class TransferProvider {
         `Can't get fee for an unsupported asset, '${params.asset_code}`,
       );
     }
+
     const { fee } = assetInfo;
     switch (fee.type) {
       case "none":

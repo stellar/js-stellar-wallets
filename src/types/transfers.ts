@@ -205,6 +205,10 @@ export interface Field {
   choices?: string[];
 }
 
+export interface FieldPayload {
+  [name: string]: string;
+}
+
 export interface NoneFee {
   type: "none";
 }

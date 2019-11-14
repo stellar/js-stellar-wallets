@@ -1,15 +1,25 @@
 import queryString from "query-string";
 
 import {
+  DepositAssetInfo,
   DepositAssetInfoMap,
   DepositRequest,
   FetchKycInBrowserParams,
+  Field,
+  FieldPayload,
   TransferError,
   TransferResponse,
 } from "../types";
 
 import { fetchKycInBrowser } from "./fetchKycInBrowser";
 import { TransferProvider } from "./TransferProvider";
+
+const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// used for field validation
+function validateEmail(email: string): boolean {
+  return !!email.match(emailRegex);
+}
 
 /**
  * DepositProvider provides methods to interact with a transfer server. At a
@@ -192,5 +202,69 @@ export class DepositProvider extends TransferProvider {
           `Invalid KYC response received: '${kycResult.status}'.`,
         );
     }
+  }
+
+  /**
+   * Validate a payload to make sure it conforms with the anchor's data
+   * requirements.
+   */
+  public validateFields(asset_code: string, payload: FieldPayload) {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
+    }
+
+    const assetInfo = this.info[this.operation][asset_code] as DepositAssetInfo;
+
+    if (!assetInfo) {
+      throw new Error(`Can't get fee for an unsupported asset, '${asset_code}`);
+    }
+
+    const fields = assetInfo.fields || [];
+
+    interface ChoiceMap {
+      [name: string]: boolean;
+    }
+
+    return fields.reduce((isValid: boolean, field: Field): boolean => {
+      if (!isValid) {
+        return isValid;
+      }
+
+      if (field.optional) {
+        return isValid;
+      }
+
+      const response = payload[field.name];
+
+      if (!response) {
+        return false;
+      }
+
+      if (field.choices) {
+        // make a map of choices, it's easier
+        const choiceMap: ChoiceMap = field.choices.reduce(
+          (memo, choice) => ({ ...memo, [choice]: true }),
+          {},
+        );
+
+        if (!choiceMap[response]) {
+          return false;
+        }
+      }
+
+      if (
+        field.name === "email" ||
+        (field.name === "email_address" && !validateEmail(response))
+      ) {
+        return false;
+      }
+
+      if (field.name === "amount" && isNaN(parseFloat(response))) {
+        return false;
+      }
+
+      // if we're still here, keep it goin
+      return isValid;
+    }, true);
   }
 }
