@@ -4,7 +4,8 @@ import {
   FetchKycInBrowserParams,
   TransferError,
   TransferResponse,
-  WithdrawInfo,
+  WithdrawAssetInfo,
+  WithdrawAssetInfoMap,
   WithdrawRequest,
 } from "../types";
 
@@ -34,7 +35,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // show fee to user, confirm amount and destination
  *
- * const withdrawResult = await withdrawProvider.withdraw({
+ * const withdrawResult = await withdrawProvider.startWithdraw({
  *   type
  *   asset_code,
  *   dest,
@@ -77,12 +78,14 @@ export class WithdrawProvider extends TransferProvider {
   }
 
   /**
-   * Make a withdraw request.
+   * Start a withdraw request.
    *
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async withdraw(params: WithdrawRequest): Promise<TransferResponse> {
+  public async startWithdraw(
+    params: WithdrawRequest,
+  ): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
     const search = queryString.stringify({ ...params, account: this.account });
 
@@ -104,7 +107,7 @@ export class WithdrawProvider extends TransferProvider {
    * Fetch the assets that the deposit provider supports, along with details
    * about depositing that asset.
    */
-  public async fetchSupportedAssets(): Promise<WithdrawInfo> {
+  public async fetchSupportedAssets(): Promise<WithdrawAssetInfoMap> {
     const { withdraw } = await this.fetchInfo();
 
     // seed internal registry objects with supported assets
@@ -118,6 +121,21 @@ export class WithdrawProvider extends TransferProvider {
     });
 
     return withdraw;
+  }
+
+  /**
+   * Get one supported asset by code.
+   */
+  public getAsset(asset_code: string): WithdrawAssetInfo {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error(`Run fetchSupportedAssets before running getAsset!`);
+    }
+
+    if (!this.info[this.operation][asset_code]) {
+      throw new Error(`Asset not supported: ${asset_code}`);
+    }
+
+    return (this.info[this.operation] as WithdrawAssetInfoMap)[asset_code];
   }
 
   /**
@@ -178,7 +196,7 @@ export class WithdrawProvider extends TransferProvider {
       case "pending":
         return Promise.reject(kycResult);
       case "success": {
-        const retryResponse = await this.withdraw(request);
+        const retryResponse = await this.startWithdraw(request);
         // Since we've just successfully KYC'd, the only expected response is
         // success. Reject anything else.
         if (retryResponse.type === "ok") {

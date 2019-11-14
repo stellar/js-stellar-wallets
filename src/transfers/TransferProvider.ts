@@ -2,7 +2,8 @@ import isEqual from "lodash/isEqual";
 import queryString from "query-string";
 
 import {
-  DepositInfo,
+  DepositAssetInfo,
+  DepositAssetInfoMap,
   Fee,
   FeeParams,
   Info,
@@ -14,7 +15,8 @@ import {
   WatchAllTransactionsParams,
   WatcherResponse,
   WatchOneTransactionParams,
-  WithdrawInfo,
+  WithdrawAssetInfo,
+  WithdrawAssetInfoMap,
 } from "../types";
 
 import { TransactionStatus } from "../constants/transfers";
@@ -115,8 +117,12 @@ export abstract class TransferProvider {
   }
 
   public abstract fetchSupportedAssets():
-    | Promise<WithdrawInfo>
-    | Promise<DepositInfo>;
+    | Promise<WithdrawAssetInfoMap>
+    | Promise<DepositAssetInfoMap>;
+
+  public abstract getAsset(
+    asset_code: string,
+  ): WithdrawAssetInfo | DepositAssetInfo;
 
   /**
    * Fetch the list of transactions for a given account / asset code from the
@@ -465,6 +471,7 @@ export abstract class TransferProvider {
         `Can't get fee for an unsupported asset, '${params.asset_code}`,
       );
     }
+
     const { fee } = assetInfo;
     switch (fee.type) {
       case "none":
@@ -477,7 +484,11 @@ export abstract class TransferProvider {
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(params as any)}`,
+          `${this.transferServer}/fee?${queryString.stringify({
+            ...params,
+            ...fee,
+            operation: this.operation,
+          })}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

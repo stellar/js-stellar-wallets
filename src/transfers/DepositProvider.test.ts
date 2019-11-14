@@ -6,7 +6,7 @@ import { TransactionsResponse } from "../fixtures/TransactionsResponse";
 import { SMXTransferInfo } from "../fixtures/TransferInfoResponse";
 
 import { TransactionStatus } from "../constants/transfers";
-import { DepositInfo, Transaction } from "../types";
+import { DepositAssetInfoMap, Field, Transaction } from "../types";
 
 const originalSetTimeout = global.setTimeout;
 
@@ -18,7 +18,7 @@ function sleep(time: number) {
 
 describe("fetchFinalFee", () => {
   test("AnchorUSD", async () => {
-    const info: DepositInfo = {
+    const info: DepositAssetInfoMap = {
       USD: {
         asset_code: "USD",
         fee: { type: "simple", fixed: 5, percent: 1 },
@@ -48,13 +48,12 @@ describe("fetchFinalFee", () => {
       await provider.fetchFinalFee({
         asset_code: info.USD.asset_code,
         amount: "15",
-        type: "",
       }),
     ).toEqual(5.15);
   });
 
   test("EUR from Nucleo staging", async () => {
-    const info: DepositInfo = {
+    const info: DepositAssetInfoMap = {
       EUR: {
         asset_code: "EUR",
         fee: { type: "simple", percent: 0.5 },
@@ -81,7 +80,6 @@ describe("fetchFinalFee", () => {
       await provider.fetchFinalFee({
         asset_code: info.EUR.asset_code,
         amount: "10",
-        type: "",
       }),
     ).toEqual(0.05);
   });
@@ -704,5 +702,154 @@ describe("watchAllTransactions", () => {
 
     expect(onMessage.callCount).toBe(1);
     expect(onError.callCount).toBe(0);
+  });
+});
+
+describe("validateFields", () => {
+  const asset_code = "TEST";
+
+  function getProvider(fields: Field[]): DepositProvider {
+    const provider = new DepositProvider(
+      "https://test.com",
+      StellarSdk.Keypair.random().publicKey(),
+    );
+    provider.info = {
+      deposit: {
+        [asset_code]: {
+          asset_code,
+          fee: { type: "simple" },
+          fields,
+          min_amount: 0,
+        },
+      },
+      withdraw: {},
+    };
+
+    return provider;
+  }
+
+  test("returns true for empty fields", () => {
+    expect(getProvider([]).validateFields(asset_code, {})).toEqual(true);
+  });
+  test("returns true for correct response", () => {
+    const fields = [
+      {
+        description: "your email address for transaction status updates",
+        optional: true,
+        name: "email_address",
+      },
+      {
+        description: "amount in cents that you plan to deposit",
+        name: "amount",
+      },
+      {
+        description: "type of deposit to make",
+        choices: ["SPEI", "cash"],
+        name: "type",
+      },
+    ];
+
+    expect(
+      getProvider(fields).validateFields(asset_code, {
+        email: "asdf@asdf.com",
+        amount: "10",
+        type: "SPEI",
+      }),
+    ).toEqual(true);
+  });
+  test("returns false for invalid type", () => {
+    const fields = [
+      {
+        description: "your email address for transaction status updates",
+        optional: true,
+        name: "email_address",
+      },
+      {
+        description: "amount in cents that you plan to deposit",
+        name: "amount",
+      },
+      {
+        description: "type of deposit to make",
+        choices: ["SPEI", "cash"],
+        name: "type",
+      },
+    ];
+
+    expect(
+      getProvider(fields).validateFields(asset_code, {
+        email: "asdf@asdf.com",
+        amount: "10",
+        type: "asdlkfjasldkfjaskdlfjask",
+      }),
+    ).toEqual(false);
+  });
+  test("returns false for invalid email", () => {
+    const fields = [
+      {
+        description: "your email address for transaction status updates",
+        name: "email_address",
+      },
+      {
+        description: "amount in cents that you plan to deposit",
+        name: "amount",
+      },
+      {
+        description: "type of deposit to make",
+        choices: ["SPEI", "cash"],
+        name: "type",
+      },
+    ];
+
+    expect(
+      getProvider(fields).validateFields(asset_code, {
+        email: "asdf",
+        amount: "10",
+        type: "cash",
+      }),
+    ).toEqual(false);
+  });
+  test("returns false for invalid amount", () => {
+    const fields = [
+      {
+        description: "your email address for transaction status updates",
+        optional: true,
+        name: "email_address",
+      },
+      {
+        description: "amount in cents that you plan to deposit",
+        name: "amount",
+      },
+      {
+        description: "type of deposit to make",
+        choices: ["SPEI", "cash"],
+        name: "type",
+      },
+    ];
+
+    expect(
+      getProvider(fields).validateFields(asset_code, {
+        email: "asdf@asdf.com",
+        amount: "asdf",
+        type: "cash",
+      }),
+    ).toEqual(false);
+  });
+
+  test("real-world case", () => {
+    const fields = [
+      {
+        description: "Enter the amount in ARS that you plan to deposit",
+        name: "amount",
+      },
+      { description: "Enter your email address", name: "email_address" },
+    ];
+    const payload = {
+      amount: "255",
+      asset_code: "ARS",
+      email_address: "cassio@stellar.org",
+    };
+    expect(getProvider(fields).validateFields(asset_code, payload)).toEqual(
+      true,
+    );
   });
 });

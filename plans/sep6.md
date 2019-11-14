@@ -41,7 +41,9 @@ interface GetKycParams {
 
 class TransferProvider {
   constructor(transferServer) {}
-  fetchSupportedAssets: () => Promise<WithdrawInfo> | Promise<DepositInfo>;
+  fetchSupportedAssets: () =>
+    | Promise<WithdrawAssetInfoMap>
+    | Promise<DepositAssetInfoMap>;
   fetchFinalFee: (params: FeeParams) => Promise<number>;
   fetchKycInBrowser: ({
     response: InteractiveKycNeeded,
@@ -75,7 +77,7 @@ interface WithdrawAssetInfo {
   }[];
 }
 
-interface WithdrawInfo {
+interface WithdrawAssetInfoMap {
   [assetCode: string]: WithdrawAssetInfo;
 }
 
@@ -87,7 +89,7 @@ interface DepositAssetInfo {
   fields: Field[];
 }
 
-interface DepositInfo {
+interface DepositAssetInfoMap {
   [assetCode: string]: DepositAssetInfo;
 }
 

@@ -1,15 +1,25 @@
 import queryString from "query-string";
 
 import {
-  DepositInfo,
+  DepositAssetInfo,
+  DepositAssetInfoMap,
   DepositRequest,
   FetchKycInBrowserParams,
+  Field,
+  FieldPayload,
   TransferError,
   TransferResponse,
 } from "../types";
 
 import { fetchKycInBrowser } from "./fetchKycInBrowser";
 import { TransferProvider } from "./TransferProvider";
+
+const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// used for field validation
+function validateEmail(email: string): boolean {
+  return !!email.match(emailRegex);
+}
 
 /**
  * DepositProvider provides methods to interact with a transfer server. At a
@@ -34,7 +44,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // show fee to user, confirm amount and destination
  *
- * const depositResult = await depositProvider.deposit({
+ * const depositResult = await depositProvider.startDeposit({
  *   asset_code,
  *   // more optional properties
  * });
@@ -75,12 +85,12 @@ export class DepositProvider extends TransferProvider {
   }
 
   /**
-   * Make a deposit request.
+   * Start a deposit request.
    *
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async deposit(params: DepositRequest): Promise<TransferResponse> {
+  public async startDeposit(params: DepositRequest): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
     const search = queryString.stringify({ ...params, account: this.account });
 
@@ -106,7 +116,7 @@ export class DepositProvider extends TransferProvider {
    * Fetch the assets that the deposit provider supports, along with details
    * about depositing that asset.
    */
-  public async fetchSupportedAssets(): Promise<DepositInfo> {
+  public async fetchSupportedAssets(): Promise<DepositAssetInfoMap> {
     const { deposit } = await this.fetchInfo();
 
     // seed internal registry objects with supported assets
@@ -123,8 +133,23 @@ export class DepositProvider extends TransferProvider {
   }
 
   /**
+   * Get one supported asset by code.
+   */
+  public getAsset(asset_code: string): DepositAssetInfo {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error(`Run fetchSupportedAssets before running getAsset!`);
+    }
+
+    if (!this.info[this.operation][asset_code]) {
+      throw new Error(`Asset not supported: ${asset_code}`);
+    }
+
+    return (this.info[this.operation] as DepositAssetInfoMap)[asset_code];
+  }
+
+  /**
    * `fetchKycInBrowser` expects the original request parameters, the response
-   * object from `depositProvider.deposit()`, and a window instance.
+   * object from `depositProvider.startDeposit()`, and a window instance.
    *
    * Because pop-up blockers prevent new windows from being created, your app
    * will need to create one with `const popup = window.open()` and pass in the
@@ -179,7 +204,7 @@ export class DepositProvider extends TransferProvider {
       case "pending":
         return Promise.reject(kycResult);
       case "success": {
-        const retryResponse = await this.deposit(request);
+        const retryResponse = await this.startDeposit(request);
         // Since we've just successfully KYC'd, the only expected response is
         // success. Reject anything else.
         if (retryResponse.type === "ok") {
@@ -192,5 +217,69 @@ export class DepositProvider extends TransferProvider {
           `Invalid KYC response received: '${kycResult.status}'.`,
         );
     }
+  }
+
+  /**
+   * Validate a payload to make sure it conforms with the anchor's data
+   * requirements.
+   */
+  public validateFields(asset_code: string, payload: FieldPayload) {
+    if (!this.info || !this.info[this.operation]) {
+      throw new Error("Run fetchSupportedAssets before running fetchFinalFee!");
+    }
+
+    const assetInfo = this.info[this.operation][asset_code] as DepositAssetInfo;
+
+    if (!assetInfo) {
+      throw new Error(`Can't get fee for an unsupported asset, '${asset_code}`);
+    }
+
+    const fields = assetInfo.fields || [];
+
+    interface ChoiceMap {
+      [name: string]: boolean;
+    }
+
+    return fields.reduce((isValid: boolean, field: Field): boolean => {
+      if (!isValid) {
+        return isValid;
+      }
+
+      if (field.optional) {
+        return isValid;
+      }
+
+      const response = payload[field.name];
+
+      if (!response) {
+        return false;
+      }
+
+      if (field.choices) {
+        // make a map of choices, it's easier
+        const choiceMap: ChoiceMap = field.choices.reduce(
+          (memo, choice) => ({ ...memo, [choice]: true }),
+          {},
+        );
+
+        if (!choiceMap[response]) {
+          return false;
+        }
+      }
+
+      if (
+        field.name === "email" ||
+        (field.name === "email_address" && !validateEmail(response))
+      ) {
+        return false;
+      }
+
+      if (field.name === "amount" && isNaN(parseFloat(response))) {
+        return false;
+      }
+
+      // if we're still here, keep it goin
+      return isValid;
+    }, true);
   }
 }

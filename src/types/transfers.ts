@@ -19,7 +19,6 @@ export interface FetchKycInBrowserParams<T> {
 export interface FeeParams {
   asset_code: string;
   amount: string;
-  type: string;
 }
 
 export interface RawInfoResponse {
@@ -73,8 +72,8 @@ export interface RawType {
 }
 
 export interface Info {
-  withdraw: WithdrawInfo;
-  deposit: DepositInfo;
+  withdraw: WithdrawAssetInfoMap;
+  deposit: DepositAssetInfoMap;
   fee?: {
     enabled: boolean;
   };
@@ -95,7 +94,7 @@ export interface WithdrawAssetInfo {
   authentication_required?: boolean;
 }
 
-export interface WithdrawInfo {
+export interface WithdrawAssetInfoMap {
   [asset_code: string]: WithdrawAssetInfo;
 }
 
@@ -108,7 +107,7 @@ export interface DepositAssetInfo {
   authentication_required?: boolean;
 }
 
-export interface DepositInfo {
+export interface DepositAssetInfoMap {
   [asset_code: string]: DepositAssetInfo;
 }
 
@@ -204,6 +203,10 @@ export interface Field {
   description: string;
   optional?: boolean;
   choices?: string[];
+}
+
+export interface FieldPayload {
+  [name: string]: string;
 }
 
 export interface NoneFee {

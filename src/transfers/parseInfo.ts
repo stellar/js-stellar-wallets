@@ -1,12 +1,12 @@
 import {
-  DepositInfo,
+  DepositAssetInfoMap,
   Fee,
   Field,
   RawField,
   RawInfoResponse,
   RawType,
   SimpleFee,
-  WithdrawInfo,
+  WithdrawAssetInfoMap,
 } from "../types";
 
 function isValidInfoResponse(obj: any): obj is RawInfoResponse {
@@ -72,7 +72,7 @@ function parseField([fieldName, field]: FieldEntry): Field {
   };
 }
 
-export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
+export function parseWithdraw(info: RawInfoResponse): WithdrawAssetInfoMap {
   return Object.entries(info.withdraw).reduce(
     (accum, [asset_code, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
@@ -87,11 +87,11 @@ export function parseWithdraw(info: RawInfoResponse): WithdrawInfo {
       };
       return accum;
     },
-    {} as WithdrawInfo,
+    {} as WithdrawAssetInfoMap,
   );
 }
 
-export function parseDeposit(info: RawInfoResponse): DepositInfo {
+export function parseDeposit(info: RawInfoResponse): DepositAssetInfoMap {
   return Object.entries(info.deposit).reduce(
     (accum, [asset_code, entry]) => {
       const fee = parseFee(entry, !!(info.fee && info.fee.enabled));
@@ -106,6 +106,6 @@ export function parseDeposit(info: RawInfoResponse): DepositInfo {
       };
       return accum;
     },
-    {} as DepositInfo,
+    {} as DepositAssetInfoMap,
   );
 }
