@@ -1,11 +1,14 @@
 # Changelog
 
-## v0.0.7
+## [Current](https://github.com/stellar/js-stellar-wallets/compare/v0.0.6-rc.17...master)
 
-- Rename WithdrawInfo to WithdrawAssetInfoMap
-- Rename DepositInfo to DepositAssetInfoMap
+- Rename some things for clarity
+  - WithdrawInfo -> WithdrawAssetInfoMap
+  - DepositInfo -> DepositAssetInfoMap
+  - WithdrawProvider#withdraw -> #startWithdraw
+  - DepositProvider#deposit -> #startDeposit
 
-## v0.0.6
+## [v0.0.6-rc.17](https://github.com/stellar/js-stellar-wallets/compare/v0.0.3-rc1...v0.0.6-rc.17)
 
 - General: Get rid of export namespaces, since types weren't transfering over
   properly. We now export all helper functions, classes, etc. directly.
@@ -17,11 +20,14 @@
   instead.
 - Data: Encrypted keys now store a generic encrypted blob, which among other
   things keeps public keys private by default.
+- Data: Rename "transfers" (what we call direct and path payments and other
+  similar operations) to "payments", so as to not confuse with the Transfers
+  arm.
 - Transfers: Add tools to watch pending transactions.
 - Transfers: Use snake-cased arguments for transfers, since some of them are the
   same as snake-cased arguments requested by anchors.
 
-## v0.0.3
+## v0.0.3-rc.1
 
 Initial (official) release! 🎉
 

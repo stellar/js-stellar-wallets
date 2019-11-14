@@ -34,7 +34,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // show fee to user, confirm amount and destination
  *
- * const withdrawResult = await withdrawProvider.withdraw({
+ * const withdrawResult = await withdrawProvider.startWithdraw({
  *   type
  *   asset_code,
  *   dest,
@@ -77,12 +77,14 @@ export class WithdrawProvider extends TransferProvider {
   }
 
   /**
-   * Make a withdraw request.
+   * Start a withdraw request.
    *
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async withdraw(params: WithdrawRequest): Promise<TransferResponse> {
+  public async startWithdraw(
+    params: WithdrawRequest,
+  ): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
     const search = queryString.stringify({ ...params, account: this.account });
 
@@ -178,7 +180,7 @@ export class WithdrawProvider extends TransferProvider {
       case "pending":
         return Promise.reject(kycResult);
       case "success": {
-        const retryResponse = await this.withdraw(request);
+        const retryResponse = await this.startWithdraw(request);
         // Since we've just successfully KYC'd, the only expected response is
         // success. Reject anything else.
         if (retryResponse.type === "ok") {

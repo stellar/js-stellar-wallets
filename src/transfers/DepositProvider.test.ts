@@ -48,7 +48,7 @@ describe("fetchFinalFee", () => {
       await provider.fetchFinalFee({
         asset_code: info.USD.asset_code,
         amount: "15",
-        type: "",
+        type: "simple",
       }),
     ).toEqual(5.15);
   });
@@ -81,7 +81,7 @@ describe("fetchFinalFee", () => {
       await provider.fetchFinalFee({
         asset_code: info.EUR.asset_code,
         amount: "10",
-        type: "",
+        type: "simple",
       }),
     ).toEqual(0.05);
   });

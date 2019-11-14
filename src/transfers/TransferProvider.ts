@@ -477,7 +477,10 @@ export abstract class TransferProvider {
         );
       case "complex":
         const response = await fetch(
-          `${this.transferServer}/fee?${queryString.stringify(params as any)}`,
+          `${this.transferServer}/fee?${queryString.stringify({
+            ...params,
+            operation: this.operation,
+          })}`,
         );
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;

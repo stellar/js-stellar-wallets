@@ -34,7 +34,7 @@ import { TransferProvider } from "./TransferProvider";
  *
  * // show fee to user, confirm amount and destination
  *
- * const depositResult = await depositProvider.deposit({
+ * const depositResult = await depositProvider.startDeposit({
  *   asset_code,
  *   // more optional properties
  * });
@@ -75,12 +75,12 @@ export class DepositProvider extends TransferProvider {
   }
 
   /**
-   * Make a deposit request.
+   * Start a deposit request.
    *
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async deposit(params: DepositRequest): Promise<TransferResponse> {
+  public async startDeposit(params: DepositRequest): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
     const search = queryString.stringify({ ...params, account: this.account });
 
@@ -124,7 +124,7 @@ export class DepositProvider extends TransferProvider {
 
   /**
    * `fetchKycInBrowser` expects the original request parameters, the response
-   * object from `depositProvider.deposit()`, and a window instance.
+   * object from `depositProvider.startDeposit()`, and a window instance.
    *
    * Because pop-up blockers prevent new windows from being created, your app
    * will need to create one with `const popup = window.open()` and pass in the
@@ -179,7 +179,7 @@ export class DepositProvider extends TransferProvider {
       case "pending":
         return Promise.reject(kycResult);
       case "success": {
-        const retryResponse = await this.deposit(request);
+        const retryResponse = await this.startDeposit(request);
         // Since we've just successfully KYC'd, the only expected response is
         // success. Reject anything else.
         if (retryResponse.type === "ok") {
