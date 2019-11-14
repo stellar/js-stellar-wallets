@@ -1,6 +1,6 @@
 # Changelog
 
-## [Current](https://github.com/stellar/js-stellar-wallets/compare/v0.0.6-rc.17...master)
+## [v0.0.7-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.6-rc.17...v0.0.7-rc.1)
 
 - Rename some things for clarity
   - WithdrawInfo -> WithdrawAssetInfoMap
