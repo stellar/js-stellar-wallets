@@ -7,6 +7,7 @@
   - DepositInfo -> DepositAssetInfoMap
   - WithdrawProvider#withdraw -> #startWithdraw
   - DepositProvider#deposit -> #startDeposit
+- Transfers: Fix fetchFinalFee parameters
 
 ## [v0.0.6-rc.17](https://github.com/stellar/js-stellar-wallets/compare/v0.0.3-rc1...v0.0.6-rc.17)
 

@@ -19,7 +19,6 @@ export interface FetchKycInBrowserParams<T> {
 export interface FeeParams {
   asset_code: string;
   amount: string;
-  type: "none" | "simple" | "complex" | "SEPA" | "bank_account" | "cash";
 }
 
 export interface RawInfoResponse {

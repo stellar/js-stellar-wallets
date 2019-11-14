@@ -479,6 +479,7 @@ export abstract class TransferProvider {
         const response = await fetch(
           `${this.transferServer}/fee?${queryString.stringify({
             ...params,
+            ...fee,
             operation: this.operation,
           })}`,
         );
