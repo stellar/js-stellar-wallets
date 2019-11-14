@@ -120,7 +120,7 @@ export abstract class TransferProvider {
     | Promise<WithdrawAssetInfoMap>
     | Promise<DepositAssetInfoMap>;
 
-  public abstract getAsset(
+  public abstract getAssetInfo(
     asset_code: string,
   ): WithdrawAssetInfo | DepositAssetInfo;
 

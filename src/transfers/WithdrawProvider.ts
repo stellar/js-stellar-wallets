@@ -126,9 +126,9 @@ export class WithdrawProvider extends TransferProvider {
   /**
    * Get one supported asset by code.
    */
-  public getAsset(asset_code: string): WithdrawAssetInfo {
+  public getAssetInfo(asset_code: string): WithdrawAssetInfo {
     if (!this.info || !this.info[this.operation]) {
-      throw new Error(`Run fetchSupportedAssets before running getAsset!`);
+      throw new Error(`Run fetchSupportedAssets before running getAssetInfo!`);
     }
 
     if (!this.info[this.operation][asset_code]) {
