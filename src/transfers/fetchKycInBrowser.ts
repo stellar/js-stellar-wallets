@@ -1,7 +1,7 @@
 import {
   DepositRequest,
   FetchKycInBrowserParams,
-  KycPromptStatus,
+  KycStatus,
   WithdrawRequest,
 } from "../types";
 
@@ -9,7 +9,7 @@ import { getKycUrl } from "./getKycUrl";
 
 export function fetchKycInBrowser(
   params: FetchKycInBrowserParams<DepositRequest | WithdrawRequest>,
-): Promise<KycPromptStatus> {
+): Promise<KycStatus> {
   const { response, window: windowContext } = params;
   const { origin } = new URL(response.url);
   return new Promise((resolve, reject) => {

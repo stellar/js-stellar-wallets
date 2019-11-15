@@ -181,19 +181,14 @@ export interface InteractiveKycNeededResponse extends TransferResponse {
   interactive_deposit?: boolean;
 }
 
-export interface KycStatus extends TransferResponse {
+export interface AnchorUSDKycStatus extends TransferResponse {
   type: TransferResponseType.customer_info_status;
+  status: "success" | "pending" | "denied";
   more_info_url?: string;
   eta?: number;
 }
 
-export interface CustomerInfoStatus extends KycStatus {
-  status: "pending" | "denied";
-}
-
-export interface KycPromptStatus extends KycStatus {
-  status: "success" | "pending" | "denied";
-}
+export type KycStatus = AnchorUSDKycStatus | Transaction;
 
 export interface WithdrawType {
   name: string;
