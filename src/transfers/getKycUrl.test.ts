@@ -1,7 +1,7 @@
 import { TransferResponseType } from "../constants/transfers";
 import { getKycUrl, KycUrlParams } from "./getKycUrl";
 
-function getParams(url: string, callback_url: string): KycUrlParams {
+function getParams(url: string, callback_url?: string): KycUrlParams {
   return {
     request: {
       amount: "2000",
@@ -54,4 +54,10 @@ test("works properly on urls with everything", () => {
   ).toEqual(
     "https://www.google.com/mail/one?good=true&callback=postMessage#page=1",
   );
+});
+
+test("callback not needed", () => {
+  expect(
+    getKycUrl(getParams("https://www.google.com/mail/one?good=true#page=1")),
+  ).toEqual("https://www.google.com/mail/one?good=true#page=1");
 });

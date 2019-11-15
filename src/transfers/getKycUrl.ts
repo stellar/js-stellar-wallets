@@ -6,19 +6,19 @@ import {
   WithdrawRequest,
 } from "../types";
 
-interface PostMessageParams {
+interface BaseParams {
   response: InteractiveKycNeededResponse;
+}
+
+interface PostMessageParams extends BaseParams {
   callback_url: "postMessage";
 }
-interface CallbackUrlParams {
-  response: InteractiveKycNeededResponse;
+interface CallbackUrlParams extends BaseParams {
   callback_url: string;
   request: DepositRequest | WithdrawRequest;
 }
-export type KycUrlParams = PostMessageParams | CallbackUrlParams;
 
-const isPostMessage = (params: KycUrlParams): params is PostMessageParams =>
-  params.callback_url === "postMessage";
+export type KycUrlParams = BaseParams | PostMessageParams | CallbackUrlParams;
 
 /**
  * `getKycUrl` takes in the original request object, a response object, and a
@@ -55,21 +55,26 @@ export function getKycUrl(params: KycUrlParams) {
   // break apart and re-produce the URL
   const { origin, pathname, search, hash } = new URL(params.response.url);
 
-  let callback;
+  let callback = "";
 
-  if (isPostMessage(params)) {
-    callback = "postMessage";
-  } else {
+  if ((params as PostMessageParams).callback_url === "postMessage") {
+    callback = `${search ? "&" : "?"}callback=postMessage`;
+  } else if (
+    (params as CallbackUrlParams).callback_url &&
+    (params as CallbackUrlParams).request
+  ) {
     // If the callback arg is a URL, add the original request to it as a
     // querystring argument.
-    const url = new URL(params.callback_url);
+    const url = new URL((params as CallbackUrlParams).callback_url);
     const newParams = { ...queryString.parse(url.search) };
-    newParams.request = encodeURIComponent(JSON.stringify(params.request));
+    newParams.request = encodeURIComponent(
+      JSON.stringify((params as CallbackUrlParams).request),
+    );
     url.search = queryString.stringify(newParams);
-    callback = encodeURIComponent(url.toString());
+    callback = `${search ? "&" : "?"}callback=${encodeURIComponent(
+      url.toString(),
+    )}`;
   }
 
-  return `${origin}${pathname}${search}${
-    search ? "&" : "?"
-  }callback=${callback}${hash}`;
+  return `${origin}${pathname}${search}${callback}${hash}`;
 }

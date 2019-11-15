@@ -6,7 +6,7 @@ import {
 } from "../constants/transfers";
 import {
   AnchorUSDKycStatus,
-  FetchKycInBrowserParams,
+  InteractiveKycNeededResponse,
   KycStatus,
   TransferError,
   TransferResponse,
@@ -79,6 +79,9 @@ import { TransferProvider } from "./TransferProvider";
  * serverside/native apps, `getKycUrl`.
  */
 export class WithdrawProvider extends TransferProvider {
+  public response?: TransferResponse;
+  public request?: WithdrawRequest;
+
   constructor(transferServer: string, account: string) {
     super(transferServer, account, "withdraw");
   }
@@ -92,8 +95,9 @@ export class WithdrawProvider extends TransferProvider {
   public async startWithdraw(
     params: WithdrawRequest,
   ): Promise<TransferResponse> {
+    const request = { ...params, account: this.account };
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
-    const qs = queryString.stringify({ ...params, account: this.account });
+    const qs = queryString.stringify(request);
 
     const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
@@ -119,6 +123,9 @@ export class WithdrawProvider extends TransferProvider {
         this.authToken
       }${hash}`;
     }
+
+    this.request = request;
+    this.response = json;
 
     return json;
   }
@@ -201,13 +208,22 @@ export class WithdrawProvider extends TransferProvider {
    * it fails, it will contain information about the KYC failure from the
    * anchor.
    */
-  public async fetchKycInBrowser(
-    params: FetchKycInBrowserParams<WithdrawRequest>,
-  ): Promise<KycStatus> {
-    const { response, request, window: windowContext } = params;
+  public async fetchKycInBrowser(windowContext: Window): Promise<KycStatus> {
+    if (!this.response || !this.request) {
+      throw new Error(`Run startDeposit before calling fetchKycInBrowser!`);
+    }
+
+    if (
+      this.response.type !==
+        TransferResponseType.interactive_customer_info_needed ||
+      !this.response.url
+    ) {
+      throw new Error(`KYC Not needed for this deposit!`);
+    }
+
     const kycResult = await fetchKycInBrowser({
-      response,
-      request,
+      response: this.response as InteractiveKycNeededResponse,
+      request: this.request,
       window: windowContext,
     });
 
