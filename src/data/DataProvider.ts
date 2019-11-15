@@ -111,7 +111,7 @@ export class DataProvider {
       await this.fetchAccountDetails();
       return true;
     } catch (e) {
-      return !!e.isUnfunded;
+      return !e.isUnfunded;
     }
   }
 
@@ -228,9 +228,9 @@ export class DataProvider {
           this._watcherTimeouts.watchAccountDetails = setTimeout(() => {
             this.watchAccountDetails(params);
           }, 2000);
-        } else {
-          onError(err);
         }
+
+        onError(err);
       });
 
     // if they exec this function, don't make the balance callback do anything
@@ -289,9 +289,9 @@ export class DataProvider {
           this._watcherTimeouts.watchPayments = setTimeout(() => {
             this.watchPayments(params);
           }, 2000);
-        } else {
-          onError(err);
         }
+
+        onError(err);
       });
 
     // if they exec this function, don't make the balance callback do anything
