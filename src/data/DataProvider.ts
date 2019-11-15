@@ -228,9 +228,9 @@ export class DataProvider {
           this._watcherTimeouts.watchAccountDetails = setTimeout(() => {
             this.watchAccountDetails(params);
           }, 2000);
-        } else {
-          onError(err);
         }
+
+        onError(err);
       });
 
     // if they exec this function, don't make the balance callback do anything
