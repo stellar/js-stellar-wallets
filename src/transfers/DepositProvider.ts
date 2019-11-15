@@ -93,9 +93,9 @@ export class DepositProvider extends TransferProvider {
    */
   public async startDeposit(params: DepositRequest): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
-    const search = queryString.stringify({ ...params, account: this.account });
+    const qs = queryString.stringify({ ...params, account: this.account });
 
-    const response = await fetch(`${this.transferServer}/deposit?${search}`, {
+    const response = await fetch(`${this.transferServer}/deposit?${qs}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
     });
     const json = (await response.json()) as TransferResponse;
@@ -117,15 +117,11 @@ export class DepositProvider extends TransferProvider {
       json.url &&
       json.url.indexOf("jwt") === -1
     ) {
-      // tslint:disable-next-line prefer-const
-      let [url, hash] = json.url.split("#");
-      url = `${url}${url.indexOf("?") === -1 ? "?" : "&"}jwt=${this.authToken}`;
+      const { origin, pathname, search, hash } = new URL(json.url);
 
-      if (hash) {
-        url = `${url}#${hash}`;
-      }
-
-      json.url = url;
+      json.url = `${origin}${pathname}${search}${search ? "&" : "?"}jwt=${
+        this.authToken
+      }${hash}`;
     }
 
     return json;
