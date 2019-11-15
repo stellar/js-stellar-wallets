@@ -1,8 +1,13 @@
 import queryString from "query-string";
 
-import { TransferResponseType } from "../constants/transfers";
 import {
+  TransactionStatus,
+  TransferResponseType,
+} from "../constants/transfers";
+import {
+  AnchorUSDKycStatus,
   FetchKycInBrowserParams,
+  KycStatus,
   TransferError,
   TransferResponse,
   WithdrawAssetInfo,
@@ -198,31 +203,39 @@ export class WithdrawProvider extends TransferProvider {
    */
   public async fetchKycInBrowser(
     params: FetchKycInBrowserParams<WithdrawRequest>,
-  ) {
+  ): Promise<KycStatus> {
     const { response, request, window: windowContext } = params;
     const kycResult = await fetchKycInBrowser({
       response,
       request,
       window: windowContext,
     });
-    switch (kycResult.status) {
-      case "denied":
-        return Promise.reject(kycResult);
-      case "pending":
-        return Promise.reject(kycResult);
-      case "success": {
-        const retryResponse = await this.startWithdraw(request);
-        // Since we've just successfully KYC'd, the only expected response is
-        // success. Reject anything else.
-        if (retryResponse.type === "ok") {
-          return retryResponse;
-        }
-        return Promise.reject(retryResponse);
+
+    // AnchorUSD has a specific response shape
+    // It can be detected if the response has `type` === "customer_info_status"
+    if (
+      (kycResult as AnchorUSDKycStatus).type ===
+      TransferResponseType.customer_info_status
+    ) {
+      switch (kycResult.status) {
+        case "denied":
+          return Promise.reject(kycResult);
+        case "pending":
+          return Promise.reject(kycResult);
+        case "success":
+          return Promise.resolve(kycResult);
+        default:
+          throw new Error(
+            `Invalid KYC response received: '${kycResult.status}'.`,
+          );
       }
-      default:
-        throw new Error(
-          `Invalid KYC response received: '${kycResult.status}'.`,
-        );
     }
+
+    // treat the other ones like standard, SEP-24 responses
+    if (kycResult.status === TransactionStatus.completed) {
+      return Promise.resolve(kycResult);
+    }
+
+    return Promise.reject(kycResult);
   }
 }
