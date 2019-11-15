@@ -53,18 +53,24 @@ const isPostMessage = (params: KycUrlParams): params is PostMessageParams =>
  * @returns {string} A URL to open so users can complete their KYC information.
  */
 export function getKycUrl(params: KycUrlParams) {
+  // break apart and re-produce the URL
+  const { origin, pathname, search, hash } = new URL(params.response.url);
+
+  let callback;
+
   if (isPostMessage(params)) {
-    return `${params.response.url}&callback=postMessage`;
+    callback = "postMessage";
   } else {
     // If the callback arg is a URL, add the original request to it as a
     // querystring argument.
     const url = new URL(params.callback_url);
-    const search = { ...queryString.parse(url.search) };
-    search.request = encodeURIComponent(JSON.stringify(params.request));
-    url.search = queryString.stringify(search);
-
-    return `${params.response.url}&callback=${encodeURIComponent(
-      url.toString(),
-    )}`;
+    const newParams = { ...queryString.parse(url.search) };
+    newParams.request = encodeURIComponent(JSON.stringify(params.request));
+    url.search = queryString.stringify(newParams);
+    callback = encodeURIComponent(url.toString());
   }
+
+  return `${origin}${pathname}${search}${
+    search ? "&" : "?"
+  }callback=${callback}${hash}`;
 }

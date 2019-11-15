@@ -88,9 +88,9 @@ export class WithdrawProvider extends TransferProvider {
     params: WithdrawRequest,
   ): Promise<TransferResponse> {
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
-    const search = queryString.stringify({ ...params, account: this.account });
+    const qs = queryString.stringify({ ...params, account: this.account });
 
-    const response = await fetch(`${this.transferServer}/withdraw?${search}`, {
+    const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
     });
     const json = (await response.json()) as TransferResponse;
@@ -108,15 +108,11 @@ export class WithdrawProvider extends TransferProvider {
       json.url &&
       json.url.indexOf("jwt") === -1
     ) {
-      // tslint:disable-next-line prefer-const
-      let [url, hash] = json.url.split("#");
-      url = `${url}${url.indexOf("?") === -1 ? "?" : "&"}jwt=${this.authToken}`;
+      const { origin, pathname, search, hash } = new URL(json.url);
 
-      if (hash) {
-        url = `${url}#${hash}`;
-      }
-
-      json.url = url;
+      json.url = `${origin}${pathname}${search}${search ? "&" : "?"}jwt=${
+        this.authToken
+      }${hash}`;
     }
 
     return json;

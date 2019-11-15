@@ -12,6 +12,8 @@
 - Transfers: Add `TransferProvider#getAssetInfo` to fetch single assets
 - Transfers: If a deposit or withdraw requires auth and the interactive URL
   doesn't include a `jwt` property, add it
+- Transfers: Fix a bug in `getKycUrl` where the URL manipulation wouldn't take
+  into account certain URL shapes.
 
 ## [v0.0.6-rc.17](https://github.com/stellar/js-stellar-wallets/compare/v0.0.3-rc1...v0.0.6-rc.17)
 
