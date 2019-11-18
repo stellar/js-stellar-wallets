@@ -183,7 +183,6 @@ export class DataProvider {
         id: accountSummary.id,
         subentryCount: accountSummary.subentry_count,
         inflationDestination: accountSummary.inflation_destination,
-        lastModifiedLedger: accountSummary.last_modified_ledger,
         thresholds: accountSummary.thresholds,
         signers: accountSummary.signers,
         flags: accountSummary.flags,

@@ -50,7 +50,7 @@ export function makeDisplayableOffers(
         buying,
         amount,
         price_r,
-        last_modified_ledger,
+        last_modified_time,
       } = offer;
 
       const paymentToken: Token = {
@@ -86,7 +86,7 @@ export function makeDisplayableOffers(
         offerer: {
           publicKey: seller as string,
         },
-        timestamp: last_modified_ledger,
+        timestamp: Math.floor(new Date(last_modified_time).getTime() / 1000),
         paymentToken,
         paymentAmount: new BigNumber(amount),
         initialPaymentAmount: new BigNumber(amount).plus(tradePaymentAmount),

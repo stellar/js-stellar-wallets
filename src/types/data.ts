@@ -156,7 +156,6 @@ export interface AccountDetails {
   id: string;
   subentryCount: number;
   inflationDestination?: string;
-  lastModifiedLedger: number;
   thresholds: Horizon.AccountThresholds;
   signers: ServerApi.AccountRecordSigners[];
   flags: Horizon.Flags;
