@@ -16,7 +16,6 @@ it("makes balances from a real-world example", async () => {
       limit: new BigNumber("922337203685.4775807"),
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
-      lastModified: 22897214,
       token: {
         type: "credit_alphanum4",
         code: "BAT",
@@ -31,7 +30,6 @@ it("makes balances from a real-world example", async () => {
       limit: new BigNumber("922337203685.4775807"),
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
-      lastModified: 19145605,
       token: {
         type: "credit_alphanum4",
         code: "REPO",
@@ -46,7 +44,6 @@ it("makes balances from a real-world example", async () => {
       limit: new BigNumber("922337203685.4775807"),
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
-      lastModified: 18902253,
       token: {
         type: "credit_alphanum4",
         code: "TERN",
@@ -61,7 +58,6 @@ it("makes balances from a real-world example", async () => {
       limit: new BigNumber("922337203685.4775807"),
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
-      lastModified: 22718536,
       token: {
         type: "credit_alphanum4",
         code: "WSD",
@@ -76,7 +72,6 @@ it("makes balances from a real-world example", async () => {
       limit: new BigNumber("922337203685.4775807"),
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
-      lastModified: 22721290,
       token: {
         type: "credit_alphanum4",
         code: "USD",

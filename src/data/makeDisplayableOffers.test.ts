@@ -39,7 +39,7 @@ it("makes offers from partial fill", () => {
     paymentAmount: new BigNumber(8),
     incomingTokenPrice: new BigNumber(4),
     initialPaymentAmount: new BigNumber(8),
-    timestamp: 23121355,
+    timestamp: 1553635587,
     resultingTrades: [],
   });
   expect(offers[1].resultingTrades).toEqual(["99777639383887873-0"]);

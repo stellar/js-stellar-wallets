@@ -14,11 +14,12 @@
   doesn't include a `jwt` property, add it
 - Transfers: Fix a bug in `getKycUrl` where the URL manipulation wouldn't take
   into account certain URL shapes.
-- Transfers: Add support for SEP-24 responses in
-  `TransferProvider#fetchKycInBrowser`
-- Transfers: `getKycUrl` no longer requires a callback
-- Transfers: Store transfer requests and responses, and use the stored versions
-  when getting KYC urls or fetching KYC in browser.
+- Transfers: Add support for canonical SEP-24 transaction responses in
+  fetchKycInBrowser
+- Transfers: Add `TransferProvider#getKycUrl` so consumers can fetch KYC easier,
+  even if they're not in a browser.
+- `fetchKycInBrowser` and `getKycUrl` no longer need to be explicitly passed
+  request and response; it'll read the stored values from the class.
 
 ## [v0.0.6-rc.17](https://github.com/stellar/js-stellar-wallets/compare/v0.0.3-rc1...v0.0.6-rc.17)
 

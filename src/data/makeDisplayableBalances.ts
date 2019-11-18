@@ -54,8 +54,6 @@ export function makeDisplayableBalances(
           sellingLiabilities,
           buyingLiabilities,
           total,
-          lastModified: (balance as Horizon.BalanceLineAsset)
-            .last_modified_ledger,
           limit: new BigNumber((balance as Horizon.BalanceLineAsset).limit),
           available: total.minus(sellingLiabilities),
         },
