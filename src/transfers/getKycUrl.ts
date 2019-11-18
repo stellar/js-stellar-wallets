@@ -57,19 +57,16 @@ export function getKycUrl(params: KycUrlParams) {
 
   let callback = "";
 
-  if ((params as PostMessageParams).callback_url === "postMessage") {
+  const { callback_url, request } = params as CallbackUrlParams;
+
+  if (callback_url === "postMessage") {
     callback = `${search ? "&" : "?"}callback=postMessage`;
-  } else if (
-    (params as CallbackUrlParams).callback_url &&
-    (params as CallbackUrlParams).request
-  ) {
+  } else if (callback_url && request) {
     // If the callback arg is a URL, add the original request to it as a
     // querystring argument.
-    const url = new URL((params as CallbackUrlParams).callback_url);
+    const url = new URL(callback_url);
     const newParams = { ...queryString.parse(url.search) };
-    newParams.request = encodeURIComponent(
-      JSON.stringify((params as CallbackUrlParams).request),
-    );
+    newParams.request = encodeURIComponent(JSON.stringify(request));
     url.search = queryString.stringify(newParams);
     callback = `${search ? "&" : "?"}callback=${encodeURIComponent(
       url.toString(),
