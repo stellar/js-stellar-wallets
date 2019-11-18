@@ -16,6 +16,7 @@ import {
 } from "../types";
 
 import { fetchKycInBrowser } from "./fetchKycInBrowser";
+import { getKycUrl } from "./getKycUrl";
 import { TransferProvider } from "./TransferProvider";
 
 /**
@@ -218,7 +219,7 @@ export class WithdrawProvider extends TransferProvider {
         TransferResponseType.interactive_customer_info_needed ||
       !this.response.url
     ) {
-      throw new Error(`KYC Not needed for this deposit!`);
+      throw new Error(`KYC not needed for this withdrawal!`);
     }
 
     const kycResult = await fetchKycInBrowser({
@@ -253,5 +254,28 @@ export class WithdrawProvider extends TransferProvider {
     }
 
     return Promise.reject(kycResult);
+  }
+
+  /**
+   * Return the KYC url. Only run this after starting a transfer.
+   */
+  public getKycUrl(callback_url?: string) {
+    if (!this.response || !this.request) {
+      throw new Error(`Run startDeposit before calling fetchKycInBrowser!`);
+    }
+
+    if (
+      this.response.type !==
+        TransferResponseType.interactive_customer_info_needed ||
+      !this.response.url
+    ) {
+      throw new Error(`KYC not needed for this withdrawal!`);
+    }
+
+    return getKycUrl({
+      response: this.response as InteractiveKycNeededResponse,
+      request: this.request,
+      callback_url,
+    });
   }
 }
