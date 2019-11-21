@@ -106,7 +106,7 @@ this.state.keyManager
 
 ## Transferring funds
 
-Like the rest of the `@steller/wallet-sdk`, the `Transfers` API is meant to
+Like the rest of the `@stellar/wallet-sdk`, the `Transfers` API is meant to
 provide a predictable, easy-to-use interface.
 
 ```js
