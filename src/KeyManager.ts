@@ -249,10 +249,10 @@ export class KeyManager {
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
     const { id, password, authServer } = params;
     // throw errors for missing params
-    if (!id) {
+    if (id === undefined) {
       throw new Error("Required parameter `id` is missing!");
     }
-    if (!password) {
+    if (password === undefined) {
       throw new Error("Required parameter `password` is missing!");
     }
     if (!authServer) {
