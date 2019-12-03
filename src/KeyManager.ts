@@ -211,7 +211,9 @@ export class KeyManager {
       const encryptedKey = await this.keyStore.loadKey(id);
 
       if (!encryptedKey) {
-        throw new Error("No key found");
+        throw new Error(
+          `Couldn't sign the transaction: no key with id '${id}' found.`,
+        );
       }
 
       const encrypter = this.encrypterMap[encryptedKey.encrypterName];
@@ -265,7 +267,9 @@ export class KeyManager {
       const encryptedKey = await this.keyStore.loadKey(id);
 
       if (!encryptedKey) {
-        throw new Error("No key found");
+        throw new Error(
+          `Couldn't fetch an auth token: no key with id '${id}' found.`,
+        );
       }
 
       const encrypter = this.encrypterMap[encryptedKey.encrypterName];
