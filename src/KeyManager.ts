@@ -126,7 +126,9 @@ export class KeyManager {
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @async
-   * @param key key to store
+   * @param key Key object to store. an `id` field is optional; if you don't 
+   * provide one, we'll generate a random number. The id will be used to read, 
+   * change, update, and delete keys.
    * @param password encrypt key with this as the secret
    * @param encrypterName encryption algorithm to use (must have been
    * registered)
@@ -135,7 +137,7 @@ export class KeyManager {
    */
   public async storeKey(params: StoreKeyParams): Promise<KeyMetadata> {
     const { key, password, encrypterName } = params;
-    const id = key.id || sha1(`${key.privateKey}${key.publicKey}`);
+    const id = key.id || `${Math.random()}`;
 
     const newKey: Key = {
       ...key,
