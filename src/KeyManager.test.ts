@@ -1,7 +1,9 @@
+import { mockRandomForEach } from "jest-mock-random";
 import sinon from "sinon";
 import StellarBase from "stellar-base";
 
 import { KeyType } from "./constants/keys";
+import "./index.d";
 import { KeyManager } from "./KeyManager";
 import { IdentityEncrypter } from "./plugins/IdentityEncrypter";
 import { MemoryKeyStore } from "./plugins/MemoryKeyStore";
@@ -12,10 +14,49 @@ describe("KeyManager", function() {
 
   beforeEach(() => {
     clock = sinon.useFakeTimers(666);
+    mockRandomForEach(0.5);
   });
 
   afterEach(() => {
     clock.restore();
+  });
+
+  test("Set an ID of one's own", async () => {
+    const testStore = new MemoryKeyStore();
+    const testKeyManager = new KeyManager({
+      keyStore: testStore,
+    });
+
+    testKeyManager.registerEncrypter(IdentityEncrypter);
+
+    const password = "test";
+    const metadata = await testKeyManager.storeKey({
+      key: {
+        id: "this is a very good id, and I like it",
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
+      },
+      password,
+      encrypterName: "IdentityEncrypter",
+    });
+
+    expect(metadata).toEqual({
+      id: "this is a very good id, and I like it",
+    });
+
+    expect(await testKeyManager.loadAllKeys(password)).toEqual([
+      {
+        id: "this is a very good id, and I like it",
+        privateKey: "ARCHANGEL",
+        publicKey: "AVACYN",
+        type: "plaintextKey",
+      },
+    ]);
+
+    await testKeyManager.removeKey(metadata.id);
+
+    expect(await testKeyManager.loadAllKeys(password)).toEqual([]);
   });
 
   test("Save / remove keys", async () => {
@@ -38,12 +79,12 @@ describe("KeyManager", function() {
     });
 
     expect(metadata).toEqual({
-      id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
+      id: "0.5",
     });
 
     expect(await testKeyManager.loadAllKeys(password)).toEqual([
       {
-        id: "2d1707a654a4edbf3a64689e4ca493a85afa2a4f",
+        id: "0.5",
         privateKey: "ARCHANGEL",
         publicKey: "AVACYN",
         type: "plaintextKey",

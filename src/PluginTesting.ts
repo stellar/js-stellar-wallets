@@ -1,4 +1,3 @@
-import sha1 from "js-sha1";
 import StellarSdk from "stellar-sdk";
 
 import { KeyType } from "./constants/keys";
@@ -44,7 +43,7 @@ export async function testEncrypter(encrypter: any = 0): Promise<boolean> {
   const privateKey = account.secret();
 
   const key: Key = {
-    id: sha1(`${privateKey}${publicKey}`),
+    id: "test id",
     type: KeyType.plaintextKey,
     publicKey,
     privateKey,

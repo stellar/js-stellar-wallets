@@ -1,4 +1,3 @@
-import sha1 from "js-sha1";
 import StellarSdk, { Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
@@ -126,8 +125,8 @@ export class KeyManager {
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @async
-   * @param key Key object to store. an `id` field is optional; if you don't 
-   * provide one, we'll generate a random number. The id will be used to read, 
+   * @param key Key object to store. an `id` field is optional; if you don't
+   * provide one, we'll generate a random number. The id will be used to read,
    * change, update, and delete keys.
    * @param password encrypt key with this as the secret
    * @param encrypterName encryption algorithm to use (must have been
