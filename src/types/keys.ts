@@ -91,7 +91,7 @@ export interface Encrypter {
  *   - authenticated server-side storage
  *   - storage on local device
  *
- * A key's id is generating by computing `sha1(private key + public key)`.
+ * A key's id, if one isn't provided, will be Math.random().
  */
 export interface KeyStore {
   name: string;

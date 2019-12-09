@@ -6,7 +6,7 @@ In order to increase privacy on the data stored, the key manager will encrypt
 all data before passing it to the keystore.
 
 The most notable change related to the wallet SDK's API is that keystores won't
-receive the public key anymore; only a `sha1(privateKey + publicKey)` digest
+receive the public key anymore; only a client-provided id (or a random number)
 will be available to operate search actions, like removing a key.
 
 ## Data format
