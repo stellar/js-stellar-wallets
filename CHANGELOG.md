@@ -2,6 +2,9 @@
 
 ## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
 
+- [Data] Fix a bug where makeDisplayableTrades was outputting tokens with
+  incorrectly-formatted `issuer` properties: the `issuer` object had in
+  incorrect `publicKey` property that was renamed to the correct name `key`.
 - [Transfers] Inject JWTs into interactive KYC URLs if not present
 - [Transfers] Fix and standardize URL manipulation
 - [Transfers} Add `TransferProvider#getKycUrl`, which uses the same URL as
