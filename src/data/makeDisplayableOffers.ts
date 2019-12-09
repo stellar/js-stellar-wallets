@@ -55,23 +55,23 @@ export function makeDisplayableOffers(
 
       const paymentToken: Token = {
         type: selling.asset_type as AssetType,
-        code: selling.asset_code || "XLM",
+        code: (selling.asset_code as string) || "XLM",
         issuer:
           selling.asset_type === "native"
             ? undefined
             : {
-                key: selling.asset_issuer,
+                key: selling.asset_issuer as string,
               },
       };
 
       const incomingToken: Token = {
         type: buying.asset_type as AssetType,
-        code: buying.asset_code || "XLM",
+        code: (buying.asset_code as string) || "XLM",
         issuer:
           buying.asset_type === "native"
             ? undefined
             : {
-                key: buying.asset_issuer,
+                key: buying.asset_issuer as string,
               },
       };
 

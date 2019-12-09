@@ -64,23 +64,23 @@ export function makeDisplayableTrades(
 
       const baseToken: Token = {
         type: trade.base_asset_type as AssetType,
-        code: trade.base_asset_code || "XLM",
+        code: (trade.base_asset_code as string) || "XLM",
         issuer:
           trade.base_asset_type === "native"
             ? undefined
             : {
-                publicKey: trade.base_asset_issuer,
+                key: trade.base_asset_issuer as string,
               },
       };
 
       const counterToken: Token = {
         type: trade.counter_asset_type as AssetType,
-        code: trade.counter_asset_code || "XLM",
+        code: (trade.counter_asset_code as string) || "XLM",
         issuer:
           trade.counter_asset_type === "native"
             ? undefined
             : {
-                publicKey: trade.counter_asset_issuer,
+                key: trade.counter_asset_issuer as string,
               },
       };
 

@@ -45,12 +45,12 @@ export interface AssetToken {
   type: AssetType;
   code: string;
   issuer: Issuer;
-  anchorAsset: string;
-  numAccounts: BigNumber;
-  amount: BigNumber;
-  bidCount: BigNumber;
-  askCount: BigNumber;
-  spread: BigNumber;
+  anchorAsset?: string;
+  numAccounts?: BigNumber;
+  amount?: BigNumber;
+  bidCount?: BigNumber;
+  askCount?: BigNumber;
+  spread?: BigNumber;
 }
 
 export type Token = NativeToken | AssetToken;
