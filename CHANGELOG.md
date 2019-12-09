@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
+
+- [Transfers] Inject JWTs into interactive KYC URLs if not present
+- [Transfers] Fix and standardize URL manipulation
+- [Transfers} Add `TransferProvider#getKycUrl`, which uses the same URL as
+  `fetchKycInBrowser`
+- [Transfers] Fixes and improvements to fetchKycInBrowser / getKycUrl
+
 ## [v0.0.7-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.6-rc.17...v0.0.7-rc.1)
 
 - Rename some things for clarity
