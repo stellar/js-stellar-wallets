@@ -1,4 +1,3 @@
-import sha1 from "js-sha1";
 import StellarSdk from "stellar-sdk";
 
 import { EncryptedKey, Key, KeyMetadata } from "../types";
@@ -11,7 +10,7 @@ export function generatePlaintextKey(): Key {
   const privateKey = account.secret();
 
   return {
-    id: sha1(`${privateKey}${publicKey}`),
+    id: `${Math.random()}`,
     type: KeyType.plaintextKey,
     publicKey,
     privateKey,
@@ -23,7 +22,7 @@ export function generateLedgerKey(): Key {
   const publicKey = account.publicKey();
 
   return {
-    id: sha1(`${publicKey}`),
+    id: `${Math.random()}`,
     type: KeyType.ledger,
     publicKey,
     privateKey: "",
