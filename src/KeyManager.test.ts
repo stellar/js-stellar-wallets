@@ -3,7 +3,6 @@ import sinon from "sinon";
 import StellarBase from "stellar-base";
 
 import { KeyType } from "./constants/keys";
-import "./index.d";
 import { KeyManager } from "./KeyManager";
 import { IdentityEncrypter } from "./plugins/IdentityEncrypter";
 import { MemoryKeyStore } from "./plugins/MemoryKeyStore";

@@ -28,7 +28,7 @@ it("makes trades from real-world examples", () => {
         code: "BAT",
         type: "credit_alphanum4",
         issuer: {
-          publicKey: "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
+          key: "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
         },
       },
       incomingAmount: new BigNumber("139.5761839"),
