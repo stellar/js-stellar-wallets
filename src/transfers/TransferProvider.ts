@@ -72,7 +72,9 @@ export abstract class TransferProvider {
   public authToken?: string;
 
   // This type monstrosity courtesy of https://stackoverflow.com/a/56239226
-  protected _oneTransactionWatcher?: ReturnType<typeof setTimeout>;
+  protected _oneTransactionWatcher: {
+    [id: string]: ReturnType<typeof setTimeout>;
+  };
   protected _allTransactionsWatcher?: ReturnType<typeof setTimeout>;
 
   protected _watchOneTransactionRegistry: WatchOneTransactionRegistry;
@@ -105,6 +107,7 @@ export abstract class TransferProvider {
     this._watchAllTransactionsRegistry = {};
     this._transactionsRegistry = {};
     this._transactionsIgnoredRegistry = {};
+    this._oneTransactionWatcher = {};
   }
 
   protected async fetchInfo(): Promise<Info> {
@@ -184,14 +187,42 @@ export abstract class TransferProvider {
     params: TransactionParams,
     isWatching: boolean,
   ): Promise<Transaction> {
-    const { asset_code, id } = params;
+    const {
+      asset_code,
+      id,
+      stellar_transaction_id,
+      external_transaction_id,
+    } = params;
+
+    // one of either id or stellar_transaction_id must be provided
+    if (
+      id === undefined &&
+      stellar_transaction_id === undefined &&
+      external_transaction_id === undefined
+    ) {
+      throw new Error(
+        "fetchTransaction: One of `id`, `external_transaction_id`, " +
+          "or `stellar_transaction_id` must be provided! ",
+      );
+    }
+
     const isAuthRequired = this.getAuthStatus(
       isWatching ? "watchOneTransaction" : "fetchTransaction",
       asset_code,
     );
 
+    let qs: { [name: string]: string } = {};
+
+    if (id) {
+      qs = { id };
+    } else if (stellar_transaction_id) {
+      qs = { stellar_transaction_id };
+    } else if (external_transaction_id) {
+      qs = { external_transaction_id };
+    }
+
     const response = await fetch(
-      `${this.transferServer}/transaction?${queryString.stringify({ id })}`,
+      `${this.transferServer}/transaction?${queryString.stringify(qs)}`,
       {
         headers: isAuthRequired ? this.getHeaders() : undefined,
       },
@@ -371,6 +402,8 @@ export abstract class TransferProvider {
     const {
       asset_code,
       id,
+      external_transaction_id,
+      stellar_transaction_id,
       onMessage,
       onSuccess,
       onError,
@@ -378,13 +411,23 @@ export abstract class TransferProvider {
       isRetry = false,
       ...otherParams
     } = params;
+
+    const txId = id || external_transaction_id || stellar_transaction_id;
+
+    if (txId === undefined) {
+      throw new Error(
+        "fetchTransaction: One of `id`, `external_transaction_id`, " +
+          "or `stellar_transaction_id` must be provided! ",
+      );
+    }
+
     // if it's a first blush, drop it in the registry
     if (!isRetry) {
       this._watchOneTransactionRegistry = {
         ...this._watchOneTransactionRegistry,
         [asset_code]: {
           ...(this._watchOneTransactionRegistry[asset_code] || {}),
-          [id]: true,
+          [txId]: true,
         },
       };
     }
@@ -395,7 +438,7 @@ export abstract class TransferProvider {
         if (
           !(
             this._watchOneTransactionRegistry[asset_code] &&
-            this._watchOneTransactionRegistry[asset_code][id]
+            this._watchOneTransactionRegistry[asset_code][txId]
           )
         ) {
           return;
@@ -416,14 +459,16 @@ export abstract class TransferProvider {
         this._transactionsRegistry[asset_code][transaction.id] = transaction;
 
         if (transaction.status.indexOf("pending") === 0) {
-          if (this._oneTransactionWatcher) {
-            clearTimeout(this._oneTransactionWatcher);
+          if (this._oneTransactionWatcher[txId]) {
+            clearTimeout(this._oneTransactionWatcher[txId]);
           }
 
-          this._oneTransactionWatcher = setTimeout(() => {
+          this._oneTransactionWatcher[txId] = setTimeout(() => {
             this.watchOneTransaction({
               asset_code,
               id,
+              external_transaction_id,
+              stellar_transaction_id,
               onMessage,
               onSuccess,
               onError,
@@ -448,19 +493,21 @@ export abstract class TransferProvider {
         if (
           !(
             this._watchOneTransactionRegistry[asset_code] &&
-            this._watchOneTransactionRegistry[asset_code][id]
+            this._watchOneTransactionRegistry[asset_code][txId]
           )
         ) {
           return;
         }
 
-        if (this._oneTransactionWatcher) {
-          clearTimeout(this._oneTransactionWatcher);
+        if (this._oneTransactionWatcher[txId]) {
+          clearTimeout(this._oneTransactionWatcher[txId]);
         }
 
         this.watchOneTransaction({
           asset_code,
           id,
+          external_transaction_id,
+          stellar_transaction_id,
           onMessage,
           onSuccess,
           onError,
@@ -469,9 +516,9 @@ export abstract class TransferProvider {
         });
       },
       stop: () => {
-        if (this._oneTransactionWatcher) {
-          this._watchOneTransactionRegistry[asset_code][id] = false;
-          clearTimeout(this._oneTransactionWatcher);
+        if (this._oneTransactionWatcher[txId]) {
+          this._watchOneTransactionRegistry[asset_code][txId] = false;
+          clearTimeout(this._oneTransactionWatcher[txId]);
         }
       },
     };

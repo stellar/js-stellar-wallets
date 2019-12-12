@@ -297,7 +297,9 @@ export interface TransactionsParams {
 
 export interface TransactionParams {
   asset_code: string;
-  id: string;
+  id?: string;
+  stellar_transaction_id?: string;
+  external_transaction_id?: string;
 }
 
 export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
