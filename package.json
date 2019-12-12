@@ -12,7 +12,9 @@
     "stellar-sdk": "^3.x.x"
   },
   "scripts": {
+    "prepare": "yarn build ; yarn build:commonjs",
     "build": "tsc -p tsconfig.json",
+    "build:commonjs": "webpack --mode production",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'yarn lint'",
     "docs": "typedoc",
     "lint": "tslint --fix --format verbose --project tsconfig.json",
@@ -50,6 +52,7 @@
     "@types/ledgerhq__hw-transport-u2f": "^4.21.1",
     "@types/sinon": "^7.0.11",
     "babel-jest": "^24.5.0",
+    "babel-loader": "^8.0.6",
     "concurrently": "^4.1.1",
     "husky": "^1.3.1",
     "jest": "^24.7.1",
@@ -57,13 +60,18 @@
     "jest-mock-random": "^1.0.3",
     "lint-staged": "^8.1.5",
     "prettier": "^1.17.0",
-    "regenerator-runtime": "^0.13.2",
+    "regenerator-runtime": "^0.13.3",
     "sinon": "^7.3.1",
     "stellar-sdk": "^3.2.0",
+    "terser-webpack-plugin": "^2.3.0",
+    "ts-loader": "^6.2.1",
     "tsc-watch": "^2.1.2",
     "tslint": "^5.14.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "path": "^0.12.7"
   },
   "dependencies": {
     "@ledgerhq/hw-app-str": "^4.48.0",
