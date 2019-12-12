@@ -261,6 +261,10 @@ interface BaseTransaction {
   external_transaction_id?: string;
   message?: string;
   refunded?: boolean;
+
+  // these are off-spec props from certain anchors
+  _id?: string;
+  amount?: string;
 }
 
 export interface DepositTransaction extends BaseTransaction {

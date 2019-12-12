@@ -233,6 +233,21 @@ export abstract class TransferProvider {
         try {
           const newTransactions = transactions.filter(
             (transaction: Transaction) => {
+              // some anchors (Settle) return _id instead of id, so rewrite that
+              if (transaction._id && transaction.id === undefined) {
+                transaction.id = transaction._id;
+              }
+
+              // others (Saldo) provide amount but not amount_in / amount_out
+              if (
+                transaction.amount &&
+                transaction.amount_in === undefined &&
+                transaction.amount_out === undefined
+              ) {
+                transaction.amount_in = transaction.amount;
+                transaction.amount_out = transaction.amount;
+              }
+
               const isPending = transaction.status.indexOf("pending") === 0;
               const registeredTransaction = this._transactionsRegistry[
                 asset_code
