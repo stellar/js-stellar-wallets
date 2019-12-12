@@ -1,5 +1,15 @@
 # Changelog
 
+## In master
+
+- [General] Add support for building a commonjs bundle
+- [Transfers] Normalize some anchor transactions that almost meet SEP-24 spec
+- [Transfers] Support fetching single transactions by their stellar id or
+  external id
+- [Transfers] Fix potential bugs with watching more than one transaction at a
+  time
+-
+
 ## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
 
 - [Data] Fix a bug where makeDisplayableTrades was outputting tokens with
