@@ -90,6 +90,7 @@ export function makeDisplayablePayments(
         sourceAmount: isPathPayment(payment)
           ? new BigNumber(payment.source_amount)
           : undefined,
+        transactionId: payment.transaction_hash,
       };
     },
   );

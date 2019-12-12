@@ -125,6 +125,8 @@ export interface Payment {
 
   sourceToken?: Token;
   sourceAmount?: BigNumber;
+
+  transactionId: string;
 }
 
 export interface Balance {
