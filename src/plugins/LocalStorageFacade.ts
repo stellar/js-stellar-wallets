@@ -14,12 +14,7 @@ export class LocalStorageFacade {
   private prefix: string = "stellarkeys";
 
   public configure(params: LocalStorageConfigParams) {
-    try {
-      Object.assign(this, params);
-      return Promise.resolve();
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    Object.assign(this, params);
   }
 
   public hasKey(id: string) {
