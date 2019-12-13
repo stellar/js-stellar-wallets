@@ -2,7 +2,7 @@ import { EncryptedKey } from "../types";
 
 export interface LocalStorageConfigParams {
   prefix?: string;
-  storage?: Storage;
+  storage: Storage;
 }
 
 /**
