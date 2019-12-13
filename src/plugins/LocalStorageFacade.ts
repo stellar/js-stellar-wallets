@@ -5,6 +5,10 @@ export interface LocalStorageConfigParams {
   storage?: Storage;
 }
 
+/**
+ * Facade for `LocalStorageKeyStore` encapsulating the access to the actual
+ * local storage
+ */
 export class LocalStorageFacade {
   private storage: Storage | null = null;
   private prefix: string = "stellarkeys";
