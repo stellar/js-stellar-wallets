@@ -1,6 +1,9 @@
 import { getKeyMetadata } from "../helpers/getKeyMetadata";
 import { EncryptedKey, KeyMetadata, KeyStore } from "../types";
-import { LocalStorageFacade } from "./LocalStorageFacade";
+import {
+  LocalStorageConfigParams,
+  LocalStorageFacade,
+} from "./LocalStorageFacade";
 
 export class LocalStorageKeyStore implements KeyStore {
   public name: string;
@@ -11,7 +14,7 @@ export class LocalStorageKeyStore implements KeyStore {
     this.keyStore = new LocalStorageFacade();
   }
 
-  public configure(params?: any) {
+  public configure(params: LocalStorageConfigParams) {
     return this.keyStore.configure(params);
   }
 

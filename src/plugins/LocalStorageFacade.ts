@@ -1,6 +1,6 @@
 import { EncryptedKey } from "../types";
 
-interface ConfigParams {
+export interface LocalStorageConfigParams {
   prefix?: string;
   storage?: Storage;
 }
@@ -9,7 +9,7 @@ export class LocalStorageFacade {
   private storage: Storage | null = null;
   private prefix: string = "stellarkeys";
 
-  public configure(params: ConfigParams) {
+  public configure(params: LocalStorageConfigParams) {
     try {
       Object.assign(this, params);
       return Promise.resolve();
