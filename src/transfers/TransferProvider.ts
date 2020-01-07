@@ -185,7 +185,7 @@ export abstract class TransferProvider {
    */
   public async fetchTransaction(
     params: TransactionParams,
-    isWatching: boolean,
+    isWatching: boolean = false,
   ): Promise<Transaction> {
     const {
       asset_code,
@@ -228,7 +228,7 @@ export abstract class TransferProvider {
       },
     );
 
-    const transaction: Transaction = await response.json();
+    const { transaction }: { transaction: Transaction } = await response.json();
 
     return _normalizeTransaction(transaction);
   }

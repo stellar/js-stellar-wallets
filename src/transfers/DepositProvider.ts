@@ -269,7 +269,7 @@ export class DepositProvider extends TransferProvider {
    */
   public getKycUrl(callback_url?: string) {
     if (!this.response || !this.request) {
-      throw new Error(`Run startDeposit before calling fetchKycInBrowser!`);
+      throw new Error(`Run startDeposit before calling getKycUrl!`);
     }
 
     if (

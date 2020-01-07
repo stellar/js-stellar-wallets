@@ -211,7 +211,7 @@ export class WithdrawProvider extends TransferProvider {
    */
   public async fetchKycInBrowser(windowContext: Window): Promise<KycStatus> {
     if (!this.response || !this.request) {
-      throw new Error(`Run startDeposit before calling fetchKycInBrowser!`);
+      throw new Error(`Run startWithdraw before calling fetchKycInBrowser!`);
     }
 
     if (
@@ -261,7 +261,7 @@ export class WithdrawProvider extends TransferProvider {
    */
   public getKycUrl(callback_url?: string) {
     if (!this.response || !this.request) {
-      throw new Error(`Run startDeposit before calling fetchKycInBrowser!`);
+      throw new Error(`Run startWithdraw before calling getKycUrl!`);
     }
 
     if (
