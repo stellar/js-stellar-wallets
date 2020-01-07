@@ -92,28 +92,36 @@ describe("watchOneTransaction", () => {
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
 
-  const pendingTransaction = (n: number = 0): Transaction => {
+  const pendingTransaction = (n: number = 0): { transaction: Transaction } => {
     return {
-      kind: "deposit",
-      id: "TEST",
-      status: TransactionStatus.pending_anchor,
-      status_eta: n,
+      transaction: {
+        kind: "deposit",
+        id: "TEST",
+        status: TransactionStatus.pending_anchor,
+        status_eta: n,
+      },
     };
   };
-  const successfulTransaction = (n: number = 0): Transaction => {
+  const successfulTransaction = (
+    n: number = 0,
+  ): { transaction: Transaction } => {
     return {
-      kind: "deposit",
-      id: "TEST",
-      status: TransactionStatus.completed,
-      status_eta: n,
+      transaction: {
+        kind: "deposit",
+        id: "TEST",
+        status: TransactionStatus.completed,
+        status_eta: n,
+      },
     };
   };
-  const failedTransaction = (n: number = 0): Transaction => {
+  const failedTransaction = (n: number = 0): { transaction: Transaction } => {
     return {
-      kind: "deposit",
-      id: "TEST",
-      status: TransactionStatus.error,
-      status_eta: n,
+      transaction: {
+        kind: "deposit",
+        id: "TEST",
+        status: TransactionStatus.error,
+        status_eta: n,
+      },
     };
   };
 
@@ -156,7 +164,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -190,7 +198,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -224,7 +232,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -263,7 +271,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -315,7 +323,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -375,7 +383,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,
@@ -436,7 +444,7 @@ describe("watchOneTransaction", () => {
     // start watching
     provider.watchOneTransaction({
       asset_code: "SMX",
-      id: successfulTransaction(0).id,
+      id: successfulTransaction(0).transaction.id,
       onMessage,
       onSuccess,
       onError,

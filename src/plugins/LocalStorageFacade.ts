@@ -10,8 +10,13 @@ export interface LocalStorageConfigParams {
  * local storage
  */
 export class LocalStorageFacade {
-  private storage: Storage | null = null;
-  private prefix: string = "stellarkeys";
+  private storage: Storage | null;
+  private prefix: string;
+
+  constructor() {
+    this.storage = null;
+    this.prefix = "stellarkeys";
+  }
 
   public configure(params: LocalStorageConfigParams) {
     Object.assign(this, params);
