@@ -8,7 +8,8 @@
   external id
 - [Transfers] Fix potential bugs with watching more than one transaction at a
   time
--
+- [Transfers] Fix a bug where `TransferProvider#fetchTransaction` was expecting
+  the wrong response shape from /transaction
 
 ## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
 
