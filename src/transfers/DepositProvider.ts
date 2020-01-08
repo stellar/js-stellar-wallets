@@ -100,17 +100,43 @@ export class DepositProvider extends TransferProvider {
    * Note that all arguments must be in snake_case (which is what transfer
    * servers expect)!
    */
-  public async startDeposit(params: DepositRequest): Promise<TransferResponse> {
-    const request = { ...params, account: this.account };
+  public async startDeposit(
+    params: DepositRequest,
+    shouldUseNewEndpoints: boolean = false,
+  ): Promise<TransferResponse> {
+    const request: DepositRequest & { account: string } = {
+      ...params,
+      account: this.account,
+    };
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
-    const qs = queryString.stringify(request);
 
-    const response = await fetch(`${this.transferServer}/deposit?${qs}`, {
-      headers: isAuthRequired ? this.getHeaders() : undefined,
-    });
-
-    const text = await response.text();
+    let text;
     let json;
+
+    if (shouldUseNewEndpoints) {
+      const body = new FormData();
+
+      Object.keys(request).forEach((key: string) => {
+        body.append(key, request[key]);
+      });
+
+      const response = await fetch(
+        `${this.transferServer}/deposit/interactive`,
+        {
+          method: "POST",
+          body,
+          headers: isAuthRequired ? this.getHeaders() : undefined,
+        },
+      );
+
+      text = await response.text();
+    } else {
+      const qs = queryString.stringify(request);
+      const response = await fetch(`${this.transferServer}/deposit?${qs}`, {
+        headers: isAuthRequired ? this.getHeaders() : undefined,
+      });
+      text = await response.text();
+    }
 
     try {
       json = JSON.parse(text) as TransferResponse;
