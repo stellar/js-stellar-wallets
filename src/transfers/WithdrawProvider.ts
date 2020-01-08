@@ -103,7 +103,15 @@ export class WithdrawProvider extends TransferProvider {
     const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
       headers: isAuthRequired ? this.getHeaders() : undefined,
     });
-    const json = (await response.json()) as TransferResponse;
+
+    const text = await response.text();
+    let json;
+
+    try {
+      json = JSON.parse(text) as TransferResponse;
+    } catch (e) {
+      throw new Error(`Error parsing the deposit response as JSON: ${text}`);
+    }
 
     if (json.error) {
       const error: TransferError = new Error(json.error);
