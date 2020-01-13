@@ -310,11 +310,11 @@ export abstract class TransferProvider {
               }
 
               // if it's NOT a registered transaction, and it's not the first
-              // roll, maybe it's a new trans that completed immediately
+              // roll, maybe it's a new trans that completed/errored immediately
               // so register that!
               if (
-                !registeredTransaction &&
-                transaction.status === TransactionStatus.completed &&
+                (transaction.status === TransactionStatus.completed ||
+                  transaction.status === TransactionStatus.error) &&
                 isRetry &&
                 !this._transactionsIgnoredRegistry[asset_code][transaction.id]
               ) {
@@ -334,7 +334,12 @@ export abstract class TransferProvider {
             this._transactionsRegistry[asset_code][
               transaction.id
             ] = transaction;
-            onMessage(transaction);
+
+            if (transaction.status === TransactionStatus.error) {
+              onError(transaction);
+            } else {
+              onMessage(transaction);
+            }
           });
         } catch (e) {
           onError(e);
