@@ -114,7 +114,7 @@ export class WithdrawProvider extends TransferProvider {
       });
 
       const response = await fetch(
-        `${this.transferServer}/withdraw/interactive`,
+        `${this.transferServer}/transactions/withdraw/interactive`,
         {
           method: "POST",
           body,

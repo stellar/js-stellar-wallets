@@ -121,7 +121,7 @@ export class DepositProvider extends TransferProvider {
       });
 
       const response = await fetch(
-        `${this.transferServer}/deposit/interactive`,
+        `${this.transferServer}/transactions/deposit/interactive`,
         {
           method: "POST",
           body,
