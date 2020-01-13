@@ -112,22 +112,16 @@ export interface DepositAssetInfoMap {
 }
 
 export interface WithdrawRequest {
-  type: string;
   asset_code: string;
+  type: string;
   dest: string;
   dest_extra: string;
-  memo?: Memo;
-  memoType?: string;
-  [key: string]: any;
+  [key: string]: string;
 }
 
 export interface DepositRequest {
   asset_code: string;
-  memo?: Memo;
-  memoType?: string;
-  emailAddress?: string;
-  type?: string;
-  [key: string]: any;
+  [key: string]: string;
 }
 
 export interface TransferResponse {

@@ -95,17 +95,41 @@ export class WithdrawProvider extends TransferProvider {
    */
   public async startWithdraw(
     params: WithdrawRequest,
+    shouldUseNewEndpoints: boolean = false,
   ): Promise<TransferResponse> {
-    const request = { ...params, account: this.account };
+    const request: WithdrawRequest & { account: string } = {
+      ...params,
+      account: this.account,
+    };
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
-    const qs = queryString.stringify(request);
 
-    const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
-      headers: isAuthRequired ? this.getHeaders() : undefined,
-    });
-
-    const text = await response.text();
+    let text;
     let json;
+
+    if (shouldUseNewEndpoints) {
+      const body = new FormData();
+
+      Object.keys(request).forEach((key: string) => {
+        body.append(key, request[key]);
+      });
+
+      const response = await fetch(
+        `${this.transferServer}/withdraw/interactive`,
+        {
+          method: "POST",
+          body,
+          headers: isAuthRequired ? this.getHeaders() : undefined,
+        },
+      );
+
+      text = await response.text();
+    } else {
+      const qs = queryString.stringify(request);
+      const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
+        headers: isAuthRequired ? this.getHeaders() : undefined,
+      });
+      text = await response.text();
+    }
 
     try {
       json = JSON.parse(text) as TransferResponse;

@@ -10,6 +10,8 @@
   time
 - [Transfers] Fix a bug where `TransferProvider#fetchTransaction` was expecting
   the wrong response shape from /transaction
+- [Transfers] Add support for /deposit/interactive and /withdraw/interactive as
+  transfer endpoints.
 
 ## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
 
