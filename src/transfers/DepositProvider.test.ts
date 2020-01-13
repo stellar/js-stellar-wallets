@@ -43,6 +43,7 @@ describe("fetchFinalFee", () => {
 
     // manually set info
     provider.info = { deposit: info, withdraw: {} };
+    provider.authToken = "test";
 
     expect(
       await provider.fetchFinalFee({
@@ -75,6 +76,7 @@ describe("fetchFinalFee", () => {
     );
 
     provider.info = { deposit: info, withdraw: {} };
+    provider.authToken = "test";
 
     expect(
       await provider.fetchFinalFee({
@@ -138,6 +140,7 @@ describe("watchOneTransaction", () => {
       transferServer,
       StellarSdk.Keypair.random().publicKey(),
     );
+    provider.authToken = "test";
 
     await provider.fetchSupportedAssets();
   });
@@ -511,6 +514,8 @@ describe("watchAllTransactions", () => {
       StellarSdk.Keypair.random().publicKey(),
     );
 
+    provider.authToken = "test";
+
     await provider.fetchSupportedAssets();
   });
 
@@ -732,6 +737,7 @@ describe("validateFields", () => {
       },
       withdraw: {},
     };
+    provider.authToken = "test";
 
     return provider;
   }
