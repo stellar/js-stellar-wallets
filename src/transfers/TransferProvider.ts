@@ -591,10 +591,8 @@ export abstract class TransferProvider {
       );
     }
 
-    const isAuthRequired = !!assetInfo.authentication_required;
-
     // if the asset requires authentication, require an auth_token
-    if (isAuthRequired && !this.authToken) {
+    if (!this.authToken) {
       throw new Error(
         `
         Asset ${asset_code} requires authentication. Run KeyManager's 
@@ -603,6 +601,6 @@ export abstract class TransferProvider {
       );
     }
 
-    return isAuthRequired;
+    return true;
   }
 }

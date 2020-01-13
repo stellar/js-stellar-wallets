@@ -12,6 +12,8 @@
   the wrong response shape from /transaction
 - [Transfers] Add support for /deposit/interactive and /withdraw/interactive as
   transfer endpoints.
+- [Transfers] Previously, we'd only require an auth token if an endpoint
+  explicitly required it. Now, always require an auth token.
 
 ## [v0.0.8-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.7-rc.1...v0.0.8-rc.1)
 
