@@ -48,7 +48,7 @@ export function makeDisplayableBalances(
             type: (balance as Horizon.BalanceLineAsset).asset_type,
             code: (balance as Horizon.BalanceLineAsset).asset_code,
             issuer: {
-              publicKey: (balance as Horizon.BalanceLineAsset).asset_issuer,
+              key: (balance as Horizon.BalanceLineAsset).asset_issuer,
             },
           },
           sellingLiabilities,
