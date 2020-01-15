@@ -20,7 +20,7 @@ it("makes balances from a real-world example", async () => {
         type: "credit_alphanum4",
         code: "BAT",
         issuer: {
-          publicKey: "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
+          key: "GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
         },
       },
     },
@@ -34,7 +34,7 @@ it("makes balances from a real-world example", async () => {
         type: "credit_alphanum4",
         code: "REPO",
         issuer: {
-          publicKey: "GCZNF24HPMYTV6NOEHI7Q5RJFFUI23JKUKY3H3XTQAFBQIBOHD5OXG3B",
+          key: "GCZNF24HPMYTV6NOEHI7Q5RJFFUI23JKUKY3H3XTQAFBQIBOHD5OXG3B",
         },
       },
     },
@@ -48,7 +48,7 @@ it("makes balances from a real-world example", async () => {
         type: "credit_alphanum4",
         code: "TERN",
         issuer: {
-          publicKey: "GDGQDVO6XPFSY4NMX75A7AOVYCF5JYGW2SHCJJNWCQWIDGOZB53DGP6C",
+          key: "GDGQDVO6XPFSY4NMX75A7AOVYCF5JYGW2SHCJJNWCQWIDGOZB53DGP6C",
         },
       },
     },
@@ -62,7 +62,7 @@ it("makes balances from a real-world example", async () => {
         type: "credit_alphanum4",
         code: "WSD",
         issuer: {
-          publicKey: "GDSVWEA7XV6M5XNLODVTPCGMAJTNBLZBXOFNQD3BNPNYALEYBNT6CE2V",
+          key: "GDSVWEA7XV6M5XNLODVTPCGMAJTNBLZBXOFNQD3BNPNYALEYBNT6CE2V",
         },
       },
     },
@@ -76,7 +76,7 @@ it("makes balances from a real-world example", async () => {
         type: "credit_alphanum4",
         code: "USD",
         issuer: {
-          publicKey: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
+          key: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
         },
       },
     },
