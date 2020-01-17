@@ -282,7 +282,9 @@ export abstract class TransferProvider {
         try {
           const newTransactions = transactions.filter(
             (transaction: Transaction) => {
-              const isPending = transaction.status.indexOf("pending") === 0;
+              const isPending =
+                transaction.status.indexOf("pending") === 0 ||
+                transaction.status === TransactionStatus.incomplete;
               const registeredTransaction = this._transactionsRegistry[
                 asset_code
               ][transaction.id];
