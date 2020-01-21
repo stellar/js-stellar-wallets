@@ -95,8 +95,10 @@ describe("KeyManager", function() {
     await testKeyManager.removeKey(metadata.id);
 
     try {
-      const key = await testKeyManager.loadKey(id, password);
-      expect(key).toBeUndefined();
+      await testKeyManager.loadKey(id, password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
     } catch (e) {
       expect(e.toString()).toContain("Key not found");
     }
@@ -166,8 +168,10 @@ describe("KeyManager", function() {
     await testKeyManager.removeKey(metadata.id);
 
     try {
-      const key = await testKeyManager.loadKey("0.5", password);
-      expect(key).toBeUndefined();
+      await testKeyManager.loadKey("0.5", password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
     } catch (e) {
       expect(e.toString()).toContain("Key not found");
     }
@@ -387,11 +391,13 @@ describe("KeyManager Scrypt", () => {
     });
 
     try {
-      const key = await testKeyManager.loadKey(
+      await testKeyManager.loadKey(
         "0.5",
         "i don't know the password but I'm hoping the decrypter works anyway",
       );
-      expect(key).toBeUndefined();
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
     } catch (e) {
       expect(e.toString()).toContain("Couldn’t decrypt key");
     }
@@ -399,8 +405,10 @@ describe("KeyManager Scrypt", () => {
     await testKeyManager.removeKey(metadata.id);
 
     try {
-      const key = await testKeyManager.loadKey("0.5", password);
-      expect(key).toBeUndefined();
+      await testKeyManager.loadKey("0.5", password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
     } catch (e) {
       expect(e.toString()).toContain("Key not found");
     }
