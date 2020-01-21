@@ -6,6 +6,7 @@ import { KeyType } from "./constants/keys";
 import { KeyManager } from "./KeyManager";
 import { IdentityEncrypter } from "./plugins/IdentityEncrypter";
 import { MemoryKeyStore } from "./plugins/MemoryKeyStore";
+import { ScryptEncrypter } from "./plugins/ScryptEncrypter";
 
 // tslint:disable-next-line
 describe("KeyManager", function() {
@@ -20,7 +21,90 @@ describe("KeyManager", function() {
     clock.restore();
   });
 
-  test("Set an ID of one's own", async () => {
+  test("Save an ID of one's own", async () => {
+    const testStore = new MemoryKeyStore();
+    const testKeyManager = new KeyManager({
+      keyStore: testStore,
+    });
+
+    const id = "this is a very good id, and I like it";
+
+    testKeyManager.registerEncrypter(IdentityEncrypter);
+
+    const password = "test";
+    const metadata = await testKeyManager.storeKey({
+      key: {
+        id,
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
+      },
+      password,
+      encrypterName: "IdentityEncrypter",
+    });
+
+    expect(metadata).toEqual({
+      id,
+    });
+
+    expect(await testKeyManager.loadAllKeyIds()).toEqual([id]);
+
+    expect(await testKeyManager.loadKey(id, password)).toEqual({
+      id,
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      privateKey: "ARCHANGEL",
+    });
+  });
+
+  test("Save and remove an ID of one's own", async () => {
+    const testStore = new MemoryKeyStore();
+    const testKeyManager = new KeyManager({
+      keyStore: testStore,
+    });
+
+    const id = "this is a very good id, and I like it";
+
+    testKeyManager.registerEncrypter(IdentityEncrypter);
+
+    const password = "test";
+    const metadata = await testKeyManager.storeKey({
+      key: {
+        id,
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
+      },
+      password,
+      encrypterName: "IdentityEncrypter",
+    });
+
+    expect(metadata).toEqual({
+      id,
+    });
+
+    expect(await testKeyManager.loadAllKeyIds()).toEqual([id]);
+
+    expect(await testKeyManager.loadKey(id, password)).toEqual({
+      id,
+      type: KeyType.plaintextKey,
+      publicKey: "AVACYN",
+      privateKey: "ARCHANGEL",
+    });
+
+    await testKeyManager.removeKey(metadata.id);
+
+    try {
+      await testKeyManager.loadKey(id, password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain("Key not found");
+    }
+  });
+
+  test("Save keys", async () => {
     const testStore = new MemoryKeyStore();
     const testKeyManager = new KeyManager({
       keyStore: testStore,
@@ -31,7 +115,6 @@ describe("KeyManager", function() {
     const password = "test";
     const metadata = await testKeyManager.storeKey({
       key: {
-        id: "this is a very good id, and I like it",
         type: KeyType.plaintextKey,
         publicKey: "AVACYN",
         privateKey: "ARCHANGEL",
@@ -41,21 +124,15 @@ describe("KeyManager", function() {
     });
 
     expect(metadata).toEqual({
-      id: "this is a very good id, and I like it",
+      id: "0.5",
     });
 
-    expect(await testKeyManager.loadAllKeys(password)).toEqual([
-      {
-        id: "this is a very good id, and I like it",
-        privateKey: "ARCHANGEL",
-        publicKey: "AVACYN",
-        type: "plaintextKey",
-      },
-    ]);
-
-    await testKeyManager.removeKey(metadata.id);
-
-    expect(await testKeyManager.loadAllKeys(password)).toEqual([]);
+    expect(await testKeyManager.loadKey("0.5", password)).toEqual({
+      id: "0.5",
+      privateKey: "ARCHANGEL",
+      publicKey: "AVACYN",
+      type: "plaintextKey",
+    });
   });
 
   test("Save / remove keys", async () => {
@@ -81,18 +158,23 @@ describe("KeyManager", function() {
       id: "0.5",
     });
 
-    expect(await testKeyManager.loadAllKeys(password)).toEqual([
-      {
-        id: "0.5",
-        privateKey: "ARCHANGEL",
-        publicKey: "AVACYN",
-        type: "plaintextKey",
-      },
-    ]);
+    expect(await testKeyManager.loadKey("0.5", password)).toEqual({
+      id: "0.5",
+      privateKey: "ARCHANGEL",
+      publicKey: "AVACYN",
+      type: "plaintextKey",
+    });
 
     await testKeyManager.removeKey(metadata.id);
 
-    expect(await testKeyManager.loadAllKeys(password)).toEqual([]);
+    try {
+      await testKeyManager.loadKey("0.5", password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain("Key not found");
+    }
   });
 
   test("Sign transactions", async () => {
@@ -262,6 +344,147 @@ describe("KeyManager", function() {
       } catch (e) {
         expect(e.toString()).toMatch(`Network mismatch`);
       }
+    });
+  });
+});
+
+describe("KeyManager Scrypt", () => {
+  let clock: sinon.SinonFakeTimers;
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(666);
+    mockRandomForEach(0.5);
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
+  test("Save / remove keys", async () => {
+    const testStore = new MemoryKeyStore();
+    const testKeyManager = new KeyManager({
+      keyStore: testStore,
+    });
+
+    testKeyManager.registerEncrypter(ScryptEncrypter);
+
+    const password = "test";
+    const metadata = await testKeyManager.storeKey({
+      key: {
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN",
+        privateKey: "ARCHANGEL",
+      },
+      password,
+      encrypterName: ScryptEncrypter.name,
+    });
+
+    expect(metadata).toEqual({
+      id: "0.5",
+    });
+
+    expect(await testKeyManager.loadKey("0.5", password)).toEqual({
+      id: "0.5",
+      privateKey: "ARCHANGEL",
+      publicKey: "AVACYN",
+      type: "plaintextKey",
+    });
+
+    try {
+      await testKeyManager.loadKey(
+        "0.5",
+        "i don't know the password but I'm hoping the decrypter works anyway",
+      );
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain("Couldn’t decrypt key");
+    }
+
+    await testKeyManager.removeKey(metadata.id);
+
+    try {
+      await testKeyManager.loadKey("0.5", password);
+      expect(
+        "The function should have thrown but didn't, the test failed!",
+      ).toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain("Key not found");
+    }
+  });
+});
+
+describe("KeyManager Scrypt, multiple keys with different passwords", () => {
+  let clock: sinon.SinonFakeTimers;
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(666);
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
+  test("Save multiple keys", async () => {
+    const testStore = new MemoryKeyStore();
+    const testKeyManager = new KeyManager({
+      keyStore: testStore,
+    });
+
+    testKeyManager.registerEncrypter(ScryptEncrypter);
+
+    const password1 = "test1";
+    const metadata1 = await testKeyManager.storeKey({
+      key: {
+        id: "key1",
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN1",
+        privateKey: "ARCHANGEL1",
+      },
+      password: password1,
+      encrypterName: ScryptEncrypter.name,
+    });
+
+    expect(metadata1).toEqual({
+      id: "key1",
+    });
+
+    expect(await testKeyManager.loadKey("key1", password1)).toEqual({
+      id: "key1",
+      privateKey: "ARCHANGEL1",
+      publicKey: "AVACYN1",
+      type: "plaintextKey",
+    });
+
+    const password2 = "test1";
+    const metadata2 = await testKeyManager.storeKey({
+      key: {
+        id: "key2",
+        type: KeyType.plaintextKey,
+        publicKey: "AVACYN2",
+        privateKey: "ARCHANGEL2",
+      },
+      password: password2,
+      encrypterName: ScryptEncrypter.name,
+    });
+
+    expect(metadata2).toEqual({
+      id: "key2",
+    });
+
+    expect(await testKeyManager.loadKey("key2", password2)).toEqual({
+      id: "key2",
+      privateKey: "ARCHANGEL2",
+      publicKey: "AVACYN2",
+      type: "plaintextKey",
+    });
+
+    expect(await testKeyManager.loadKey("key1", password1)).toEqual({
+      id: "key1",
+      privateKey: "ARCHANGEL1",
+      publicKey: "AVACYN1",
+      type: "plaintextKey",
     });
   });
 });

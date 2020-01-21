@@ -156,26 +156,51 @@ export class KeyManager {
   }
 
   /**
-   *  List information about stored keys
+   *  Load and decrypt one key, given its id.
    *
-   * @returns a list of all stored keys
+   * @returns Decrypted key
    */
-  public async loadAllKeys(password: string): Promise<any[]> {
+  public async loadKey(id: string, password: string): Promise<Key> {
     const encryptedKeys: EncryptedKey[] = await this.keyStore.loadAllKeys();
-    const keys = [];
+    const keys = encryptedKeys.filter((k) => k.id === id);
 
-    while (encryptedKeys.length) {
-      const encryptedKey = encryptedKeys.shift() as EncryptedKey;
-      const encrypter = this.encrypterMap[encryptedKey.encrypterName];
-      const key = await encrypter.decryptKey({
+    if (!keys.length) {
+      throw new Error(`Key not found with id '${id}'.`);
+    }
+
+    if (keys.length > 1) {
+      throw new Error(
+        `Too many keys found with id '${id}', that’s not supposed to happen!`,
+      );
+    }
+
+    const encryptedKey = keys[0];
+    const encrypter = this.encrypterMap[encryptedKey.encrypterName];
+
+    let key;
+
+    try {
+      key = await encrypter.decryptKey({
         encryptedKey,
         password,
       });
-
-      keys.push(key);
+    } catch (e) {
+      throw new Error(
+        `Couldn’t decrypt key '${id}' with the supplied password.`,
+      );
     }
 
-    return keys;
+    return key;
+  }
+
+  /**
+   *  Get a list of all stored key ids.
+   *
+   * @returns List of ids
+   */
+  public async loadAllKeyIds(): Promise<string[]> {
+    const encryptedKeys: EncryptedKey[] = await this.keyStore.loadAllKeys();
+    return encryptedKeys.map((key) => key.id);
   }
 
   /**

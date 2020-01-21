@@ -3,6 +3,9 @@
 ## In master
 
 - [General] Add support for building a commonjs bundle
+- [Keys] Replace `KeyManager#loadAllKeys` with `loadKey` and `loadAllKeyIds`.
+  This fixes a bug where a user wouldn't be able to save multiple keys with
+  different passwords.
 - [Transfers] Normalize some anchor transactions that almost meet SEP-24 spec
 - [Transfers] Support fetching single transactions by their stellar id or
   external id
