@@ -444,8 +444,8 @@ describe("KeyManager Scrypt, multiple keys with different passwords", () => {
 
     expect(await testKeyManager.loadKey("key1", password1)).toEqual({
       id: "key1",
-      privateKey: "ARCHANGEL",
-      publicKey: "AVACYN",
+      privateKey: "ARCHANGEL1",
+      publicKey: "AVACYN1",
       type: "plaintextKey",
     });
 
@@ -467,59 +467,16 @@ describe("KeyManager Scrypt, multiple keys with different passwords", () => {
 
     expect(await testKeyManager.loadKey("key2", password2)).toEqual({
       id: "key2",
-      privateKey: "ARCHANGEL",
-      publicKey: "AVACYN",
-      type: "plaintextKey",
-    });
-  });
-
-  test("Save and remove multiple keys", async () => {
-    const testStore = new MemoryKeyStore();
-    const testKeyManager = new KeyManager({
-      keyStore: testStore,
-    });
-
-    testKeyManager.registerEncrypter(ScryptEncrypter);
-
-    const password = "test";
-    const metadata = await testKeyManager.storeKey({
-      key: {
-        type: KeyType.plaintextKey,
-        publicKey: "AVACYN",
-        privateKey: "ARCHANGEL",
-      },
-      password,
-      encrypterName: ScryptEncrypter.name,
-    });
-
-    expect(metadata).toEqual({
-      id: "0.5",
-    });
-
-    expect(await testKeyManager.loadKey("0.5", password)).toEqual({
-      id: "0.5",
-      privateKey: "ARCHANGEL",
-      publicKey: "AVACYN",
+      privateKey: "ARCHANGEL2",
+      publicKey: "AVACYN2",
       type: "plaintextKey",
     });
 
-    try {
-      const key = await testKeyManager.loadKey(
-        "0.5",
-        "i don't know the password but I'm hoping the decrypter works anyway",
-      );
-      expect(key).toBeUndefined();
-    } catch (e) {
-      expect(e.toString()).toContain("Couldn’t decrypt key");
-    }
-
-    await testKeyManager.removeKey(metadata.id);
-
-    try {
-      const key = await testKeyManager.loadKey("0.5", password);
-      expect(key).toBeUndefined();
-    } catch (e) {
-      expect(e.toString()).toContain("Key not found");
-    }
+    expect(await testKeyManager.loadKey("key1", password1)).toEqual({
+      id: "key1",
+      privateKey: "ARCHANGEL1",
+      publicKey: "AVACYN1",
+      type: "plaintextKey",
+    });
   });
 });
