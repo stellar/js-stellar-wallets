@@ -1,5 +1,10 @@
 # Changelog
 
+## In master
+
+- [Transfers] Make the transactions fetcher more resilient to invalid responses
+  from /transactions.
+
 ## [v0.0.9-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.8-rc.1...v0.0.9-rc.1)
 
 - [General] Add support for building a commonjs bundle

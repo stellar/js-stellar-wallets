@@ -175,9 +175,16 @@ export abstract class TransferProvider {
       },
     );
 
-    const { transactions } = await response.json();
+    const text = await response.text();
 
-    return transactions.map(_normalizeTransaction);
+    try {
+      const { transactions } = JSON.parse(text);
+      return transactions.map(_normalizeTransaction);
+    } catch (e) {
+      throw new Error(
+        `Invalid transaction response from ${this.transferServer}: ${text}`,
+      );
+    }
   }
 
   /**
