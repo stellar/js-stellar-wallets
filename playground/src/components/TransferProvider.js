@@ -86,6 +86,12 @@ class TransferProvider extends Component {
 
         {depositProvider && info && (
           <>
+            <h2>Token Info</h2>
+
+            <Json src={info} />
+
+            <h2>Transaction History</h2>
+
             <label>
               Get transactions for asset:{" "}
               <Select

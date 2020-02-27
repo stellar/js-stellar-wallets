@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
 import * as WalletSdk from "@stellar/wallet-sdk";
@@ -46,40 +47,67 @@ class App extends Component {
     const { dataProvider, authToken } = this.state;
 
     return (
-      <div>
-        <GlobalStyle />
+      <Router>
+        <div>
+          <GlobalStyle />
 
-        <h2>Key Data</h2>
+          <h2>Key Data</h2>
 
-        <KeyEntry
-          onSetKey={this._setKey}
-          onGetAuthToken={(authToken) => this.setState({ authToken })}
-        />
+          <KeyEntry
+            onSetKey={this._setKey}
+            onGetAuthToken={(authToken) => this.setState({ authToken })}
+          />
 
-        {dataProvider && !dataProvider.isValidKey() && (
-          <p>That's an invalid key!</p>
-        )}
+          {dataProvider && !dataProvider.isValidKey() && (
+            <p>That's an invalid key!</p>
+          )}
 
-        {dataProvider && dataProvider.isValidKey() && (
-          <>
-            <h2>Transfers</h2>
+          {dataProvider && dataProvider.isValidKey() && (
+            <div>
+              <nav>
+                <ul>
+                  <li>
+                    <Link to="/">Account</Link>
+                  </li>
+                  <li>
+                    <Link to="/transfers">Transfers</Link>
+                  </li>
+                  <li>
+                    <Link to="/payments">Payments</Link>
+                  </li>
+                  <li>
+                    <Link to="/offers">Offers</Link>
+                  </li>
+                  <li>
+                    <Link to="/trades">Trades</Link>
+                  </li>
+                </ul>
+              </nav>
 
-            <TransferProvider
-              dataProvider={dataProvider}
-              authToken={authToken}
-            />
-
-            <El>
-              <AccountDetails dataProvider={dataProvider} />
-              <div>
-                <Payments dataProvider={dataProvider} />
-                <Offers dataProvider={dataProvider} />
-                <Trades dataProvider={dataProvider} />
-              </div>
-            </El>
-          </>
-        )}
-      </div>
+              <Switch>
+                <Route path="/transfers">
+                  <TransferProvider
+                    dataProvider={dataProvider}
+                    authToken={authToken}
+                  />
+                </Route>
+                <Route path="/payments">
+                  <Payments dataProvider={dataProvider} />
+                </Route>
+                <Route path="/">
+                  <AccountDetails dataProvider={dataProvider} />
+                </Route>
+                <Route path="/offers">
+                  <Offers dataProvider={dataProvider} />
+                </Route>
+                <Route path="/trades">
+                  <Trades dataProvider={dataProvider} />
+                </Route>
+              </Switch>
+            </div>
+          )}
+        </div>
+      </Router>
     );
   }
 }
