@@ -307,6 +307,22 @@ export class KeyManager {
       `${authServer}?account=${encodeURIComponent(key.publicKey)}`,
     );
 
+    if (challengeRes.status !== 200) {
+      try {
+        const challengeJson = await challengeRes.json();
+        throw new Error(
+          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction, 
+          error: ${challengeJson.error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction, 
+          error code ${challengeRes.status} and status text 
+          "${challengeRes.statusText}"`,
+        );
+      }
+    }
+
     const keyNetwork = key.network || this.defaultNetworkPassphrase;
 
     const {
@@ -352,6 +368,22 @@ export class KeyManager {
         "Content-Type": "application/json",
       },
     });
+
+    if (responseRes.status !== 200) {
+      try {
+        const responseJson = await responseRes.json();
+        throw new Error(
+          `[KeyManager#fetchAuthToken] Failed to return a signed transaction, 
+          error: ${responseJson.error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `[KeyManager#fetchAuthToken] Failed to return a signed transaction, 
+          error code ${responseRes.status} and status text 
+          "${responseRes.statusText}"`,
+        );
+      }
+    }
 
     const { token, message, status } = await responseRes.json();
 

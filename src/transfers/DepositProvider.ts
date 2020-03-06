@@ -110,7 +110,7 @@ export class DepositProvider extends TransferProvider {
     };
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
 
-    let text;
+    let response;
     let json;
 
     if (shouldUseNewEndpoints) {
@@ -120,7 +120,7 @@ export class DepositProvider extends TransferProvider {
         body.append(key, request[key]);
       });
 
-      const response = await fetch(
+      response = await fetch(
         `${this.transferServer}/transactions/deposit/interactive`,
         {
           method: "POST",
@@ -128,15 +128,28 @@ export class DepositProvider extends TransferProvider {
           headers: isAuthRequired ? this.getHeaders() : undefined,
         },
       );
-
-      text = await response.text();
     } else {
       const qs = queryString.stringify(request);
-      const response = await fetch(`${this.transferServer}/deposit?${qs}`, {
+      response = await fetch(`${this.transferServer}/deposit?${qs}`, {
         headers: isAuthRequired ? this.getHeaders() : undefined,
       });
-      text = await response.text();
     }
+
+    if (!response.ok) {
+      try {
+        const { error } = await response.json();
+        throw new Error(
+          `Error starting deposit to ${this.transferServer}: error ${error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `Error starting deposit to ${this.transferServer}: error 
+          code ${response.status}, status text: "${response.statusText}"`,
+        );
+      }
+    }
+
+    const text = await response.text();
 
     try {
       json = JSON.parse(text) as TransferResponse;

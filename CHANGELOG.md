@@ -2,6 +2,8 @@
 
 ## In master
 
+- [KeyManager] Correctly handle non-successful HTTP status codes when fetching
+  auth tokens.
 - [Transfers] Make the transactions fetcher more resilient to invalid responses
   from /transactions.
 
