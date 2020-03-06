@@ -4,6 +4,8 @@
 
 - [KeyManager] Correctly handle non-successful HTTP status codes when fetching
   auth tokens.
+- [Transfers] Correctly handle non-successful HTTP status codes for
+  transfer-related fetches.
 - [Transfers] Make the transactions fetcher more resilient to invalid responses
   from /transactions.
 
