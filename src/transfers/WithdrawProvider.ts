@@ -103,7 +103,7 @@ export class WithdrawProvider extends TransferProvider {
     };
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
 
-    let text;
+    let response;
     let json;
 
     if (shouldUseNewEndpoints) {
@@ -113,7 +113,7 @@ export class WithdrawProvider extends TransferProvider {
         body.append(key, request[key]);
       });
 
-      const response = await fetch(
+      response = await fetch(
         `${this.transferServer}/transactions/withdraw/interactive`,
         {
           method: "POST",
@@ -121,15 +121,28 @@ export class WithdrawProvider extends TransferProvider {
           headers: isAuthRequired ? this.getHeaders() : undefined,
         },
       );
-
-      text = await response.text();
     } else {
       const qs = queryString.stringify(request);
-      const response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
+      response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
         headers: isAuthRequired ? this.getHeaders() : undefined,
       });
-      text = await response.text();
     }
+
+    if (!response.ok) {
+      try {
+        const { error } = await response.json();
+        throw new Error(
+          `Error starting withdrawal to ${this.transferServer}: error ${error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `Error starting withdrawal to ${this.transferServer}: error 
+          code ${response.status}, status text: "${response.statusText}"`,
+        );
+      }
+    }
+
+    const text = await response.text();
 
     try {
       json = JSON.parse(text) as TransferResponse;

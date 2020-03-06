@@ -112,6 +112,21 @@ export abstract class TransferProvider {
 
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(`${this.transferServer}/info`);
+
+    if (!response.ok) {
+      try {
+        const { error } = await response.json();
+        throw new Error(
+          `Error fetching info from ${this.transferServer}: error ${error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `Error fetching info from ${this.transferServer}: error 
+          code ${response.status}, status text: "${response.statusText}"`,
+        );
+      }
+    }
+
     const rawInfo = (await response.json()) as RawInfoResponse;
     const info = parseInfo(rawInfo);
     this.info = info;
@@ -175,6 +190,22 @@ export abstract class TransferProvider {
       },
     );
 
+    if (!response.ok) {
+      try {
+        const { error } = await response.json();
+        throw new Error(
+          `Error fetching transactions from ${
+            this.transferServer
+          }: error ${error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `Error fetching transactions from ${this.transferServer}: error 
+          code ${response.status}, status text: "${response.statusText}"`,
+        );
+      }
+    }
+
     const text = await response.text();
 
     try {
@@ -234,6 +265,22 @@ export abstract class TransferProvider {
         headers: isAuthRequired ? this.getHeaders() : undefined,
       },
     );
+
+    if (!response.ok) {
+      try {
+        const { error } = await response.json();
+        throw new Error(
+          `Error fetching transaction ${qs} from ${
+            this.transferServer
+          }: error ${error}`,
+        );
+      } catch (e) {
+        throw new Error(
+          `Error fetching transaction ${qs} from ${this.transferServer}: error 
+          code ${response.status}, status text: "${response.statusText}"`,
+        );
+      }
+    }
 
     const { transaction }: { transaction: Transaction } = await response.json();
 
@@ -569,6 +616,21 @@ export abstract class TransferProvider {
             operation: this.operation,
           })}`,
         );
+
+        if (!response.ok) {
+          try {
+            const { error } = await response.json();
+            throw new Error(
+              `Error fetching fees from ${this.transferServer}: error ${error}`,
+            );
+          } catch (e) {
+            throw new Error(
+              `Error fetching fees from ${this.transferServer}: error 
+              code ${response.status}, status text: "${response.statusText}"`,
+            );
+          }
+        }
+
         const { fee: feeResponse } = await response.json();
         return feeResponse as number;
 
