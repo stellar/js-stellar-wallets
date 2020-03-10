@@ -10,6 +10,10 @@
   transfer-related fetches.
 - [Transfers] Make the transactions fetcher more resilient to invalid responses
   from /transactions.
+- [Transfers] `DepositProvider` and `WithdrawProvider` instantiation now takes a
+  third, optional parameter for
+  [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) language codes. The
+  default value is "en".
 
 ## [v0.0.9-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.8-rc.1...v0.0.9-rc.1)
 
