@@ -99,7 +99,8 @@ export abstract class TransferProvider {
       throw new Error("Required parameter `operation` missing!");
     }
 
-    this.transferServer = transferServer;
+    // remove the trailing /
+    this.transferServer = transferServer.replace(/\/$/, "");
     this.operation = operation;
     this.account = account;
 
