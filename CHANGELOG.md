@@ -2,6 +2,8 @@
 
 ## In master
 
+- When parsing API responses, take extra care making sure that the responses are
+  valid JSON, and throw if not.
 - [KeyManager] Correctly handle non-successful HTTP status codes when fetching
   auth tokens.
 - [Transfers] Correctly handle non-successful HTTP status codes for
