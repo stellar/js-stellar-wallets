@@ -90,8 +90,12 @@ export class DepositProvider extends TransferProvider {
   public response?: TransferResponse;
   public request?: DepositRequest;
 
-  constructor(transferServer: string, account: string) {
-    super(transferServer, account, "deposit");
+  constructor(
+    transferServer: string,
+    account: string,
+    language: string = "en",
+  ) {
+    super(transferServer, account, language, "deposit");
   }
 
   /**
@@ -119,6 +123,8 @@ export class DepositProvider extends TransferProvider {
       Object.keys(request).forEach((key: string) => {
         body.append(key, request[key]);
       });
+
+      body.append("lang", this.language);
 
       response = await fetch(
         `${this.transferServer}/transactions/deposit/interactive`,
