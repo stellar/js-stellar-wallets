@@ -325,11 +325,21 @@ export class KeyManager {
 
     const keyNetwork = key.network || this.defaultNetworkPassphrase;
 
-    const {
-      transaction,
-      network_passphrase,
-      error,
-    } = await challengeRes.json();
+    const text = await challengeRes.text();
+
+    let transaction;
+    let network_passphrase;
+    let error;
+
+    try {
+      const json = JSON.parse(text);
+
+      transaction = json.transaction;
+      network_passphrase = json.network_passphrase;
+      error = json.error;
+    } catch (e) {
+      throw new Error(`Request for challenge returned invalid JSON: ${text}`);
+    }
 
     if (error) {
       throw new Error(error);

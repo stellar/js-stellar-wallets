@@ -99,7 +99,8 @@ export abstract class TransferProvider {
       throw new Error("Required parameter `operation` missing!");
     }
 
-    this.transferServer = transferServer;
+    // remove the trailing /
+    this.transferServer = transferServer.replace(/\/$/, "");
     this.operation = operation;
     this.account = account;
 
@@ -127,10 +128,20 @@ export abstract class TransferProvider {
       }
     }
 
-    const rawInfo = (await response.json()) as RawInfoResponse;
-    const info = parseInfo(rawInfo);
-    this.info = info;
-    return info;
+    const text = await response.text();
+
+    try {
+      const rawInfo = JSON.parse(text) as RawInfoResponse;
+      const info = parseInfo(rawInfo);
+      this.info = info;
+      return info;
+    } catch (e) {
+      throw new Error(
+        `Error parsing the response of ${
+          this.transferServer
+        }/info as JSON: ${text}`,
+      );
+    }
   }
 
   protected getHeaders(): Headers {
@@ -282,9 +293,13 @@ export abstract class TransferProvider {
       }
     }
 
-    const { transaction }: { transaction: Transaction } = await response.json();
-
-    return _normalizeTransaction(transaction);
+    const text = await response.text();
+    try {
+      const { transaction }: { transaction: Transaction } = JSON.parse(text);
+      return _normalizeTransaction(transaction);
+    } catch (e) {
+      throw new Error(`Auth challenge response wasn't valid JSON: ${text}`);
+    }
   }
 
   /**
@@ -631,8 +646,14 @@ export abstract class TransferProvider {
           }
         }
 
-        const { fee: feeResponse } = await response.json();
-        return feeResponse as number;
+        const text = await response.text();
+
+        try {
+          const { fee: feeResponse } = JSON.parse(text);
+          return feeResponse as number;
+        } catch (e) {
+          throw new Error(`Fee endpoint returned invalid JSON: ${text}`);
+        }
 
       default:
         throw new Error(
