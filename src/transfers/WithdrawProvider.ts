@@ -83,8 +83,12 @@ export class WithdrawProvider extends TransferProvider {
   public response?: TransferResponse;
   public request?: WithdrawRequest;
 
-  constructor(transferServer: string, account: string) {
-    super(transferServer, account, "withdraw");
+  constructor(
+    transferServer: string,
+    account: string,
+    language: string = "en",
+  ) {
+    super(transferServer, account, language, "withdraw");
   }
 
   /**
@@ -112,6 +116,8 @@ export class WithdrawProvider extends TransferProvider {
       Object.keys(request).forEach((key: string) => {
         body.append(key, request[key]);
       });
+
+      body.append("lang", this.language);
 
       response = await fetch(
         `${this.transferServer}/transactions/withdraw/interactive`,

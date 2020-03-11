@@ -68,6 +68,7 @@ export abstract class TransferProvider {
   public transferServer: string;
   public operation: "deposit" | "withdraw";
   public account: string;
+  public language: string;
   public info?: Info;
   public authToken?: string;
 
@@ -85,6 +86,7 @@ export abstract class TransferProvider {
   constructor(
     transferServer: string,
     account: string,
+    language: string,
     operation: "deposit" | "withdraw",
   ) {
     if (!transferServer) {
@@ -103,6 +105,7 @@ export abstract class TransferProvider {
     this.transferServer = transferServer.replace(/\/$/, "");
     this.operation = operation;
     this.account = account;
+    this.language = language;
 
     this._watchOneTransactionRegistry = {};
     this._watchAllTransactionsRegistry = {};
@@ -112,7 +115,9 @@ export abstract class TransferProvider {
   }
 
   protected async fetchInfo(): Promise<Info> {
-    const response = await fetch(`${this.transferServer}/info`);
+    const response = await fetch(
+      `${this.transferServer}/info?lang=${this.language}`,
+    );
 
     if (!response.ok) {
       try {
