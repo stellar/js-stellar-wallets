@@ -111,6 +111,7 @@ export class DepositProvider extends TransferProvider {
     const request: DepositRequest & { account: string } = {
       ...params,
       account: this.account,
+      lang: this.language,
     };
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
 
@@ -123,8 +124,6 @@ export class DepositProvider extends TransferProvider {
       Object.keys(request).forEach((key: string) => {
         body.append(key, request[key]);
       });
-
-      body.append("lang", this.language);
 
       response = await fetch(
         `${this.transferServer}/transactions/deposit/interactive`,

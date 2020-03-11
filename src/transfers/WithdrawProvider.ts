@@ -104,6 +104,7 @@ export class WithdrawProvider extends TransferProvider {
     const request: WithdrawRequest & { account: string } = {
       ...params,
       account: this.account,
+      lang: this.language,
     };
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
 
@@ -116,8 +117,6 @@ export class WithdrawProvider extends TransferProvider {
       Object.keys(request).forEach((key: string) => {
         body.append(key, request[key]);
       });
-
-      body.append("lang", this.language);
 
       response = await fetch(
         `${this.transferServer}/transactions/withdraw/interactive`,
