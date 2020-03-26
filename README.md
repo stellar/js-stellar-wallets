@@ -2,6 +2,8 @@
 
 A library to make it easier to write your own Stellar wallets.
 
+Docs: https://stellar-walletsdk-docs.netlify.com/
+
 It provides straightforward APIs for handling these tasks:
 
 - Fetching and formatting data from the Stellar network
