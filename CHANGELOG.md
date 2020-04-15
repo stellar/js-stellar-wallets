@@ -6,6 +6,8 @@
   valid JSON, and throw if not.
 - [KeyManager] Correctly handle non-successful HTTP status codes when fetching
   auth tokens.
+- [KeyManager] fetchAuthToken now accepts another account, if you're trying to
+  auth another key that your KeyManager account is a signer on.
 - [Transfers] Correctly handle non-successful HTTP status codes for
   transfer-related fetches.
 - [Transfers] Make the transactions fetcher more resilient to invalid responses
