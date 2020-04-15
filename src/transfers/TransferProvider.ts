@@ -198,7 +198,6 @@ export abstract class TransferProvider {
     const response = await fetch(
       `${this.transferServer}/transactions?${queryString.stringify({
         ...params,
-        account: this.account,
         kind,
       })}`,
       {
