@@ -271,11 +271,16 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
+   * @param {string} params.account The authenticating public key. If not
+   *                                provided, then the signers's public key will
+   *                                be used instead.
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
     const { id, password, authServer } = params;
+    let { account } = params;
+
     // throw errors for missing params
     if (id === undefined) {
       throw new Error("Required parameter `id` is missing!");
@@ -303,21 +308,25 @@ export class KeyManager {
       this._writeIndexCache(id, key);
     }
 
+    // If no account has been provided, assume that the signer is the target
+    // account.
+    account = account || key.publicKey;
+
     const challengeRes = await fetch(
-      `${authServer}?account=${encodeURIComponent(key.publicKey)}`,
+      `${authServer}?account=${encodeURIComponent(account)}`,
     );
 
     if (challengeRes.status !== 200) {
       try {
         const challengeJson = await challengeRes.json();
         throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction, 
+          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction,
           error: ${challengeJson.error}`,
         );
       } catch (e) {
         throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction, 
-          error code ${challengeRes.status} and status text 
+          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction,
+          error code ${challengeRes.status} and status text
           "${challengeRes.statusText}"`,
         );
       }
@@ -349,7 +358,7 @@ export class KeyManager {
     if (network_passphrase !== undefined && keyNetwork !== network_passphrase) {
       throw new Error(
         `
-        Network mismatch: the transfer server expects "${network_passphrase}", 
+        Network mismatch: the transfer server expects "${network_passphrase}",
         but you're using "${keyNetwork}"
         `,
       );
@@ -383,13 +392,13 @@ export class KeyManager {
       try {
         const responseJson = await responseRes.json();
         throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to return a signed transaction, 
+          `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
           error: ${responseJson.error}`,
         );
       } catch (e) {
         throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to return a signed transaction, 
-          error code ${responseRes.status} and status text 
+          `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
+          error code ${responseRes.status} and status text
           "${responseRes.statusText}"`,
         );
       }
