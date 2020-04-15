@@ -120,15 +120,17 @@ export abstract class TransferProvider {
     );
 
     if (!response.ok) {
+      const badResponse = await response.text();
       try {
-        const { error } = await response.json();
+        const { error, message } = JSON.parse(badResponse);
         throw new Error(
-          `Error fetching info from ${this.transferServer}: error ${error}`,
+          `Error fetching info from ${this.transferServer}: error ${error ||
+            message}`,
         );
       } catch (e) {
         throw new Error(
           `Error fetching info from ${this.transferServer}: error 
-          code ${response.status}, status text: "${response.statusText}"`,
+          code ${response.status}, response text: "${badResponse}"`,
         );
       }
     }
@@ -206,17 +208,18 @@ export abstract class TransferProvider {
     );
 
     if (!response.ok) {
+      const badResponse = await response.text();
       try {
-        const { error } = await response.json();
+        const { error, message } = JSON.parse(badResponse);
         throw new Error(
           `Error fetching transactions from ${
             this.transferServer
-          }: error ${error}`,
+          }: error ${error || message}`,
         );
       } catch (e) {
         throw new Error(
           `Error fetching transactions from ${this.transferServer}: error 
-          code ${response.status}, status text: "${response.statusText}"`,
+          code ${response.status}, response text: "${badResponse}"`,
         );
       }
     }
@@ -282,17 +285,19 @@ export abstract class TransferProvider {
     );
 
     if (!response.ok) {
+      const badResponse = await response.text();
+
       try {
-        const { error } = await response.json();
+        const { error, message } = JSON.parse(badResponse);
         throw new Error(
           `Error fetching transaction ${qs} from ${
             this.transferServer
-          }: error ${error}`,
+          }: error ${error || message}`,
         );
       } catch (e) {
         throw new Error(
           `Error fetching transaction ${qs} from ${this.transferServer}: error 
-          code ${response.status}, status text: "${response.statusText}"`,
+          code ${response.status}, response text: "${badResponse}"`,
         );
       }
     }
@@ -637,15 +642,18 @@ export abstract class TransferProvider {
         );
 
         if (!response.ok) {
+          const badResponse = await response.text();
+
           try {
-            const { error } = await response.json();
+            const { error, message } = JSON.parse(badResponse);
             throw new Error(
-              `Error fetching fees from ${this.transferServer}: error ${error}`,
+              `Error fetching fees from ${this.transferServer}: error ${error ||
+                message}`,
             );
           } catch (e) {
             throw new Error(
               `Error fetching fees from ${this.transferServer}: error 
-              code ${response.status}, status text: "${response.statusText}"`,
+              code ${response.status}, response text: "${badResponse}"`,
             );
           }
         }
