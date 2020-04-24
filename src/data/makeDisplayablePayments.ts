@@ -91,6 +91,16 @@ export function makeDisplayablePayments(
           ? new BigNumber(payment.source_amount)
           : undefined,
         transactionId: payment.transaction_hash,
+        // TODO: remove these when stellar-sdk is updated
+        // @ts-ignore
+        ...(payment.transaction_attr
+          ? {
+              // @ts-ignore
+              memo: payment.transaction_attr.memo,
+              // @ts-ignore
+              memoType: payment.transaction_attr.memo_type,
+            }
+          : {}),
       };
     },
   );

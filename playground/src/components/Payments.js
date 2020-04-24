@@ -88,6 +88,8 @@ class Payments extends Component {
                     {payment.isRecipient ? "From" : "To"}{" "}
                     {payment.otherAccount.publicKey}
                   </li>
+                  <li>Memo: {payment.memo}</li>
+                  <li>Memo type: {payment.memoType}</li>
                 </ul>
                 {/* <Json src={payment} /> */}
               </li>

@@ -161,6 +161,7 @@ export class DataProvider {
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
+      .join("transactions")
       .call();
 
     return this._processPayments(payments);
