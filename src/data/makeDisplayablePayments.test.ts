@@ -4,9 +4,9 @@ import { Payments } from "../fixtures/PaymentsResponse";
 import { parseResponse } from "../testUtils";
 import { makeDisplayablePayments } from "./makeDisplayablePayments";
 
-it("Makes payments", () => {
+it("Makes payments", async () => {
   const paymentResponse = parseResponse(Payments);
-  const payments = makeDisplayablePayments(
+  const payments = await makeDisplayablePayments(
     { publicKey: "PHYREXIA" },
     paymentResponse.records,
   );

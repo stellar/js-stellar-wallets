@@ -20,78 +20,95 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   );
 }
 
-export function makeDisplayablePayments(
+export async function makeDisplayablePayments(
   subjectAccount: Account,
   payments: Array<
     | ServerApi.CreateAccountOperationRecord
     | ServerApi.PaymentOperationRecord
     | ServerApi.PathPaymentOperationRecord
   >,
-): Payment[] {
-  return payments.map(
-    (
-      payment:
-        | ServerApi.CreateAccountOperationRecord
-        | ServerApi.PaymentOperationRecord
-        | ServerApi.PathPaymentOperationRecord,
-    ): Payment => {
-      const isRecipient = payment.source_account !== subjectAccount.publicKey;
+): Promise<Payment[]> {
+  return Promise.all(
+    payments.map(
+      async (
+        payment:
+          | ServerApi.CreateAccountOperationRecord
+          | ServerApi.PaymentOperationRecord
+          | ServerApi.PathPaymentOperationRecord,
+      ): Promise<Payment> => {
+        const isRecipient = payment.source_account !== subjectAccount.publicKey;
 
-      let otherAccount: Account;
+        let otherAccount: Account;
 
-      if (isCreateAccount(payment)) {
-        otherAccount = {
-          publicKey: isRecipient
-            ? payment.source_account
-            : payment.source_account,
-        };
-      } else {
-        otherAccount = { publicKey: isRecipient ? payment.from : payment.to };
-      }
-
-      const token: Token = isCreateAccount(payment)
-        ? {
-            type: "native" as AssetType,
-            code: "XLM",
-          }
-        : {
-            type: payment.asset_type as AssetType,
-            code: payment.asset_code || "XLM",
-            issuer:
-              payment.asset_type === "native"
-                ? undefined
-                : {
-                    key: payment.asset_issuer as string,
-                  },
+        if (isCreateAccount(payment)) {
+          otherAccount = {
+            publicKey: isRecipient
+              ? payment.source_account
+              : payment.source_account,
           };
+        } else {
+          otherAccount = { publicKey: isRecipient ? payment.from : payment.to };
+        }
 
-      return {
-        id: payment.id,
-        isInitialFunding: isCreateAccount(payment),
-        isRecipient,
-        token,
-        amount: new BigNumber(
-          isCreateAccount(payment) ? payment.starting_balance : payment.amount,
-        ),
-        timestamp: Math.floor(new Date(payment.created_at).getTime() / 1000),
-        otherAccount,
-        sourceToken: isPathPayment(payment)
+        const token: Token = isCreateAccount(payment)
           ? {
-              type: payment.source_asset_type as AssetType,
-              code: payment.source_asset_code || "XLM",
+              type: "native" as AssetType,
+              code: "XLM",
+            }
+          : {
+              type: payment.asset_type as AssetType,
+              code: payment.asset_code || "XLM",
               issuer:
-                payment.source_asset_type === "native"
+                payment.asset_type === "native"
                   ? undefined
                   : {
-                      key: payment.source_asset_issuer as string,
+                      key: payment.asset_issuer as string,
                     },
-            }
-          : undefined,
-        sourceAmount: isPathPayment(payment)
-          ? new BigNumber(payment.source_amount)
-          : undefined,
-        transactionId: payment.transaction_hash,
-      };
-    },
+            };
+
+        let transaction: ServerApi.TransactionRecord | undefined;
+        try {
+          transaction = await payment.transaction();
+        } catch (e) {
+          // do nothing
+        }
+
+        return {
+          id: payment.id,
+          isInitialFunding: isCreateAccount(payment),
+          isRecipient,
+          token,
+          amount: new BigNumber(
+            isCreateAccount(payment)
+              ? payment.starting_balance
+              : payment.amount,
+          ),
+          timestamp: Math.floor(new Date(payment.created_at).getTime() / 1000),
+          otherAccount,
+          sourceToken: isPathPayment(payment)
+            ? {
+                type: payment.source_asset_type as AssetType,
+                code: payment.source_asset_code || "XLM",
+                issuer:
+                  payment.source_asset_type === "native"
+                    ? undefined
+                    : {
+                        key: payment.source_asset_issuer as string,
+                      },
+              }
+            : undefined,
+          sourceAmount: isPathPayment(payment)
+            ? new BigNumber(payment.source_amount)
+            : undefined,
+          transactionId: payment.transaction_hash,
+          ...(transaction
+            ? {
+                memo: transaction.memo,
+                memoType: transaction.memo_type,
+              }
+            : {}),
+        };
+      },
+    ),
   );
 }
