@@ -4,6 +4,7 @@
 
 - When parsing API responses, take extra care making sure that the responses are
   valid JSON, and throw if not.
+- [DataProvider] Add memo information to payments.
 - [KeyManager] Correctly handle non-successful HTTP status codes when fetching
   auth tokens.
 - [KeyManager] fetchAuthToken now accepts another account, if you're trying to
