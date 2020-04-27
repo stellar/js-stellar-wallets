@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { AssetType } from "stellar-base";
+import { AssetType, Memo, MemoType } from "stellar-base";
 import {
   BadRequestError,
   Horizon,
@@ -127,6 +127,9 @@ export interface Payment {
   sourceAmount?: BigNumber;
 
   transactionId: string;
+
+  memo?: Memo | string;
+  memoType?: MemoType;
 }
 
 export interface Balance {

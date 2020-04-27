@@ -359,7 +359,7 @@ export class DataProvider {
     return {
       next: () => payments.next().then((res) => this._processPayments(res)),
       prev: () => payments.prev().then((res) => this._processPayments(res)),
-      records: makeDisplayablePayments(
+      records: await makeDisplayablePayments(
         { publicKey: this.accountKey },
         payments.records,
       ),
