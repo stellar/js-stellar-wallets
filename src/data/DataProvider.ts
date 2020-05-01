@@ -1,4 +1,3 @@
-// @ts-ignore
 import debounce from "lodash/debounce";
 import { Keypair, Server, ServerApi, StrKey } from "stellar-sdk";
 
@@ -177,7 +176,6 @@ export class DataProvider {
         .accountId(this.accountKey)
         .call();
 
-      // @ts-ignore
       const balances = makeDisplayableBalances(accountSummary);
 
       return {
@@ -303,6 +301,74 @@ export class DataProvider {
       delete this.callbacks.accountDetails;
       delete this.errorHandlers.accountDetails;
     };
+  }
+
+  /**
+   * Given a destination key, return a transaction that removes all trustlines
+   * and offers on the tracked account and merges the account into a given one.
+   *
+   * @throws Throws if the account has balances.
+   * @throws Throws if the destination account is invalid.
+   */
+  public async getStripAndMergeAccountTransaction(destinationKey: string) {
+    // throw if the destination is invalid
+    if (!StrKey.isValidEd25519PublicKey(destinationKey)) {
+      throw new Error("The destination is not a valid Stellar address.");
+    }
+
+    let account: AccountDetails;
+
+    // fetch the current account
+    try {
+      account = await this.fetchAccountDetails();
+    } catch (e) {
+      throw new Error(`Couldn't fetch account details, error: ${e.toString()}`);
+    }
+
+    // make sure all non-native balances are zero
+    const hasNonZeroBalance = Object.keys(account.balances).reduce(
+      (memo, identifier) => {
+        const balance = account.balances[identifier];
+        if (identifier !== "native" && balance.total.gt(0)) {
+          return true;
+        }
+        return memo;
+      },
+      false,
+    );
+
+    if (hasNonZeroBalance) {
+      throw new Error(
+        "This account can't be closed until all non-XLM balances are 0.",
+      );
+    }
+
+    // get ALL offers for the account
+    // (we don't need trade details, so skip those)
+    let offers: ServerApi.OfferRecord[] = [];
+    try {
+      let additionalOffers: ServerApi.OfferRecord[] | undefined;
+      let cursor: string | undefined;
+      let next: () => Promise<Collection<ServerApi.OfferRecord>> = () =>
+        this.server
+          .offers("accounts", this.accountKey)
+          .limit(25)
+          .order("desc")
+          .cursor(cursor || "")
+          .call();
+
+      while (additionalOffers === undefined || additionalOffers.length) {
+        const res = await next();
+        additionalOffers = res.records;
+        next = res.next;
+        offers = [...offers, ...additionalOffers];
+        console.log("Open offers list: ", openOffers);
+      }
+    } catch (e) {
+      throw new Error(`Couldn't fetch open offers, error: ${e.toString()}`);
+    }
+
+    let operations;
   }
 
   private async _processOpenOffers(
