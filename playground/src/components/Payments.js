@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import Json from "react-json-view";
 
 class Payments extends Component {
   state = {

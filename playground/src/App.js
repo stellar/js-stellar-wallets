@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
 import * as WalletSdk from "@stellar/wallet-sdk";
 import StellarSdk, { Networks } from "stellar-sdk";
@@ -11,12 +10,6 @@ import Offers from "components/Offers";
 import Trades from "components/Trades";
 import Payments from "components/Payments";
 import TransferProvider from "components/TransferProvider";
-
-const El = styled.div`
-  display: flex;
-  font-size: 0.8em;
-  line-height: 1.2em;
-`;
 
 class App extends Component {
   state = {
