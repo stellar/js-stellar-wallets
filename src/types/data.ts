@@ -165,6 +165,7 @@ export interface AccountDetails {
   signers: ServerApi.AccountRecordSigners[];
   flags: Horizon.Flags;
   balances: BalanceMap;
+  sequenceNumber: string;
 }
 
 export interface CollectionParams {

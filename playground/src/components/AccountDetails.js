@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import Json from "react-json-view";
+import { Keypair } from "stellar-sdk";
+
+import TransactionViewer from "components/TransactionViewer";
 
 class AccountDetails extends Component {
   state = {
@@ -8,6 +11,7 @@ class AccountDetails extends Component {
     updateTimes: [],
     streamEnder: null,
     isAccountFunded: null,
+    mergeTransaction: null,
   };
 
   componentDidMount() {
@@ -71,10 +75,32 @@ class AccountDetails extends Component {
   };
 
   render() {
-    const { accountDetails, err, updateTimes, isAccountFunded } = this.state;
+    const {
+      accountDetails,
+      err,
+      updateTimes,
+      isAccountFunded,
+      mergeTransaction,
+    } = this.state;
+
+    const handleGetTransaction = async () => {
+      const trans = await this.props.dataProvider.getStripAndMergeAccountTransaction(
+        Keypair.random().publicKey(),
+      );
+      console.log("~!!!!!!!!!!! rans: ", trans);
+      debugger;
+      this.setState({ mergeTransaction: trans });
+    };
+
     return (
       <div>
         <h2>Account Details</h2>
+
+        <button onClick={handleGetTransaction}>Run merge command</button>
+
+        {mergeTransaction && (
+          <TransactionViewer transaction={mergeTransaction} />
+        )}
 
         {!isAccountFunded && <p>Account isn't funded yet.</p>}
         {isAccountFunded && (

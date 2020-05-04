@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.0.9-rc.9",
+  "version": "0.1.0-rc.1",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,8 +9,8 @@
   "license": "Apache-2.0",
   "prettier": "@stellar/prettier-config",
   "peerDependencies": {
-    "stellar-sdk": "^3.x.x",
-    "bignumber.js": "*"
+    "bignumber.js": "*",
+    "stellar-sdk": "^5.x.x"
   },
   "scripts": {
     "prepare": "yarn build ; yarn build:commonjs",
@@ -63,10 +63,11 @@
     "jest-mock-random": "^1.0.3",
     "lint-staged": "^8.1.5",
     "node-localstorage": "^2.1.5",
+    "path": "^0.12.7",
     "prettier": "^1.17.0",
     "regenerator-runtime": "^0.13.3",
     "sinon": "^7.3.1",
-    "stellar-sdk": "^3.2.0",
+    "stellar-sdk": "^5.0.0",
     "terser-webpack-plugin": "^2.3.0",
     "ts-loader": "^6.2.1",
     "tsc-watch": "^2.1.2",
@@ -74,14 +75,12 @@
     "typedoc": "^0.14.2",
     "typescript": "^3.3.3333",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "path": "^0.12.7"
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "@ledgerhq/hw-app-str": "^4.48.0",
     "@ledgerhq/hw-transport-u2f": "^4.48.0",
     "@types/jest": "^24.0.11",
-    "@types/stellar-base": "^0.10.2",
     "change-case": "^3.1.0",
     "lodash": "^4.17.14",
     "query-string": "^6.4.2",
