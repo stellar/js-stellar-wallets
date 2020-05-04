@@ -332,7 +332,6 @@ export class DataProvider {
    */
   public async getStripAndMergeAccountTransaction(destinationKey: string) {
     // throw if the destination is invalid
-    console.log("!!!!!!!!!!!!!! check out this dest: ", destinationKey);
     if (!StrKey.isValidEd25519PublicKey(destinationKey)) {
       throw new Error("The destination is not a valid Stellar address.");
     }
@@ -375,7 +374,6 @@ export class DataProvider {
           .forAccount(this.accountKey)
           .limit(25)
           .order("desc")
-          .cursor("")
           .call();
 
       while (additionalOffers === undefined || additionalOffers.length) {
@@ -383,10 +381,9 @@ export class DataProvider {
         additionalOffers = res.records;
         next = res.next;
         offers = [...offers, ...additionalOffers];
-        console.log("Open offers list: ", offers);
       }
     } catch (e) {
-      throw new Error(`Couldn't fetch open offers, error: ${e.toString()}`);
+      throw new Error(`Couldn't fetch open offers, error: ${e.stack}`);
     }
 
     const accountObject = new StellarAccount(

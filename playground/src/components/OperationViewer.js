@@ -204,7 +204,7 @@ const OperationViewer = ({ type, ...props }) => {
 
       {type === TYPE.changeTrust && (
         <p>
-          {props.limit === "0" ? (
+          {parseInt(props.limit, 10) === 0 ? (
             <>
               Remove trustline to {props.line.code} ({props.line.issuer})
             </>

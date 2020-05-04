@@ -1085,13 +1085,6 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/stellar-base@^0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@types/stellar-base/-/stellar-base-0.10.2.tgz#8a6bbaabde140971ccab4cf202151de84740fa29"
-  integrity sha512-MOilZXnnLqxCa3f2Xr7phqI8mbfz5j1BhWs6XrGwHfNTL9XQPOyLBN9tBWIsDIRZ1VyUZQ2YQLTjSppsB8/iUQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/urijs@^1.19.6":
   version "1.19.8"
   resolved "https://registry.yarnpkg.com/@types/urijs/-/urijs-1.19.8.tgz#a66b2fd8b1d3cf3ef5bae7ca093b7d1b50e48c0a"
