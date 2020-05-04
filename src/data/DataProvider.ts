@@ -461,6 +461,12 @@ export class DataProvider {
       );
     });
 
+    transaction.addOperation(
+      Operation.accountMerge({
+        destination: destinationKey,
+      }),
+    );
+
     return transaction.build();
   }
 
