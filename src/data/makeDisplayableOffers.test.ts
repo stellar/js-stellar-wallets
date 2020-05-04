@@ -20,7 +20,7 @@ it("makes offers from partial fill", () => {
   );
 
   expect(offers[0]).toEqual({
-    id: 76884793,
+    id: "76884793",
     offerer: {
       publicKey: "PHYREXIA",
     },
