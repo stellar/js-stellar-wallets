@@ -1,3 +1,4 @@
+import { Networks } from "stellar-sdk";
 import { generatePlaintextKey } from "../fixtures/keys";
 import { DataProvider } from "./DataProvider";
 
@@ -8,6 +9,7 @@ describe("Account validation", () => {
         // @ts-ignore
         accountOrKey: null,
         serverUrl: "https://horizon.stellar.org",
+        networkPassphrase: Networks.PUBLIC,
       });
       expect(provider).not.toBeInstanceOf(DataProvider);
     } catch (e) {
@@ -22,6 +24,7 @@ describe("Account validation", () => {
         accountOrKey:
           "GDZBHQFIHLVDF6GCRV5DT2STB6ZXAJR3JFGZNXNPLB35TH5GNMUVIAQP",
         serverUrl: "https://horizon.stellar.org",
+        networkPassphrase: Networks.PUBLIC,
       });
       expect(provider).toBeInstanceOf(DataProvider);
     } catch (e) {
@@ -34,6 +37,7 @@ describe("Account validation", () => {
       const provider = new DataProvider({
         accountOrKey: generatePlaintextKey(),
         serverUrl: "https://horizon.stellar.org",
+        networkPassphrase: Networks.PUBLIC,
       });
       expect(provider).toBeInstanceOf(DataProvider);
     } catch (e) {
@@ -47,6 +51,7 @@ describe("Account validation", () => {
       provider = new DataProvider({
         accountOrKey: "I am not a stupid key you dumbdumb",
         serverUrl: "https://horizon.stellar.org",
+        networkPassphrase: Networks.PUBLIC,
       });
     } catch (e) {
       expect(e).toBeTruthy();

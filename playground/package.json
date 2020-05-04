@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@stellar/elements": "^0.0.0",
+    "big.js": "^5.2.2",
     "lodash": "^4.17.14",
     "moment": "^2.24.0",
     "react": "^16.8.5",
@@ -29,6 +30,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "styled-components": "^4.2.0"
+    "styled-components": "^5.1.0"
   }
 }

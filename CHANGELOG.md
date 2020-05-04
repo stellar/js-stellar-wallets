@@ -2,9 +2,20 @@
 
 ## In master
 
+**Breaking changes**:
+
+- Upgraded `stellar-sdk` to 5.0.0.
+- [DataProvider] Constructor now requires a `networkPassphrase` param.
+
+Other changes:
+
 - When parsing API responses, take extra care making sure that the responses are
   valid JSON, and throw if not.
 - [DataProvider] Add memo information to payments.
+- [DataProvider] Add `DataProvider#getStripAndMergeAccountTransaction`, a
+  function that makes it easier to merge accounts with no balances but
+  trustlines, outstanding offers, etc. Returns a transaction to strip and merge
+  the account into another.
 - [KeyManager] Correctly handle non-successful HTTP status codes when fetching
   auth tokens.
 - [KeyManager] fetchAuthToken now accepts another account, if you're trying to

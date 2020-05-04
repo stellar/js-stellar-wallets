@@ -207,7 +207,7 @@ describe("KeyManager", function() {
     );
 
     const transaction = new StellarBase.TransactionBuilder(source, {
-      fee: 100,
+      fee: "100",
       networkPassphrase: network,
     })
       .addOperation(StellarBase.Operation.inflation({}))

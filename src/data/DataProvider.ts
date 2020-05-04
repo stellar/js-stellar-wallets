@@ -1,5 +1,14 @@
 import debounce from "lodash/debounce";
-import { Keypair, Server, ServerApi, StrKey } from "stellar-sdk";
+import {
+  Account as StellarAccount,
+  Asset,
+  Keypair,
+  Operation,
+  Server,
+  ServerApi,
+  StrKey,
+  TransactionBuilder,
+} from "stellar-sdk";
 
 import {
   Account,
@@ -13,6 +22,8 @@ import {
   WatcherParams,
 } from "../types";
 
+import { getStellarSdkAsset } from "./index";
+
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
 import { makeDisplayableOffers } from "./makeDisplayableOffers";
 import { makeDisplayablePayments } from "./makeDisplayablePayments";
@@ -21,6 +32,7 @@ import { makeDisplayableTrades } from "./makeDisplayableTrades";
 export interface DataProviderParams {
   serverUrl: string;
   accountOrKey: Account | string;
+  networkPassphrase: string;
 }
 
 function isAccount(obj: any): obj is Account {
@@ -45,6 +57,7 @@ export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
   private server: Server;
+  private networkPassphrase: string;
   private _watcherTimeouts: WatcherTimeoutsObject;
 
   private effectStreamEnder?: () => void;
@@ -64,6 +77,10 @@ export class DataProvider {
       throw new Error("No server url provided.");
     }
 
+    if (!params.networkPassphrase) {
+      throw new Error("No network passphrase provided.");
+    }
+
     // make sure the account key is a real account
     try {
       Keypair.fromPublicKey(accountKey);
@@ -73,6 +90,7 @@ export class DataProvider {
 
     this.callbacks = {};
     this.errorHandlers = {};
+    this.networkPassphrase = params.networkPassphrase;
     this.serverUrl = params.serverUrl;
     this.server = new Server(this.serverUrl);
     this.accountKey = accountKey;
@@ -122,7 +140,8 @@ export class DataProvider {
   ): Promise<Collection<Offer>> {
     // first, fetch all offers
     const offers = await this.server
-      .offers("accounts", this.accountKey)
+      .offers()
+      .forAccount(this.accountKey)
       .limit(params.limit || 10)
       .order(params.order || "desc")
       .cursor(params.cursor || "")
@@ -185,6 +204,7 @@ export class DataProvider {
         thresholds: accountSummary.thresholds,
         signers: accountSummary.signers,
         flags: accountSummary.flags,
+        sequenceNumber: accountSummary.sequence,
         balances,
       };
     } catch (err) {
@@ -312,6 +332,7 @@ export class DataProvider {
    */
   public async getStripAndMergeAccountTransaction(destinationKey: string) {
     // throw if the destination is invalid
+    console.log("!!!!!!!!!!!!!! check out this dest: ", destinationKey);
     if (!StrKey.isValidEd25519PublicKey(destinationKey)) {
       throw new Error("The destination is not a valid Stellar address.");
     }
@@ -348,13 +369,13 @@ export class DataProvider {
     let offers: ServerApi.OfferRecord[] = [];
     try {
       let additionalOffers: ServerApi.OfferRecord[] | undefined;
-      let cursor: string | undefined;
       let next: () => Promise<Collection<ServerApi.OfferRecord>> = () =>
         this.server
-          .offers("accounts", this.accountKey)
+          .offers()
+          .forAccount(this.accountKey)
           .limit(25)
           .order("desc")
-          .cursor(cursor || "")
+          .cursor("")
           .call();
 
       while (additionalOffers === undefined || additionalOffers.length) {
@@ -362,13 +383,88 @@ export class DataProvider {
         additionalOffers = res.records;
         next = res.next;
         offers = [...offers, ...additionalOffers];
-        console.log("Open offers list: ", openOffers);
+        console.log("Open offers list: ", offers);
       }
     } catch (e) {
       throw new Error(`Couldn't fetch open offers, error: ${e.toString()}`);
     }
 
-    let operations;
+    const accountObject = new StellarAccount(
+      this.accountKey,
+      account.sequenceNumber,
+    );
+
+    let fee = "1000";
+
+    try {
+      const feeStats = await this.server.feeStats();
+      fee = feeStats.max_fee.p70;
+    } catch (e) {
+      // do nothing
+    }
+
+    const transaction = new TransactionBuilder(accountObject, {
+      fee,
+      networkPassphrase: this.networkPassphrase,
+      timebounds: await this.server.fetchTimebounds(10 * 60 * 1000),
+    });
+
+    // strip offers
+    offers.forEach((offer) => {
+      const { seller, selling, buying, id } = offer;
+
+      let operation;
+
+      // check if we're the seller
+      if (seller === this.accountKey) {
+        operation = Operation.manageSellOffer({
+          selling:
+            selling.asset_code && selling.asset_issuer
+              ? new Asset(selling.asset_code, selling.asset_issuer)
+              : Asset.native(),
+          buying:
+            buying.asset_code && buying.asset_issuer
+              ? new Asset(buying.asset_code, buying.asset_issuer)
+              : Asset.native(),
+          amount: "0",
+          price: "0",
+          offerId: id,
+        });
+      } else {
+        operation = Operation.manageBuyOffer({
+          selling:
+            selling.asset_code && selling.asset_issuer
+              ? new Asset(selling.asset_code, selling.asset_issuer)
+              : Asset.native(),
+          buying:
+            buying.asset_code && buying.asset_issuer
+              ? new Asset(buying.asset_code, buying.asset_issuer)
+              : Asset.native(),
+          buyAmount: "0",
+          price: "0",
+          offerId: id,
+        });
+      }
+      transaction.addOperation(operation);
+    });
+
+    // strip trustlines
+    Object.keys(account.balances).forEach((identifier) => {
+      if (identifier === "native") {
+        return;
+      }
+
+      const balance = account.balances[identifier];
+
+      transaction.addOperation(
+        Operation.changeTrust({
+          asset: getStellarSdkAsset(balance.token),
+          limit: "0",
+        }),
+      );
+    });
+
+    return transaction.build();
   }
 
   private async _processOpenOffers(
@@ -377,10 +473,10 @@ export class DataProvider {
     // find all offerids and check for trades of each
     const tradeRequests: Array<
       Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
-    > = offers.records.map(({ id }: { id: string }) =>
+    > = offers.records.map(({ id }: { id: number | string }) =>
       this.server
         .trades()
-        .forOffer(id)
+        .forOffer(`${id}`)
         .call(),
     );
 

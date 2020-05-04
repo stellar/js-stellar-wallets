@@ -82,7 +82,7 @@ export function makeDisplayableOffers(
       }, new BigNumber(0));
 
       return {
-        id,
+        id: `${id}`,
         offerer: {
           publicKey: seller as string,
         },

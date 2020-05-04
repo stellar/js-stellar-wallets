@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import styled from "styled-components";
 import { GlobalStyle } from "@stellar/elements";
 import * as WalletSdk from "@stellar/wallet-sdk";
-import StellarSdk from "stellar-sdk";
+import StellarSdk, { Networks } from "stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
 import KeyEntry from "components/KeyEntry";
@@ -36,6 +36,7 @@ class App extends Component {
         ? "https://horizon-testnet.stellar.org/"
         : "https://horizon.stellar.org",
       accountOrKey: publicKey,
+      networkPassphrase: isTestnet ? Networks.TESTNET : Networks.PUBLIC,
     });
 
     this.setState({
