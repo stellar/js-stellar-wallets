@@ -331,9 +331,27 @@ export class DataProvider {
    * @throws Throws if the destination account is invalid.
    */
   public async getStripAndMergeAccountTransaction(destinationKey: string) {
-    // throw if the destination is invalid
+    // make sure the destination is a funded account
     if (!StrKey.isValidEd25519PublicKey(destinationKey)) {
       throw new Error("The destination is not a valid Stellar address.");
+    }
+
+    try {
+      const destinationProvider = new DataProvider({
+        serverUrl: this.serverUrl,
+        accountOrKey: destinationKey,
+        networkPassphrase: this.networkPassphrase,
+      });
+
+      destinationProvider.fetchAccountDetails();
+    } catch (e) {
+      if (e.isUnfunded) {
+        throw new Error("The destination account is not funded yet.");
+      }
+
+      throw new Error(
+        `Couldn't fetch the destination account, error: ${e.toString()}`,
+      );
     }
 
     let account: AccountDetails;
