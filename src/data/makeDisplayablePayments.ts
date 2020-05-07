@@ -26,10 +26,10 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   );
 }
 
-async function getAccountMergePayment(
+async function getAccountMergePaymentAmount(
   payment: ServerApi.AccountMergeOperationRecord,
   publicKey: string,
-) {
+): Promise<string | undefined> {
   try {
     const effects = await payment.effects();
     const accountMergePayment = effects.records.find(
@@ -38,13 +38,12 @@ async function getAccountMergePayment(
     );
 
     if (accountMergePayment) {
-      return accountMergePayment as ServerApi.EffectRecord &
-        ServerApi.PaymentOperationRecord;
+      return accountMergePayment.amount;
     }
 
-    return null;
+    return undefined;
   } catch (e) {
-    return null;
+    return undefined;
   }
 }
 
@@ -64,18 +63,6 @@ export async function makeDisplayablePayments(
           | ServerApi.PaymentOperationRecord
           | ServerApi.PathPaymentOperationRecord,
       ): Promise<Payment> => {
-        // "account_merge" record is not of the type "payment" (has no amount)
-        if (isAccountMerge(payment)) {
-          const accountMergePayment = await getAccountMergePayment(
-            payment,
-            subjectAccount.publicKey,
-          );
-
-          if (accountMergePayment) {
-            payment = accountMergePayment;
-          }
-        }
-
         const isRecipient = payment.source_account !== subjectAccount.publicKey;
 
         let otherAccount: Account;
@@ -106,6 +93,16 @@ export async function makeDisplayablePayments(
                     },
             };
 
+        // "account_merge" record does not have "amount" property
+        let accountMergePaymentAmount;
+
+        if (isAccountMerge(payment)) {
+          accountMergePaymentAmount = await getAccountMergePaymentAmount(
+            payment,
+            subjectAccount.publicKey,
+          );
+        }
+
         let transaction: ServerApi.TransactionRecord | undefined;
         try {
           transaction = await payment.transaction();
@@ -121,7 +118,7 @@ export async function makeDisplayablePayments(
           amount: new BigNumber(
             isCreateAccount(payment)
               ? payment.starting_balance
-              : payment.amount,
+              : accountMergePaymentAmount || payment.amount,
           ),
           timestamp: Math.floor(new Date(payment.created_at).getTime() / 1000),
           otherAccount,
