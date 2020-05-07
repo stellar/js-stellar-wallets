@@ -10,6 +10,12 @@ function isCreateAccount(
   return obj.type === "create_account";
 }
 
+function isAccountMerge(
+  obj: any,
+): obj is ServerApi.AccountMergeOperationRecord {
+  return obj.type === "account_merge";
+}
+
 function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   return (
     // old, soon-to-be-deprecated name
@@ -18,6 +24,28 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
     obj.type === "path_payment_strict_send" ||
     obj.type === "path_payment_strict_receive"
   );
+}
+
+async function getAccountMergePayment(
+  payment: ServerApi.AccountMergeOperationRecord,
+  publicKey: string,
+) {
+  try {
+    const effects = await payment.effects();
+    const accountMergePayment = effects.records.find(
+      (record) =>
+        record.type === "account_credited" && record.account === publicKey,
+    );
+
+    if (accountMergePayment) {
+      return accountMergePayment as ServerApi.EffectRecord &
+        ServerApi.PaymentOperationRecord;
+    }
+
+    return null;
+  } catch (e) {
+    return null;
+  }
 }
 
 export async function makeDisplayablePayments(
@@ -36,6 +64,18 @@ export async function makeDisplayablePayments(
           | ServerApi.PaymentOperationRecord
           | ServerApi.PathPaymentOperationRecord,
       ): Promise<Payment> => {
+        // "account_merge" record is not of the type "payment" (has no amount)
+        if (isAccountMerge(payment)) {
+          const accountMergePayment = await getAccountMergePayment(
+            payment,
+            subjectAccount.publicKey,
+          );
+
+          if (accountMergePayment) {
+            payment = accountMergePayment;
+          }
+        }
+
         const isRecipient = payment.source_account !== subjectAccount.publicKey;
 
         let otherAccount: Account;
