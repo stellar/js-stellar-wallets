@@ -10,6 +10,12 @@ function isCreateAccount(
   return obj.type === "create_account";
 }
 
+function isAccountMerge(
+  obj: any,
+): obj is ServerApi.AccountMergeOperationRecord {
+  return obj.type === "account_merge";
+}
+
 function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
   return (
     // old, soon-to-be-deprecated name
@@ -18,6 +24,27 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
     obj.type === "path_payment_strict_send" ||
     obj.type === "path_payment_strict_receive"
   );
+}
+
+async function getAccountMergePaymentAmount(
+  payment: ServerApi.AccountMergeOperationRecord,
+  publicKey: string,
+): Promise<string | undefined> {
+  try {
+    const effects = await payment.effects();
+    const accountMergePayment = effects.records.find(
+      (record) =>
+        record.type === "account_credited" && record.account === publicKey,
+    );
+
+    if (accountMergePayment) {
+      return accountMergePayment.amount;
+    }
+
+    return undefined;
+  } catch (e) {
+    return undefined;
+  }
 }
 
 export async function makeDisplayablePayments(
@@ -66,6 +93,16 @@ export async function makeDisplayablePayments(
                     },
             };
 
+        // "account_merge" record does not have "amount" property
+        let accountMergePaymentAmount;
+
+        if (isAccountMerge(payment)) {
+          accountMergePaymentAmount = await getAccountMergePaymentAmount(
+            payment,
+            subjectAccount.publicKey,
+          );
+        }
+
         let transaction: ServerApi.TransactionRecord | undefined;
         try {
           transaction = await payment.transaction();
@@ -81,7 +118,7 @@ export async function makeDisplayablePayments(
           amount: new BigNumber(
             isCreateAccount(payment)
               ? payment.starting_balance
-              : payment.amount,
+              : accountMergePaymentAmount || payment.amount,
           ),
           timestamp: Math.floor(new Date(payment.created_at).getTime() / 1000),
           otherAccount,
