@@ -33,6 +33,13 @@ export interface DataProviderParams {
   serverUrl: string;
   accountOrKey: Account | string;
   networkPassphrase: string;
+
+  // these are passed to `new Server`
+  metadata?: {
+    allowHttp?: boolean;
+    appName?: string;
+    appVersion?: string;
+  };
 }
 
 function isAccount(obj: any): obj is Account {
@@ -88,11 +95,13 @@ export class DataProvider {
       throw new Error(`The provided key was not valid: ${accountKey}`);
     }
 
+    const metadata = params.metadata || {};
+
     this.callbacks = {};
     this.errorHandlers = {};
     this.networkPassphrase = params.networkPassphrase;
     this.serverUrl = params.serverUrl;
-    this.server = new Server(this.serverUrl);
+    this.server = new Server(this.serverUrl, metadata);
     this.accountKey = accountKey;
     this._watcherTimeouts = {};
   }
