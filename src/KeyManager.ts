@@ -317,19 +317,11 @@ export class KeyManager {
     );
 
     if (challengeRes.status !== 200) {
-      try {
-        const challengeJson = await challengeRes.json();
-        throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction,
-          error: ${challengeJson.error}`,
-        );
-      } catch (e) {
-        throw new Error(
-          `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction,
-          error code ${challengeRes.status} and status text
-          "${challengeRes.statusText}"`,
-        );
-      }
+      const challengeText = await challengeRes.text();
+      throw new Error(
+        `[KeyManager#fetchAuthToken] Failed to fetch a challenge transaction,
+          error: ${JSON.stringify(challengeText)}`,
+      );
     }
 
     const keyNetwork = key.network || this.defaultNetworkPassphrase;
