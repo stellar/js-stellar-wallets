@@ -381,8 +381,9 @@ export class KeyManager {
     });
 
     if (responseRes.status !== 200) {
+      const responseText = await responseRes.text();
       try {
-        const responseJson = await responseRes.json();
+        const responseJson = JSON.parse(responseText);
         throw new Error(
           `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
           error: ${responseJson.error}`,
@@ -391,19 +392,27 @@ export class KeyManager {
         throw new Error(
           `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
           error code ${responseRes.status} and status text
-          "${responseRes.statusText}"`,
+          "${responseText}"`,
         );
       }
     }
 
-    const { token, message, status } = await responseRes.json();
+    const responseResText = await responseRes.text();
 
-    // if we get a false status message, error out
-    if (status === false && message) {
-      throw new Error(message);
+    try {
+      const { token, message, status } = JSON.parse(responseResText);
+      // if we get a false status message, error out
+      if (status === false && message) {
+        throw new Error(message);
+      }
+
+      return token;
+    } catch (e) {
+      throw new Error(
+        `[KeyManager#fetchAuthToken] Failed to validate signed transaction 
+        response, server responded with ${responseResText}`,
+      );
     }
-
-    return token;
   }
 
   /**

@@ -134,15 +134,16 @@ export class WithdrawProvider extends TransferProvider {
     }
 
     if (!response.ok) {
+      const responseText = await response.text();
       try {
-        const { error } = await response.json();
+        const { error } = JSON.parse(responseText);
         throw new Error(
           `Error starting withdrawal to ${this.transferServer}: error ${error}`,
         );
       } catch (e) {
         throw new Error(
           `Error starting withdrawal to ${this.transferServer}: error 
-          code ${response.status}, status text: "${response.statusText}"`,
+          code ${response.status}, status text: "${responseText}"`,
         );
       }
     }

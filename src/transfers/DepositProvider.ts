@@ -141,15 +141,16 @@ export class DepositProvider extends TransferProvider {
     }
 
     if (!response.ok) {
+      const responseText = await response.text();
       try {
-        const { error } = await response.json();
+        const { error } = JSON.parse(responseText);
         throw new Error(
           `Error starting deposit to ${this.transferServer}: error ${error}`,
         );
       } catch (e) {
         throw new Error(
           `Error starting deposit to ${this.transferServer}: error 
-          code ${response.status}, status text: "${response.statusText}"`,
+          code ${response.status}, status text: "${responseText}"`,
         );
       }
     }
