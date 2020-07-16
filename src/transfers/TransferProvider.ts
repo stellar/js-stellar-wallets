@@ -151,13 +151,23 @@ export abstract class TransferProvider {
     }
   }
 
-  protected getHeaders(): Headers {
+  protected getHeaders(headers: { [key: string]: string } = {}): Headers {
+    // throw an error if headers include Authorization
+    // (provided headers will be wiped out)
+    if (headers.Authorization && this.authToken) {
+      throw new Error(
+        "You passed an `Authorization` header that will get wiped out by" +
+          " SEP-10 auth",
+      );
+    }
+
     return new Headers(
       this.authToken
         ? {
+            ...headers,
             Authorization: `Bearer ${this.authToken}`,
           }
-        : {},
+        : headers,
     );
   }
 
