@@ -134,7 +134,10 @@ export class WithdrawProvider extends TransferProvider {
       });
     }
 
-    if (!response.ok) {
+    const isAnchorUSDSep6 =
+      !shouldUseNewEndpoints && this.transferServer.includes("anchorusd.com");
+
+    if (!response.ok && !isAnchorUSDSep6) {
       const responseText = await response.text();
       try {
         const { error } = JSON.parse(responseText);
