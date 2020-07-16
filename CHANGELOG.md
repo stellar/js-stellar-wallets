@@ -30,6 +30,9 @@ Other changes:
   third, optional parameter for
   [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) language codes. The
   default value is "en".
+- [Transfers] `DepositProvider#startDeposit` and
+  `WithdrawProvider#startWithdraw` can now add arbitrary headers to their
+  requests.
 
 ## [v0.0.9-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.8-rc.1...v0.0.9-rc.1)
 

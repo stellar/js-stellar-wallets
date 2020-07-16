@@ -107,6 +107,7 @@ export class DepositProvider extends TransferProvider {
   public async startDeposit(
     params: DepositRequest,
     shouldUseNewEndpoints: boolean = false,
+    headers: { [key: string]: string } = {},
   ): Promise<TransferResponse> {
     const request: DepositRequest & { account: string } = {
       ...params,
@@ -130,13 +131,13 @@ export class DepositProvider extends TransferProvider {
         {
           method: "POST",
           body,
-          headers: isAuthRequired ? this.getHeaders() : undefined,
+          headers: isAuthRequired ? this.getHeaders(headers) : undefined,
         },
       );
     } else {
       const qs = queryString.stringify(request);
       response = await fetch(`${this.transferServer}/deposit?${qs}`, {
-        headers: isAuthRequired ? this.getHeaders() : undefined,
+        headers: isAuthRequired ? this.getHeaders(headers) : undefined,
       });
     }
 

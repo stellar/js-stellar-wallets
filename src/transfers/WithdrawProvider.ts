@@ -100,6 +100,7 @@ export class WithdrawProvider extends TransferProvider {
   public async startWithdraw(
     params: WithdrawRequest,
     shouldUseNewEndpoints: boolean = false,
+    headers: { [key: string]: string } = {},
   ): Promise<TransferResponse> {
     const request: WithdrawRequest & { account: string } = {
       ...params,
@@ -123,13 +124,13 @@ export class WithdrawProvider extends TransferProvider {
         {
           method: "POST",
           body,
-          headers: isAuthRequired ? this.getHeaders() : undefined,
+          headers: isAuthRequired ? this.getHeaders(headers) : undefined,
         },
       );
     } else {
       const qs = queryString.stringify(request);
       response = await fetch(`${this.transferServer}/withdraw?${qs}`, {
-        headers: isAuthRequired ? this.getHeaders() : undefined,
+        headers: isAuthRequired ? this.getHeaders(headers) : undefined,
       });
     }
 
