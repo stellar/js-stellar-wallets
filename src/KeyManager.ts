@@ -206,7 +206,7 @@ export class KeyManager {
   }
 
   /**
-   *  Remove the key specified by this publicKey.
+   *  Remove the key specified by this key id.
    *
    * @async
    * @param id Specifies which key to remove.
@@ -220,7 +220,7 @@ export class KeyManager {
   }
 
   /**
-   * Sign a transaction using the specified publicKey. Supports both using a
+   * Sign a transaction using the specified key id. Supports both using a
    * cached key and going out to the keystore to read and decrypt
    *
    * @async
