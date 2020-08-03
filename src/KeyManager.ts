@@ -362,6 +362,14 @@ export class KeyManager {
 
     const firstTransaction = new Transaction(transaction, keyNetwork);
 
+    if (firstTransaction.sequence !== "0") {
+      throw new Error(
+        `Invalid transaction: Expected a sequence number 0, but got ${
+          firstTransaction.sequence
+        }`,
+      );
+    }
+
     const signedTransaction = await keyHandler.signTransaction({
       transaction: firstTransaction,
       key,

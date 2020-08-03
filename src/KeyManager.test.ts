@@ -297,17 +297,102 @@ describe("KeyManager", function() {
       }
     });
 
-    test("Rejects challenges with network mismatches", async () => {
+    test("Accepts challenges with zero seqs", async () => {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
       const keyNetwork = StellarBase.Networks.TESTNET;
-      const challengeNetwork = StellarBase.Networks.PUBLIC;
+
+      const token = "👍";
+      const account = new StellarBase.Account(
+        StellarBase.Keypair.random().publicKey(),
+        "-1",
+      );
+
+      const tx = new StellarBase.TransactionBuilder(account, {
+        fee: "10000",
+        networkPassphrase: keyNetwork,
+      })
+        .setTimeout(1000)
+        .build()
+        .toXDR();
+
+      fetch
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            transaction: tx,
+            network_passphrase: keyNetwork,
+          }),
+        )
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            token,
+            status: 1,
+            message: "Good job friend",
+          }),
+        );
+
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(keyNetwork);
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network: keyNetwork,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      try {
+        const res = await testKeyManager.fetchAuthToken({
+          id: keyMetadata.id,
+          password,
+          authServer,
+        });
+
+        expect(res).toBe(token);
+      } catch (e) {
+        expect(e).toBe(null);
+      }
+    });
+
+    test("Rejects TXs with non-zero seq numbers", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const password = "very secure password";
+
+      const keyNetwork = StellarBase.Networks.TESTNET;
+
+      const account = new StellarBase.Account(
+        StellarBase.Keypair.random().publicKey(),
+        "1",
+      );
+
+      const tx = new StellarBase.TransactionBuilder(account, {
+        fee: "10000",
+        networkPassphrase: keyNetwork,
+      })
+        .setTimeout(1000)
+        .build()
+        .toXDR();
 
       // @ts-ignore
       fetch.mockResponseOnce(
         JSON.stringify({
-          network_passphrase: challengeNetwork,
+          transaction: tx,
+          network_passphrase: keyNetwork,
         }),
       );
 
@@ -340,9 +425,9 @@ describe("KeyManager", function() {
           authServer,
         });
 
-        expect("This test failed").toBe(null);
+        expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(`Network mismatch`);
+        expect(e.toString()).toMatch(`Invalid transaction`);
       }
     });
   });
