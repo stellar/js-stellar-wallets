@@ -2,6 +2,7 @@ import StellarSdk, { Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
+import { trezorHandler } from "./keyTypeHandlers/trezor";
 
 import { KeyType } from "./constants/keys";
 
@@ -86,6 +87,7 @@ export class KeyManager {
     this.keyHandlerMap = {
       [KeyType.ledger]: ledgerHandler,
       [KeyType.plaintextKey]: plaintextKeyHandler,
+      [KeyType.trezor]: trezorHandler,
     };
 
     this.keyCache = {};
@@ -409,7 +411,7 @@ export class KeyManager {
       return token;
     } catch (e) {
       throw new Error(
-        `[KeyManager#fetchAuthToken] Failed to validate signed transaction 
+        `[KeyManager#fetchAuthToken] Failed to validate signed transaction
         response, server responded with ${responseResText}`,
       );
     }
