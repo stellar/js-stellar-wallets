@@ -1,5 +1,3 @@
-// TODO: add better message why ignoring
-// @ts-ignore
 import TrezorConnect from "trezor-connect";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";

@@ -85,6 +85,7 @@
     "lodash": "^4.17.14",
     "query-string": "^6.4.2",
     "scrypt-async": "^2.0.1",
+    "trezor-connect": "^8.1.9",
     "tweetnacl": "^1.0.1",
     "tweetnacl-util": "^0.15.0"
   }
