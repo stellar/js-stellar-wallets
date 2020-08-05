@@ -327,8 +327,8 @@ export class DataProvider {
         clearTimeout(this._watcherTimeouts.watchPayments);
       }
 
-      delete this.callbacks.accountDetails;
-      delete this.errorHandlers.accountDetails;
+      delete this.callbacks.payments;
+      delete this.errorHandlers.payments;
     };
   }
 
