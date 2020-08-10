@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.1.0-rc.9",
+  "version": "0.1.0-rc.10",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -80,6 +80,7 @@
   "dependencies": {
     "@ledgerhq/hw-app-str": "^4.48.0",
     "@ledgerhq/hw-transport-u2f": "^4.48.0",
+    "@stellar/lyra-api": "^1.0.0-alpha.2",
     "@types/jest": "^24.0.11",
     "change-case": "^3.1.0",
     "lodash": "^4.17.14",
