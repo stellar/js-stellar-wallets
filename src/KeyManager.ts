@@ -1,6 +1,7 @@
 import StellarSdk, { Transaction } from "stellar-sdk";
 
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
+import { lyraHandler } from "./keyTypeHandlers/lyra";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
 import { trezorHandler } from "./keyTypeHandlers/trezor";
 
@@ -86,6 +87,7 @@ export class KeyManager {
     this.encrypterMap = {};
     this.keyHandlerMap = {
       [KeyType.ledger]: ledgerHandler,
+      [KeyType.lyra]: lyraHandler,
       [KeyType.plaintextKey]: plaintextKeyHandler,
       [KeyType.trezor]: trezorHandler,
     };
