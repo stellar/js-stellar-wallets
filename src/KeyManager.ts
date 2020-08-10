@@ -1,5 +1,7 @@
 import StellarSdk, { Transaction } from "stellar-sdk";
 
+// TODO:
+// import {albedoHandler} from "./keyTypeHandlers/albedo";
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
 import { trezorHandler } from "./keyTypeHandlers/trezor";
@@ -85,6 +87,8 @@ export class KeyManager {
   constructor(params: KeyManagerParams) {
     this.encrypterMap = {};
     this.keyHandlerMap = {
+      // TODO:
+      // [KeyType.albedo]: albedoHandler,
       [KeyType.ledger]: ledgerHandler,
       [KeyType.plaintextKey]: plaintextKeyHandler,
       [KeyType.trezor]: trezorHandler,
