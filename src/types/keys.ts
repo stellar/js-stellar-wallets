@@ -166,5 +166,6 @@ export interface GetAuthTokenParams {
   id: string;
   password: string;
   authServer: string;
+  authServerSigningKey?: string;
   account?: string;
 }

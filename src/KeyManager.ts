@@ -275,14 +275,16 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
-   * @param {string} params.account The authenticating public key. If not
+   * @param {string} [params.account] The authenticating public key. If not
    *                                provided, then the signers's public key will
    *                                be used instead.
+   * @param {string} [params.authServerSigningKey] If provided, ensure the
+   *                                challenge transaction is signed by this key
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
-    const { id, password, authServer } = params;
+    const { id, password, authServer, authServerSigningKey } = params;
     let { account } = params;
 
     // throw errors for missing params
@@ -370,6 +372,34 @@ export class KeyManager {
           firstTransaction.sequence
         }`,
       );
+    }
+
+    if (authServerSigningKey) {
+      if (firstTransaction.source !== authServerSigningKey) {
+        throw new Error(
+          `Signing key doesn't match: Expected ${authServerSigningKey} but got
+          ${firstTransaction.source}`,
+        );
+      }
+
+      if (
+        !firstTransaction.signatures.some((signature) =>
+          signature
+            .hint()
+            .equals(
+              StellarSdk.Keypair.fromPublicKey(
+                authServerSigningKey,
+              ).signatureHint(),
+            ),
+        )
+      ) {
+        throw new Error(
+          `Signing key doesn't match: Expected ${authServerSigningKey} but got
+          ${firstTransaction.signatures
+            .map((signature) => signature.signature.toString())
+            .join(", ")}`,
+        );
+      }
     }
 
     const signedTransaction = await keyHandler.signTransaction({

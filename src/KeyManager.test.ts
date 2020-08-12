@@ -431,18 +431,15 @@ describe("KeyManager", function() {
       }
     });
 
-    test("Rejects TXs with non-matching signatures", async () => {
+    test("Accepts TXs with matching source and signature", async () => {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
       const keyNetwork = StellarBase.Networks.TESTNET;
 
-      const account = new StellarBase.Account(
-        StellarBase.Keypair.random().publicKey(),
-        "-1",
-      );
+      const accountKey = StellarBase.Keypair.random();
 
-      const signer = StellarBase.Keypair.random();
+      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
 
       const txBuilder = new StellarBase.TransactionBuilder(account, {
         fee: "10000",
@@ -451,7 +448,73 @@ describe("KeyManager", function() {
         .setTimeout(1000)
         .build();
 
-      txBuilder.sign(signer);
+      txBuilder.sign(accountKey);
+
+      const tx = txBuilder.toXDR();
+
+      fetch
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            transaction: tx,
+            network_passphrase: keyNetwork,
+          }),
+        ) // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            token: "Good job",
+            status: 1,
+            message: "Good job friend",
+          }),
+        );
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(keyNetwork);
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network: keyNetwork,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      await testKeyManager.fetchAuthToken({
+        id: keyMetadata.id,
+        password,
+        authServer,
+        authServerSigningKey: accountKey.publicKey(),
+      });
+    });
+
+    test("Reject TXs with matching source but bad sig", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const password = "very secure password";
+
+      const keyNetwork = StellarBase.Networks.TESTNET;
+
+      const accountKey = StellarBase.Keypair.random();
+
+      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+
+      const txBuilder = new StellarBase.TransactionBuilder(account, {
+        fee: "10000",
+        networkPassphrase: keyNetwork,
+      })
+        .setTimeout(1000)
+        .build();
+
+      txBuilder.sign(StellarBase.Keypair.random());
 
       const tx = txBuilder.toXDR();
 
@@ -486,12 +549,11 @@ describe("KeyManager", function() {
       });
 
       try {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! first test!!!!!");
         await testKeyManager.fetchAuthToken({
           id: keyMetadata.id,
           password,
           authServer,
-          signingKey: StellarBase.Keypair.random().publicKey,
+          authServerSigningKey: accountKey.publicKey(),
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -500,18 +562,15 @@ describe("KeyManager", function() {
       }
     });
 
-    test("Accepts TXs with matching signatures", async () => {
+    test("Rejects TXs with non-matching signatures", async () => {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
       const keyNetwork = StellarBase.Networks.TESTNET;
 
-      const account = new StellarBase.Account(
-        StellarBase.Keypair.random().publicKey(),
-        "-1",
-      );
+      const badKey = StellarBase.Keypair.random();
 
-      const signer = StellarBase.Keypair.random();
+      const account = new StellarBase.Account(badKey.publicKey(), "-1");
 
       const txBuilder = new StellarBase.TransactionBuilder(account, {
         fee: "10000",
@@ -520,7 +579,7 @@ describe("KeyManager", function() {
         .setTimeout(1000)
         .build();
 
-      txBuilder.sign(signer);
+      txBuilder.sign(badKey);
 
       const tx = txBuilder.toXDR();
 
@@ -554,13 +613,20 @@ describe("KeyManager", function() {
         encrypterName: "IdentityEncrypter",
       });
 
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! second test!!!!!!");
-      await testKeyManager.fetchAuthToken({
-        id: keyMetadata.id,
-        password,
-        authServer,
-        signingKey: signer.publicKey,
-      });
+      const realKey = StellarBase.Keypair.random().publicKey();
+
+      try {
+        await testKeyManager.fetchAuthToken({
+          id: keyMetadata.id,
+          password,
+          authServer,
+          authServerSigningKey: realKey,
+        });
+
+        expect("This test failed: transaction didn't cause error").toBe(null);
+      } catch (e) {
+        expect(e.toString()).toMatch(`Signing key doesn't match`);
+      }
     });
   });
 });
