@@ -4,6 +4,7 @@
 - [KeyManager] Only sign SEP-10 auth transactions with seq number 0.
 - [DataProvider] Fix `watchPayments` stopper.
 - [KeyManager] Added Lyra wallet.
+- [KeyManager] Added Albedo wallet.
 
 ## [v0.1.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.0.9-rc.1...v0.1.0-rc.1)
 
