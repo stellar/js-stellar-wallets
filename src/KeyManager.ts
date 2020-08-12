@@ -395,9 +395,7 @@ export class KeyManager {
       ) {
         throw new Error(
           `Signing key doesn't match: Expected ${authServerSigningKey} but got
-          ${firstTransaction.signatures
-            .map((signature) => signature.signature.toString())
-            .join(", ")}`,
+          something different`,
         );
       }
     }

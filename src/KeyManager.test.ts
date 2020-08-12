@@ -507,6 +507,8 @@ describe("KeyManager", function() {
 
       const account = new StellarBase.Account(accountKey.publicKey(), "-1");
 
+      const badKey = StellarBase.Keypair.random();
+
       const txBuilder = new StellarBase.TransactionBuilder(account, {
         fee: "10000",
         networkPassphrase: keyNetwork,
@@ -514,7 +516,7 @@ describe("KeyManager", function() {
         .setTimeout(1000)
         .build();
 
-      txBuilder.sign(StellarBase.Keypair.random());
+      txBuilder.sign(badKey);
 
       const tx = txBuilder.toXDR();
 
