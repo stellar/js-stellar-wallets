@@ -289,6 +289,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
+          authServerKey: keypair.publicKey(),
         });
 
         expect("This test failed").toBe(null);
@@ -304,18 +305,18 @@ describe("KeyManager", function() {
       const keyNetwork = StellarBase.Networks.TESTNET;
 
       const token = "👍";
-      const account = new StellarBase.Account(
-        StellarBase.Keypair.random().publicKey(),
-        "-1",
-      );
+      const accountKey = StellarBase.Keypair.random();
+      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
+      const txBuild = new StellarBase.TransactionBuilder(account, {
         fee: "10000",
         networkPassphrase: keyNetwork,
       })
         .setTimeout(1000)
-        .build()
-        .toXDR();
+        .build();
+      txBuild.sign(accountKey);
+
+      const tx = txBuild.toXDR();
 
       fetch
         // @ts-ignore
@@ -361,6 +362,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
+          authServerKey: account.accountId(),
         });
 
         expect(res).toBe(token);
@@ -423,6 +425,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
+          authServerKey: account.accountId(),
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -493,7 +496,7 @@ describe("KeyManager", function() {
         id: keyMetadata.id,
         password,
         authServer,
-        authServerSigningKey: accountKey.publicKey(),
+        authServerKey: accountKey.publicKey(),
       });
     });
 
@@ -555,7 +558,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
-          authServerSigningKey: accountKey.publicKey(),
+          authServerKey: accountKey.publicKey(),
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -622,7 +625,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
-          authServerSigningKey: realKey,
+          authServerKey: realKey,
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);

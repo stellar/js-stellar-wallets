@@ -275,16 +275,16 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
+   * @param {string} params.authServerKey Check the challenge transaction
+   *                                for this key as source and signature.
    * @param {string} [params.account] The authenticating public key. If not
    *                                provided, then the signers's public key will
    *                                be used instead.
-   * @param {string} [params.authServerSigningKey] If provided, ensure the
-   *                                challenge transaction is signed by this key
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
-    const { id, password, authServer, authServerSigningKey } = params;
+    const { id, password, authServer, authServerKey } = params;
     let { account } = params;
 
     // throw errors for missing params
@@ -374,10 +374,10 @@ export class KeyManager {
       );
     }
 
-    if (authServerSigningKey) {
-      if (firstTransaction.source !== authServerSigningKey) {
+    if (authServerKey) {
+      if (firstTransaction.source !== authServerKey) {
         throw new Error(
-          `Signing key doesn't match: Expected ${authServerSigningKey} but got
+          `Signing key doesn't match: Expected ${authServerKey} but got
           ${firstTransaction.source}`,
         );
       }
@@ -387,14 +387,12 @@ export class KeyManager {
           signature
             .hint()
             .equals(
-              StellarSdk.Keypair.fromPublicKey(
-                authServerSigningKey,
-              ).signatureHint(),
+              StellarSdk.Keypair.fromPublicKey(authServerKey).signatureHint(),
             ),
         )
       ) {
         throw new Error(
-          `Signing key doesn't match: Expected ${authServerSigningKey} but got
+          `Signing key doesn't match: Expected ${authServerKey} but got
           something different`,
         );
       }
