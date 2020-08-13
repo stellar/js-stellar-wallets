@@ -1,5 +1,7 @@
 ## In master
 
+## [v0.2.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.1.0-rc.1...v0.2.0-rc.1)
+
 - [KeyManager] Added Trezor wallet.
 - [KeyManager] Only sign SEP-10 auth transactions with seq number 0.
 - [KeyManager] Require the auth server's key when fetching SEP-10 tokens, and
