@@ -2,6 +2,8 @@
 
 - [KeyManager] Added Trezor wallet.
 - [KeyManager] Only sign SEP-10 auth transactions with seq number 0.
+- [KeyManager] Require the auth server's key when fetching SEP-10 tokens, and
+  check the challenge transaction is from that key and signed by it.
 - [DataProvider] Fix `watchPayments` stopper.
 - [KeyManager] Added Lyra wallet for key management.
 - [KeyManager] Added Albedo wallet for key management.
