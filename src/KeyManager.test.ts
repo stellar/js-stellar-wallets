@@ -289,7 +289,7 @@ describe("KeyManager", function() {
           id: keyMetadata.id,
           password,
           authServer,
-          authServerKey: keypair.publicKey(),
+          authServerKey: "no key needed",
         });
 
         expect("This test failed").toBe(null);
