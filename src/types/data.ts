@@ -127,9 +127,12 @@ export interface Payment {
   sourceAmount?: BigNumber;
 
   transactionId: string;
+  type: Horizon.OperationResponseType;
 
   memo?: Memo | string;
   memoType?: MemoType;
+
+  mergedAccount?: Account;
 }
 
 export interface Balance {
