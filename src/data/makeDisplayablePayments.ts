@@ -47,6 +47,12 @@ async function getAccountMergePaymentAmount(
   }
 }
 
+function getMergedAccount(payment: ServerApi.AccountMergeOperationRecord) {
+  return {
+    publicKey: payment.source_account,
+  };
+}
+
 export async function makeDisplayablePayments(
   subjectAccount: Account,
   payments: Array<
@@ -69,9 +75,7 @@ export async function makeDisplayablePayments(
 
         if (isCreateAccount(payment)) {
           otherAccount = {
-            publicKey: isRecipient
-              ? payment.source_account
-              : payment.source_account,
+            publicKey: payment.funder,
           };
         } else {
           otherAccount = { publicKey: isRecipient ? payment.from : payment.to };
@@ -95,12 +99,14 @@ export async function makeDisplayablePayments(
 
         // "account_merge" record does not have "amount" property
         let accountMergePaymentAmount;
+        let mergedAccount;
 
         if (isAccountMerge(payment)) {
           accountMergePaymentAmount = await getAccountMergePaymentAmount(
             payment,
             subjectAccount.publicKey,
           );
+          mergedAccount = getMergedAccount(payment);
         }
 
         let transaction: ServerApi.TransactionRecord | undefined;
@@ -138,12 +144,14 @@ export async function makeDisplayablePayments(
             ? new BigNumber(payment.source_amount)
             : undefined,
           transactionId: payment.transaction_hash,
+          type: payment.type,
           ...(transaction
             ? {
                 memo: transaction.memo,
                 memoType: transaction.memo_type,
               }
             : {}),
+          mergedAccount,
         };
       },
     ),
