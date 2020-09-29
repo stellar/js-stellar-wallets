@@ -20,6 +20,7 @@ import {
   Payment,
   Trade,
   WatcherParams,
+  WatcherResponse,
 } from "../types";
 
 import { getStellarSdkAsset } from "./index";
@@ -99,6 +100,7 @@ export class DataProvider {
 
     this.callbacks = {};
     this.errorHandlers = {};
+    this.effectStreamEnder = undefined;
     this.networkPassphrase = params.networkPassphrase;
     this.serverUrl = params.serverUrl;
     this.server = new Server(this.serverUrl, metadata);
@@ -229,7 +231,7 @@ export class DataProvider {
    */
   public watchAccountDetails(
     params: WatcherParams<AccountDetails>,
-  ): () => void {
+  ): WatcherResponse {
     const { onMessage, onError } = params;
 
     this.fetchAccountDetails()
@@ -260,14 +262,26 @@ export class DataProvider {
         onError(err);
       });
 
-    // if they exec this function, don't make the balance callback do anything
-    return () => {
-      if (this._watcherTimeouts.watchAccountDetails) {
-        clearTimeout(this._watcherTimeouts.watchAccountDetails);
-      }
+    return {
+      refresh: () => {
+        // TODO:
+      },
+      stop: () => {
+        // if they exec this function, don't make the balance callback do
+        // anything
 
-      delete this.callbacks.accountDetails;
-      delete this.errorHandlers.accountDetails;
+        if (this._watcherTimeouts.watchAccountDetails) {
+          clearTimeout(this._watcherTimeouts.watchAccountDetails);
+        }
+
+        if (this.effectStreamEnder) {
+          this.effectStreamEnder();
+          this.effectStreamEnder = undefined;
+        }
+
+        delete this.callbacks.accountDetails;
+        delete this.errorHandlers.accountDetails;
+      },
     };
   }
 
@@ -275,7 +289,7 @@ export class DataProvider {
    * Fetch payments, then re-fetch whenever the details update.
    * Returns a function you can execute to stop the watcher.
    */
-  public watchPayments(params: WatcherParams<Payment>): () => void {
+  public watchPayments(params: WatcherParams<Payment>): WatcherResponse {
     const { onMessage, onError } = params;
 
     let getNextPayments: () => Promise<Collection<Payment>>;
@@ -321,14 +335,26 @@ export class DataProvider {
         onError(err);
       });
 
-    // if they exec this function, don't make the balance callback do anything
-    return () => {
-      if (this._watcherTimeouts.watchPayments) {
-        clearTimeout(this._watcherTimeouts.watchPayments);
-      }
+    return {
+      refresh: () => {
+        // TODO:
+      },
+      stop: () => {
+        // if they exec this function, don't make the balance callback do
+        // anything
 
-      delete this.callbacks.payments;
-      delete this.errorHandlers.payments;
+        if (this._watcherTimeouts.watchPayments) {
+          clearTimeout(this._watcherTimeouts.watchPayments);
+        }
+
+        if (this.effectStreamEnder) {
+          this.effectStreamEnder();
+          this.effectStreamEnder = undefined;
+        }
+
+        delete this.callbacks.payments;
+        delete this.errorHandlers.payments;
+      },
     };
   }
 
@@ -558,6 +584,7 @@ export class DataProvider {
     };
   }
 
+  // Account details and payments use the same stream watcher
   private async _startEffectWatcher(): Promise<{}> {
     if (this.effectStreamEnder) {
       return Promise.resolve({});
@@ -587,10 +614,6 @@ export class DataProvider {
             callbacks.forEach((callback) => {
               callback();
             });
-          } else {
-            if (this.effectStreamEnder) {
-              this.effectStreamEnder();
-            }
           }
         },
         onerror: (e) => {
