@@ -1,5 +1,15 @@
 ## In master
 
+## [v0.3.0-rc.1]
+
+**Breaking changes**:
+
+- Upgraded `stellar-sdk` to 6.0.0.
+- [DataProvider] `watchAccountDetails` and `watchPayments` watchers now return
+  `stop()` and `refresh()` per `WatcherResponse` type.
+
+## [v0.2.0-rc.2](https://github.com/stellar/js-stellar-wallets/compare/v0.2.0-rc.1...v0.2.0-rc.2)
+
 - [DataProvider] Added `type` and `mergedAccount` to `fetchPayments` response.
 
 ## [v0.2.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.1.0-rc.1...v0.2.0-rc.1)

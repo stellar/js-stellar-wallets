@@ -630,10 +630,10 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.10.2":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.0.tgz#f10245877042a815e07f7e693faff0ae9d3a2aac"
-  integrity sha512-qArkXsjJq7H+T86WrIFV0Fnu/tNOkZ4cgXmjkzAu3b/58D5mFIO8JH/y77t7C9q0OdDRdh9s7Ue5GasYssxtXw==
+"@babel/runtime@^7.11.0":
+  version "7.11.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
+  integrity sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -2753,7 +2753,7 @@ events@^3.0.0:
   resolved "https://registry.yarnpkg.com/events/-/events-3.0.0.tgz#9a0a0dfaf62893d92b875b8f2698ca4114973e88"
   integrity sha512-Dc381HFWJzEOhQ+d8pkNon++bk9h6cdAoAj4iE6Q4y6xgTzySWXlKn05/TVNpjnfRqi/X0EpJEJohPjNI3zpVA==
 
-events@^3.1.0:
+events@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.2.0.tgz#93b87c18f8efcd4202a461aec4dfc0556b639379"
   integrity sha512-/46HWwbfCX2xTawVfkKLGxMifJYQBWMwY1mjywRtb4c9x8l5NP3KoJtnIOiL1hfdRkIuYhETxQlo62IF8tcnlg==
@@ -6537,10 +6537,10 @@ stealthy-require@^1.1.1:
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
   integrity sha1-NbCYdbT/SfJqd35QmzCQoyJr8ks=
 
-stellar-base@^3.0.0:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/stellar-base/-/stellar-base-3.0.2.tgz#09083c8f2eb68eddb820504d3b19576da0632c31"
-  integrity sha512-ZZji4go8gRT932OTuUSggohWWuRIs11C99ShokoIurmWPwh0NsvkxN2cBxfEfQi/TdiO1/DiteCzz7w233AfXA==
+stellar-base@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/stellar-base/-/stellar-base-4.0.0.tgz#5eb314c76a2054b4df8bcec1278b78172b0fe663"
+  integrity sha512-isn7FoecIcr6lr38oT132UkrYPOEsZy/XAkXteClZpuBBK2aZn0qjyyX4WAoA6cQhnJw/lQQwND+qfijRETvyg==
   dependencies:
     base32.js "^0.1.0"
     bignumber.js "^4.0.0"
@@ -6552,10 +6552,10 @@ stellar-base@^3.0.0:
   optionalDependencies:
     sodium-native "^2.3.0"
 
-stellar-sdk@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-5.0.0.tgz#c9cfd36ed9871142cc3ec9a9bbcd5efc834ec9c0"
-  integrity sha512-/D4OPnUnIXARkNwhnV9fFTBlDdulf/uAM/Gtb3l6T/0ERq8kiBbnI1GEKzlSNi1hWVAPulzpa9hw5NZWUdz4BQ==
+stellar-sdk@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-6.0.0.tgz#65dfe14f73fe534f29496e1f91f9153075c70f82"
+  integrity sha512-S51rODPjcypv4nvDjAEgnpIbKE7lYGFA+UjN/GbNYh45qgHjuDqK5279+DOfl6RrJ9AENR5OoDfh9jEuE/CFBw==
   dependencies:
     "@types/eventsource" "^1.1.2"
     "@types/node" ">= 8"
@@ -6568,7 +6568,7 @@ stellar-sdk@^5.0.0:
     eventsource "^1.0.7"
     lodash "^4.17.11"
     randombytes "^2.1.0"
-    stellar-base "^3.0.0"
+    stellar-base "^4.0.0"
     toml "^2.3.0"
     tslib "^1.10.0"
     urijs "^1.19.1"
@@ -6955,13 +6955,13 @@ tree-kill@^1.1.0:
   integrity sha512-4hjqbObwlh2dLyW4tcz0Ymw0ggoaVDMveUB9w8kFSQScdRLo0gxO9J7WFcUBo+W3C1TLdFIEwNOWebgZZ0RH9Q==
 
 trezor-connect@^8.1.9:
-  version "8.1.9"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.9.tgz#4f631a063c629f5561c056d42987f1ce678da61e"
-  integrity sha512-Zp18z4sI+50Do3V5Sb2DwaCDfduJ3fJ54YDVffRG5Q8i/U/iLliICIITTNLU9DtmBdMhI7GSNC9fqeAtmSxdKQ==
+  version "8.1.14"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.14.tgz#6ce7c4c7569453a7f678b3fa9e1c4b7e90c5289e"
+  integrity sha512-Y0yY7Mc8iN/feLct2bnJNEIbFbbMC+bCddQ7vMf22ygpcl/plNnvnze03mi6+7hEk3FmiR66gi12INSOr0wBHw==
   dependencies:
-    "@babel/runtime" "^7.10.2"
-    events "^3.1.0"
-    whatwg-fetch "^3.0.0"
+    "@babel/runtime" "^7.11.0"
+    events "^3.2.0"
+    whatwg-fetch "^3.3.1"
 
 trim-right@^1.0.1:
   version "1.0.1"
@@ -7391,10 +7391,10 @@ whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3:
   dependencies:
     iconv-lite "0.4.24"
 
-whatwg-fetch@^3.0.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.2.0.tgz#8e134f701f0a4ab5fda82626f113e2b647fd16dc"
-  integrity sha512-SdGPoQMMnzVYThUbSrEvqTlkvC1Ux27NehaJ/GUHBfNrh5Mjg+1/uRyFMwVnxO2MrikMWvWAqUGgQOfVU4hT7w==
+whatwg-fetch@^3.3.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.1.tgz#e5f871572d6879663fa5674c8f833f15a8425ab3"
+  integrity sha512-sofZVzE1wKwO+EYPbWfiwzaKovWiZXf4coEzjGP9b2GBVgQRLQUZ2QcuPpQExGDAW5GItpEm6Tl4OU5mywnAoQ==
 
 whatwg-mimetype@^2.1.0, whatwg-mimetype@^2.2.0:
   version "2.3.0"
