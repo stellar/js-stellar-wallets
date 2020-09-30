@@ -264,23 +264,11 @@ export class DataProvider {
 
     return {
       refresh: () => {
-        // TODO:
+        this.stopWatchAccountDetails();
+        this.watchAccountDetails(params);
       },
       stop: () => {
-        // if they exec this function, don't make the balance callback do
-        // anything
-
-        if (this._watcherTimeouts.watchAccountDetails) {
-          clearTimeout(this._watcherTimeouts.watchAccountDetails);
-        }
-
-        if (this.effectStreamEnder) {
-          this.effectStreamEnder();
-          this.effectStreamEnder = undefined;
-        }
-
-        delete this.callbacks.accountDetails;
-        delete this.errorHandlers.accountDetails;
+        this.stopWatchAccountDetails();
       },
     };
   }
@@ -337,23 +325,11 @@ export class DataProvider {
 
     return {
       refresh: () => {
-        // TODO:
+        this.stopWatchPayments();
+        this.watchPayments(params);
       },
       stop: () => {
-        // if they exec this function, don't make the balance callback do
-        // anything
-
-        if (this._watcherTimeouts.watchPayments) {
-          clearTimeout(this._watcherTimeouts.watchPayments);
-        }
-
-        if (this.effectStreamEnder) {
-          this.effectStreamEnder();
-          this.effectStreamEnder = undefined;
-        }
-
-        delete this.callbacks.payments;
-        delete this.errorHandlers.payments;
+        this.stopWatchPayments();
       },
     };
   }
@@ -521,6 +497,46 @@ export class DataProvider {
     );
 
     return transaction.build();
+  }
+
+  /**
+   * Stop acount details watcher.
+   */
+  private stopWatchAccountDetails() {
+    // if they exec this function, don't make the balance callback do
+    // anything
+
+    if (this._watcherTimeouts.watchAccountDetails) {
+      clearTimeout(this._watcherTimeouts.watchAccountDetails);
+    }
+
+    if (this.effectStreamEnder) {
+      this.effectStreamEnder();
+      this.effectStreamEnder = undefined;
+    }
+
+    delete this.callbacks.accountDetails;
+    delete this.errorHandlers.accountDetails;
+  }
+
+  /**
+   * Stop payments watcher.
+   */
+  private stopWatchPayments() {
+    // if they exec this function, don't make the balance callback do
+    // anything
+
+    if (this._watcherTimeouts.watchPayments) {
+      clearTimeout(this._watcherTimeouts.watchPayments);
+    }
+
+    if (this.effectStreamEnder) {
+      this.effectStreamEnder();
+      this.effectStreamEnder = undefined;
+    }
+
+    delete this.callbacks.payments;
+    delete this.errorHandlers.payments;
   }
 
   private async _processOpenOffers(
