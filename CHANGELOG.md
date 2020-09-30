@@ -1,5 +1,7 @@
 ## In master
 
+## [v0.3.0-rc.1]
+
 **Breaking changes**:
 
 - Upgraded `stellar-sdk` to 6.0.0.
