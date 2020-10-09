@@ -10,6 +10,7 @@ import { KeyType } from "./constants/keys";
 
 import {
   AuthToken,
+  AuthTokenError,
   EncryptedKey,
   Encrypter,
   GetAuthTokenParams,
@@ -347,7 +348,7 @@ export class KeyManager {
       network_passphrase = json.network_passphrase;
       error = json.error;
     } catch (e) {
-      throw new Error(`Request for challenge returned invalid JSON: ${text}`);
+      error = new Error(`Request for challenge returned invalid JSON: ${text}`);
     }
 
     if (error) {
@@ -422,19 +423,24 @@ export class KeyManager {
 
     if (responseRes.status !== 200) {
       const responseText = await responseRes.text();
+      let err: AuthTokenError;
       try {
         const responseJson = JSON.parse(responseText);
-        throw new Error(
+        err = new Error(
           `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
-          error: ${responseJson.error}`,
+          error code ${responseRes.status} and error: ${responseJson.error}`,
         );
       } catch (e) {
-        throw new Error(
+        err = new Error(
           `[KeyManager#fetchAuthToken] Failed to return a signed transaction,
           error code ${responseRes.status} and status text
           "${responseText}"`,
         );
       }
+
+      err.xdr = signedTransactionXDR;
+
+      throw err;
     }
 
     const responseResText = await responseRes.text();
