@@ -36,6 +36,7 @@ export interface SignTransactionParams {
   transaction: Transaction;
   id: string;
   password: string;
+  custom?: any;
 }
 
 export interface ChangePasswordParams {
@@ -236,7 +237,7 @@ export class KeyManager {
   public async signTransaction(
     params: SignTransactionParams,
   ): Promise<Transaction> {
-    const { transaction, id, password } = params;
+    const { transaction, id, password, custom } = params;
     let key = this._readFromCache(id);
 
     if (!key) {
@@ -257,6 +258,7 @@ export class KeyManager {
     const signedTransaction = await keyHandler.signTransaction({
       transaction,
       key,
+      custom,
     });
     return signedTransaction;
   }

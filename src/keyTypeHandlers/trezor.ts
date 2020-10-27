@@ -8,7 +8,7 @@ import { transformTransaction } from "../helpers/trezorTransformTransaction";
 export const trezorHandler: KeyTypeHandler = {
   keyType: KeyType.trezor,
   async signTransaction(params: HandlerSignTransactionParams) {
-    const { transaction, key } = params;
+    const { transaction, key, custom } = params;
 
     if (key.privateKey !== "") {
       throw new Error(
@@ -18,7 +18,19 @@ export const trezorHandler: KeyTypeHandler = {
       );
     }
 
+    if (!custom || !custom.email || !custom.appUrl) {
+      throw new Error(
+        `Trezor Connect manifest with "email" and "appUrl" props is required.
+        Make sure they are passed through "custom" prop.`,
+      );
+    }
+
     try {
+      TrezorConnect.manifest({
+        email: custom.email,
+        appUrl: custom.appUrl,
+      });
+
       const trezorParams = transformTransaction("m/44'/148'/0'", transaction);
       const response = await TrezorConnect.stellarSignTransaction(trezorParams);
 
