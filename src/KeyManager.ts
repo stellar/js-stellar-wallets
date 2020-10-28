@@ -36,7 +36,9 @@ export interface SignTransactionParams {
   transaction: Transaction;
   id: string;
   password: string;
-  custom?: any;
+  custom?: {
+    [key: string]: any;
+  };
 }
 
 export interface ChangePasswordParams {

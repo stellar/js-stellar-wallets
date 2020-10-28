@@ -1,6 +1,12 @@
 ## In master
 
-## [v0.3.0-rc.1]
+## [v0.3.0-rc.2]
+
+- [KeyManager] Added optional `custom` prop to `signTransaction()` to allow
+  passing additional info.
+- [KeyManager] Trezor wallet: pass manifest info through `custom` prop.
+
+## [v0.3.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.2.0-rc.2...v0.3.0-rc.1)
 
 **Breaking changes**:
 
