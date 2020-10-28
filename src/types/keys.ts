@@ -145,6 +145,9 @@ export interface KeyStore {
 export interface HandlerSignTransactionParams {
   transaction: Transaction;
   key: Key;
+  custom?: {
+    [key: string]: any;
+  };
 }
 
 /**

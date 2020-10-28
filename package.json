@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.3.0-rc.1",
+  "version": "0.3.0-rc.2",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -87,7 +87,7 @@
     "lodash": "^4.17.14",
     "query-string": "^6.4.2",
     "scrypt-async": "^2.0.1",
-    "trezor-connect": "^8.1.9",
+    "trezor-connect": "^8.1.16",
     "tweetnacl": "^1.0.1",
     "tweetnacl-util": "^0.15.0"
   }
