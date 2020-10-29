@@ -172,3 +172,7 @@ export interface GetAuthTokenParams {
   authServerKey: string;
   account?: string;
 }
+
+export interface AuthTokenError extends Error {
+  xdr?: string;
+}
