@@ -1,7 +1,7 @@
 export enum KeyType {
   albedo = "albedo",
   ledger = "ledger",
-  lyra = "lyra",
+  freighter = "freighter",
   plaintextKey = "plaintextKey",
   trezor = "trezor",
 }

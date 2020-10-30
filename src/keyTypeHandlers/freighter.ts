@@ -1,12 +1,12 @@
-import { signTransaction } from "@stellar/lyra-api";
+import { signTransaction } from "@stellar/freighter-api";
 import { Networks, Transaction, TransactionBuilder } from "stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
 import { KeyType } from "../constants/keys";
 
-export const lyraHandler: KeyTypeHandler = {
-  keyType: KeyType.lyra,
+export const freighterHandler: KeyTypeHandler = {
+  keyType: KeyType.freighter,
   async signTransaction(params: HandlerSignTransactionParams) {
     const { transaction, key } = params;
 
@@ -19,24 +19,19 @@ export const lyraHandler: KeyTypeHandler = {
     }
 
     try {
-      const response = await signTransaction({
-        transactionXdr: transaction.toXDR(),
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
+      const response = await signTransaction(transaction.toXDR());
 
       // fromXDR() returns type "Transaction | FeeBumpTransaction" and
       // signTransaction() doesn't like "| FeeBumpTransaction" type, so casting
       // to "Transaction" type.
       return TransactionBuilder.fromXDR(
-        response.signedTransaction,
+        response,
+        // TODO: switch to pubnet before commit
         Networks.TESTNET,
       ) as Transaction;
     } catch (error) {
       throw new Error(
-        `We couldn’t sign the transaction with Lyra. ${error.toString()}.`,
+        `We couldn’t sign the transaction with Freighter. ${error.toString()}.`,
       );
     }
   },

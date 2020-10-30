@@ -630,10 +630,10 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.11.0":
-  version "7.11.2"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
-  integrity sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
+"@babel/runtime@^7.11.2":
+  version "7.12.1"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.1.tgz#b4116a6b6711d010b2dad3b7b6e43bf1b9954740"
+  integrity sha512-J5AIf3vPj3UwXaAzb5j1xM4WAQDX3EMgemF8rjCP3SoW09LfRKAXQKt6CoVYl230P6iWdRcBbnLDDdnqWxZSCA==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -922,10 +922,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@stellar/lyra-api@^1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@stellar/lyra-api/-/lyra-api-1.0.0-alpha.2.tgz#8863998dd9588c946e17449a35bba4bfd8f21092"
-  integrity sha512-1Y3a2KSpCL3Cg/qHJYHRe5kRA4gz8JnQedRPwwUp9q+Bd6UaTPOmgKVUMRrYRTAaLx87JtZUQObHTPc4owcJQg==
+"@stellar/freighter-api@^1.0.0-beta.0":
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@stellar/freighter-api/-/freighter-api-1.0.0-beta.0.tgz#08c3f4ebb4d1b8c3e92039242ca5c877814864b4"
+  integrity sha512-wngITwqu9h4yfgqXvJS27VEkrlPh/u6uTDOPI2Ct8pZzde3fVPYGK+42izhGAe5oOvbziZQqHkHIPh+rkl7YHg==
 
 "@stellar/prettier-config@^1.0.1":
   version "1.0.1"
@@ -6954,14 +6954,14 @@ tree-kill@^1.1.0:
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.1.tgz#5398f374e2f292b9dcc7b2e71e30a5c3bb6c743a"
   integrity sha512-4hjqbObwlh2dLyW4tcz0Ymw0ggoaVDMveUB9w8kFSQScdRLo0gxO9J7WFcUBo+W3C1TLdFIEwNOWebgZZ0RH9Q==
 
-trezor-connect@^8.1.9:
-  version "8.1.14"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.14.tgz#6ce7c4c7569453a7f678b3fa9e1c4b7e90c5289e"
-  integrity sha512-Y0yY7Mc8iN/feLct2bnJNEIbFbbMC+bCddQ7vMf22ygpcl/plNnvnze03mi6+7hEk3FmiR66gi12INSOr0wBHw==
+trezor-connect@^8.1.16:
+  version "8.1.16"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.16.tgz#a634b16c436311f3833aa0a6a36089c95ba4f6fd"
+  integrity sha512-HYSYsJk0js+OFUjO7ebsUunjYBpoUcjHI5iDBeaDoefBl0FT/Qwf6o1sd2IYVVmVCL/MtqxZ6by+/Z0/GaFBNw==
   dependencies:
-    "@babel/runtime" "^7.11.0"
+    "@babel/runtime" "^7.11.2"
     events "^3.2.0"
-    whatwg-fetch "^3.3.1"
+    whatwg-fetch "^3.4.1"
 
 trim-right@^1.0.1:
   version "1.0.1"
@@ -7391,7 +7391,7 @@ whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3:
   dependencies:
     iconv-lite "0.4.24"
 
-whatwg-fetch@^3.3.1:
+whatwg-fetch@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.1.tgz#e5f871572d6879663fa5674c8f833f15a8425ab3"
   integrity sha512-sofZVzE1wKwO+EYPbWfiwzaKovWiZXf4coEzjGP9b2GBVgQRLQUZ2QcuPpQExGDAW5GItpEm6Tl4OU5mywnAoQ==
