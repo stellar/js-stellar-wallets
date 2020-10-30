@@ -26,8 +26,7 @@ export const freighterHandler: KeyTypeHandler = {
       // to "Transaction" type.
       return TransactionBuilder.fromXDR(
         response,
-        // TODO: switch to pubnet before commit
-        Networks.TESTNET,
+        Networks.PUBLIC,
       ) as Transaction;
     } catch (error) {
       throw new Error(
