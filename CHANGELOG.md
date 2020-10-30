@@ -1,6 +1,10 @@
 ## In master
 
-## [v0.3.0-rc.2]
+## [v0.3.0-rc.3]
+
+- [KeyManager] Renamed Lyra to Freighter.
+
+## [v0.3.0-rc.2](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.1...v0.3.0-rc.2)
 
 - [KeyManager] Added optional `custom` prop to `signTransaction()` to allow
   passing additional info.

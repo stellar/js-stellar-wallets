@@ -1,8 +1,8 @@
 import StellarSdk, { Transaction } from "stellar-sdk";
 
 import { albedoHandler } from "./keyTypeHandlers/albedo";
+import { freighterHandler } from "./keyTypeHandlers/freighter";
 import { ledgerHandler } from "./keyTypeHandlers/ledger";
-import { lyraHandler } from "./keyTypeHandlers/lyra";
 import { plaintextKeyHandler } from "./keyTypeHandlers/plaintextKey";
 import { trezorHandler } from "./keyTypeHandlers/trezor";
 
@@ -92,7 +92,7 @@ export class KeyManager {
     this.keyHandlerMap = {
       [KeyType.albedo]: albedoHandler,
       [KeyType.ledger]: ledgerHandler,
-      [KeyType.lyra]: lyraHandler,
+      [KeyType.freighter]: freighterHandler,
       [KeyType.plaintextKey]: plaintextKeyHandler,
       [KeyType.trezor]: trezorHandler,
     };
