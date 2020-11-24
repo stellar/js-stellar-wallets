@@ -79,8 +79,8 @@
   },
   "dependencies": {
     "@albedo-link/intent": "^0.9.2",
-    "@ledgerhq/hw-app-str": "^4.48.0",
-    "@ledgerhq/hw-transport-u2f": "^4.48.0",
+    "@ledgerhq/hw-app-str": "^5.28.0",
+    "@ledgerhq/hw-transport-u2f": "^5.26.0",
     "@stellar/freighter-api": "^1.0.0-beta.0",
     "@types/jest": "^24.0.11",
     "change-case": "^3.1.0",
