@@ -152,7 +152,7 @@ switch (approvalResponse.status) {
       const popup = window.open("", "name", "dimensions etc");
 
       const actionResult = await approvalProvider.fetchActionInBrowser({
-        response: approvalResult,
+        response: approvalResponse,
         window: popup,
       });
 
@@ -165,7 +165,7 @@ switch (approvalResponse.status) {
       }
     } else if (isServerEnv || isNativeEnv) {
       const actionRedirect = getActionUrl({
-        result: approvalResult,
+        response: approvalResponse,
         request: approvalRequest,
         callbackUrl,
       });
