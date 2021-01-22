@@ -30,6 +30,8 @@ The high-level flow is:
 ### Types
 
 ```ts
+type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => boolean;
+
 type getActionUrl = (params: GetActionParams) => string;
 
 interface GetActionParams {
@@ -41,7 +43,6 @@ interface GetActionParams {
 class ApprovalProvider {
   constructor(approvalServer, regulatedAssets) {}
   approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
-  needsApproval: (params: Transaction) => boolean;
   fetchActionInBrowser: ({
     response: ActionRequired,
     window: Window,
@@ -97,6 +98,7 @@ interface TransactionRejected extends ApprovalResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
+  checkIfTxInvolvesRegulatedAssets,
   getActionUrl,
 } from "wallet-sdk";
 
@@ -107,8 +109,8 @@ const approvalProvider = new ApprovalProvider(
   regulatedAssets,
 );
 
-// Parse transaction to check if involves regulated assets
-const needsApproval = approvalProvider.needsApproval(transaction);
+// Parse transaction to check if it involves regulated assets
+const needsApproval = checkIfTxInvolvesRegulatedAssets(transaction);
 if (!needsApproval) {
   // No approval needed so submit to the network
   submitPayment(transaction);
