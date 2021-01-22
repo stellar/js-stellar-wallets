@@ -54,6 +54,7 @@ interface GetActionParams {
   callbackUrl: string;
 }
 
+// If we need to support transactions involving multiple regulated assets, the constructor can take an array of approvalServerUrls.
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
