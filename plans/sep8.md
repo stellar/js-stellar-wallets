@@ -30,7 +30,21 @@ The high-level flow is:
 ### Types
 
 ```ts
+// TODO:
+// 1. Think about whether we can handle a transaction involving more than one regulated asset?
+// 2. Make this function return the regulated asset or an array of regulated assets if found.
 type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => boolean;
+
+// Asset issuers usually have the home_domain set in their account.
+type getHomeDomainByAssetIssuer = (params: string) => string;
+
+// Get the approval server's URL by fetching the stellar.toml file at the home domain and look for the matched currency.
+type getApprovalServerUrl = (params: GetApprovalServerUrlRequest) => string;
+
+interface GetApprovalServerUrlReqeust {
+  homeDomain: string;
+  regulatedAsset: string;
+}
 
 type getActionUrl = (params: GetActionParams) => string;
 
@@ -41,7 +55,7 @@ interface GetActionParams {
 }
 
 class ApprovalProvider {
-  constructor(approvalServer, regulatedAssets) {}
+  constructor(approvalServerUrl) {}
   approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
   fetchActionInBrowser: ({
     response: ActionRequired,
