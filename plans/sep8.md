@@ -5,30 +5,33 @@ Approval service API for transacting with an anchor's regulated assets.
 The high-level flow is:
 
 - User signs a transaction
-- Parse transaction for assets involved, detect whether any assets involved are
-  regulated
-- If regulated, notify user submitting request for transaction approval
-- Submit transaction to approval server, and depending on response:
+- Parse the transaction for assets involved, detect whether any assets involved
+  are regulated
+- If regulated, notify the user to submit a request for transaction approval
+- Submit the transaction to the corresponding approval server, and depending on
+  the response:
   - if success
-    - Display message if included in response
-    - Submit approved tx to the network
+    - Display the message if included in the response
+    - Submit the approved tx to the network
   - if revised
-    - Display message
-    - Parse returned tx, display modifications to user
-    - Prompt user to resign tx
-    - Submit resigned tx to the network
+    - Display the message
+    - Parse the returned tx, display modifications to the user
+    - Prompt the user to re-sign the tx
+    - Submit the resigned tx to the network
   - if pending
-    - Display timeout, message if included in response
-  - if action required
-    - Display message
-    - Redirect to action url
+    - Display the timeout if it is not zero
+    - Display the message if included in the response
+  - if action_required
+    - Display the message
+    - Redirect to action_url
   - if rejected
-    - "approval failed"
-    - Display error
+    - Display the error
 
 ### Types
 
 ```ts
+type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => boolean;
+
 type getActionUrl = (params: GetActionParams) => string;
 
 interface GetActionParams {
@@ -40,7 +43,6 @@ interface GetActionParams {
 class ApprovalProvider {
   constructor(approvalServer, regulatedAssets) {}
   approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
-  needsApproval: (params: Transaction) => boolean;
   fetchActionInBrowser: ({
     response: ActionRequired,
     window: Window,
@@ -96,6 +98,7 @@ interface TransactionRejected extends ApprovalResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
+  checkIfTxInvolvesRegulatedAssets,
   getActionUrl,
 } from "wallet-sdk";
 
@@ -106,8 +109,8 @@ const approvalProvider = new ApprovalProvider(
   regulatedAssets,
 );
 
-// Parse transaction to check if involves regulated assets
-const needsApproval = approvalProvider.needsApproval(transaction);
+// Parse transaction to check if it involves regulated assets
+const needsApproval = checkIfTxInvolvesRegulatedAssets(transaction);
 if (!needsApproval) {
   // No approval needed so submit to the network
   submitPayment(transaction);
@@ -151,7 +154,7 @@ switch (approvalResponse.status) {
       const popup = window.open("", "name", "dimensions etc");
 
       const actionResult = await approvalProvider.fetchActionInBrowser({
-        response: approvalResult,
+        response: approvalResponse,
         window: popup,
       });
 
@@ -164,7 +167,7 @@ switch (approvalResponse.status) {
       }
     } else if (isServerEnv || isNativeEnv) {
       const actionRedirect = getActionUrl({
-        result: approvalResult,
+        response: approvalResponse,
         request: approvalRequest,
         callbackUrl,
       });
