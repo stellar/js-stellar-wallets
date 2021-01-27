@@ -30,10 +30,9 @@ The high-level flow is:
 ### Types
 
 ```ts
-// TODO:
-// 1. Think about whether we can handle a transaction involving more than one regulated asset?
-// 2. Make this function return the regulated asset or an array of regulated assets if found.
-type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => boolean;
+// This function returns the first regulated asset found in the transaction, if any.
+// The returned asset will be in the format of "Code:AssetIssuer".
+type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => string;
 
 // Asset issuers usually have the home_domain set in their account.
 type getHomeDomainByAssetIssuer = (params: string) => string;
@@ -54,7 +53,6 @@ interface GetActionParams {
   callbackUrl: string;
 }
 
-// If we need to support transactions involving multiple regulated assets, the constructor can take an array of approvalServerUrls.
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
