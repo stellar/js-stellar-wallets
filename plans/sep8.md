@@ -48,14 +48,6 @@ interface GetApprovalServerUrlReqeust {
   regulatedAsset: string;
 }
 
-type getActionUrl = (params: GetActionParams) => string;
-
-interface GetActionParams {
-  request: ApprovalRequest;
-  response: ActionRequired;
-  callbackUrl: string;
-}
-
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: Transaction) => Promise<ApprovalResponse>;
@@ -63,6 +55,19 @@ class ApprovalProvider {
     response: ActionRequired,
     window: Window,
   }) => Promise<ActionPromptStatus>;
+}
+
+type callActionUrl = (params: CallActionUrlRequest) => string;
+
+interface CallActionUrlRequest {
+  response: ActionRequired;
+  callbackId: ApprovalRequest;
+  callbackUrl: string;
+}
+
+// This is to be used as a query string for the callbackUrl.
+interface ApprovalRequest {
+  tx: string;
 }
 
 interface ApprovalResponse {
@@ -115,7 +120,7 @@ import {
   checkRegulatedAssetInTx,
   getHomeDomainByAsset,
   getApprovalServerUrl,
-  getActionUrl,
+  callActionUrl,
 } from "wallet-sdk";
 
 // Parse transaction to check if it involves regulated assets
@@ -188,10 +193,10 @@ switch (approvalResponse.status) {
         submitPayment(transaction);
       }
     } else if (isServerEnv || isNativeEnv) {
-      const actionRedirect = getActionUrl({
+      const actionRedirect = callActionUrl({
         response: approvalResponse,
-        request: approvalRequest,
-        callbackUrl,
+        callbackId: approvalRequest,
+        callbackUrl: callbackUrl,
       });
       /**
        * On e.g. react native, the client will have to open a webview manually
