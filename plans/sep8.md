@@ -23,7 +23,7 @@ The high-level flow is:
     - Display the message if included in the response
   - if action_required
     - Display the message
-    - Redirect to action_url
+    - Redirect to action_url based on action_method and action_fields
   - if rejected
     - Display the error
 
@@ -91,6 +91,8 @@ interface ActionRequired extends ApprovalResponse {
   status: "action_required";
   message: string;
   action_url: string;
+  action_method?: string;
+  action_fields?: string[];
 }
 
 interface ActionPromptStatus extends ApprovalResponse {
