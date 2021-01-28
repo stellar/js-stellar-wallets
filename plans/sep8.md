@@ -32,13 +32,16 @@ The high-level flow is:
 ```ts
 // This function returns the first regulated asset found in the transaction, if any.
 // The returned asset will be in the format of "Code:AssetIssuer".
-type checkIfTxInvolvesRegulatedAssets = (params: Transaction) => string;
+type checkRegulatedAssetInTx = (params: Transaction) => string;
 
-// Asset issuers usually have the home_domain set in their account.
-type getHomeDomainByAssetIssuer = (params: string) => string;
+// This function returns the home_domain in the asset issuer's account, if any.
+// This function takes an asset in the format of "Code:AssetIssuer".
+type getHomeDomainByAsset = (params: string) => Promise<string>;
 
 // Get the approval server's URL by fetching the stellar.toml file at the home domain and look for the matched currency.
-type getApprovalServerUrl = (params: GetApprovalServerUrlRequest) => string;
+type getApprovalServerUrl = (
+  params: GetApprovalServerUrlRequest,
+) => Promise<string>;
 
 interface GetApprovalServerUrlReqeust {
   homeDomain: string;
@@ -55,15 +58,11 @@ interface GetActionParams {
 
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
-  approve: (params: ApprovalRequest) => Promise<ApprovalResponse>;
+  approve: (params: Transaction) => Promise<ApprovalResponse>;
   fetchActionInBrowser: ({
     response: ActionRequired,
     window: Window,
   }) => Promise<ActionPromptStatus>;
-}
-
-interface ApprovalRequest {
-  tx: string;
 }
 
 interface ApprovalResponse {
@@ -111,35 +110,43 @@ interface TransactionRejected extends ApprovalResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
-  checkIfTxInvolvesRegulatedAssets,
+  checkRegulatedAssetInTx,
+  getHomeDomainByAsset,
+  getApprovalServerUrl,
   getActionUrl,
 } from "wallet-sdk";
 
-// approvalServerUrl and regulatedAssets fetched from stellar.toml
-// regulatedAssets is a map of `${asset.code}-${asset.issuer}` to 'stellar-base' Asset
-const approvalProvider = new ApprovalProvider(
-  approvalServerUrl,
-  regulatedAssets,
-);
-
 // Parse transaction to check if it involves regulated assets
-const needsApproval = checkIfTxInvolvesRegulatedAssets(transaction);
-if (!needsApproval) {
+const regulatedAsset = checkRegulatedAssetInTx(transaction);
+if (!regulatedAsset) {
   // No approval needed so submit to the network
   submitPayment(transaction);
   return;
 }
 
-// Notify user asking for approval
-showUser(needsApproval);
+// TODO: check whether the user is already authorized to transact the asset.
 
-// Deconstruct to transaction envelope then submit to approval server
-// TODO: Maybe provider helper for deconstruct/reconstruct of tx <-> Transaction?
-const tx = transaction
-  .toEnvelope()
-  .toXDR()
-  .toString("base64");
-const approvalResponse = await approvalProvider.approve({ tx });
+const homeDomain = await getHomeDomainByAsset(regulatedAsset);
+if (!homeDomain) {
+  // Report an error saying a certain information is missing in order to transact the asset.
+  return;
+}
+
+const approvalServerUrl = await getApprovalServerUrl({
+  homeDomain: homeDomain,
+  regulatedAsset: regulatedAsset,
+});
+if (!approvalServerUrl) {
+  // Report an error saying a certain information is missing in order to transact the asset.
+  return;
+}
+
+const approvalProvider = new ApprovalProvider(approvalServerUrl);
+
+// Notify user asking for approval
+showUser(transaction);
+
+const approvalResponse = await approvalProvider.approve(transaction);
 
 switch (approvalResponse.status) {
   case ApprovalResponseStatus.success:
