@@ -118,7 +118,7 @@ import {
 
 // Parse transaction to check if it involves regulated assets
 const regulatedAsset = checkRegulatedAssetInTx(transaction);
-if (regulatedAsset === "") {
+if (!regulatedAsset) {
   // No approval needed so submit to the network
   submitPayment(transaction);
   return;
@@ -127,7 +127,7 @@ if (regulatedAsset === "") {
 // TODO: check whether the user is already authorized to transact the asset.
 
 const homeDomain = await getHomeDomainByAsset(regulatedAsset);
-if (homeDomain === "") {
+if (!homeDomain) {
   // Report an error saying a certain information is missing in order to transact the asset.
   return;
 }
@@ -136,7 +136,7 @@ const approvalServerUrl = await getApprovalServerUrl({
   homeDomain: homeDomain,
   regulatedAsset: regulatedAsset,
 });
-if (approvalServerUrl === "") {
+if (!approvalServerUrl) {
   // Report an error saying a certain information is missing in order to transact the asset.
   return;
 }
