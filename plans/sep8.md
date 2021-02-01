@@ -23,7 +23,11 @@ The high-level flow is:
     - Display the message if included in the response
   - if action_required
     - Display the message
-    - Redirect to action_url based on action_method and action_fields
+    - if action_method is GET or not provided, action_url should be opened in a
+      browser and any fields passed should allow the server to proceed without
+      collecting user information
+    - if action_method is POST, fields included in action_fields may be passed
+      as JSON without user intervention
   - if rejected
     - Display the error
 
