@@ -167,7 +167,8 @@ switch (approvalResponse.status) {
     // Placeholder to show the message regarding why further actions are required.
     showUser(approvalResponse.message);
 
-    // If the approval service requested specific fields, load the values of those fields without user intervention.
+    // If the approval service requested specific fields, load the values of those fields if we know them,
+    // or if we'd like to collect them client side before taking the user to the action url.
     let actionFieldsValues = [];
     if (!approvalResponse.action_fields || !approvalResponse.action_fields.length) {
           actionFieldValues = approvalResponse.action_fields.map(field => loadValue(field););
