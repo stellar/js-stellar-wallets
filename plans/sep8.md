@@ -23,7 +23,11 @@ The high-level flow is:
     - Display the message if included in the response
   - if action_required
     - Display the message
-    - Redirect to action_url
+    - if action_method is GET or not provided, action_url should be opened in a
+      browser and any fields passed should allow the server to proceed without
+      collecting user information
+    - if action_method is POST, fields included in action_fields may be passed
+      as JSON without user intervention
   - if rejected
     - Display the error
 
@@ -48,21 +52,14 @@ interface GetApprovalServerUrlReqeust {
   regulatedAsset: string;
 }
 
-type getActionUrl = (params: GetActionParams) => string;
-
-interface GetActionParams {
-  request: ApprovalRequest;
-  response: ActionRequired;
-  callbackUrl: string;
-}
-
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: Transaction) => Promise<ApprovalResponse>;
-  fetchActionInBrowser: ({
-    response: ActionRequired,
-    window: Window,
-  }) => Promise<ActionPromptStatus>;
+  postActionUrl: ({
+    url: string;
+    fields: string[];
+    values: any[];
+  }) => Promise<PostActionUrlResponse>;
 }
 
 interface ApprovalResponse {
@@ -91,16 +88,18 @@ interface ActionRequired extends ApprovalResponse {
   status: "action_required";
   message: string;
   action_url: string;
-}
-
-interface ActionPromptStatus extends ApprovalResponse {
-  status: "success" | "rejected";
-  tx: string;
+  action_method?: string;
+  action_fields?: string[];
 }
 
 interface TransactionRejected extends ApprovalResponse {
   status: "rejected";
   error: string;
+}
+
+interface PostActionUrlResponse {
+  result: string;
+  next_url?: string;
 }
 ```
 
@@ -113,7 +112,6 @@ import {
   checkRegulatedAssetInTx,
   getHomeDomainByAsset,
   getApprovalServerUrl,
-  getActionUrl,
 } from "wallet-sdk";
 
 // Parse transaction to check if it involves regulated assets
@@ -166,39 +164,35 @@ switch (approvalResponse.status) {
     showUser(approvalResponse);
     break;
   case ApprovalResponseStatus.action_required:
-    if (isBrowser) {
-      // To avoid popup blockers, the new window has to be opened directly in
-      // response to a user click event, so we need consumers to provide us a
-      // window instance that they created previously. This could also be done in
-      // an iframe or something.
-      const popup = window.open("", "name", "dimensions etc");
+    // Placeholder to show the message regarding why further actions are required.
+    showUser(approvalResponse.message);
 
-      const actionResult = await approvalProvider.fetchActionInBrowser({
-        response: approvalResponse,
-        window: popup,
-      });
+    // If the approval service requested specific fields, load the values of those fields if we know them,
+    // or if we'd like to collect them client side before taking the user to the action url.
+    let actionFieldsValues = [];
+    if (!approvalResponse.action_fields || !approvalResponse.action_fields.length) {
+          actionFieldValues = approvalResponse.action_fields.map(field => loadValue(field););
+    }
 
-      showUser(actionResult);
-
-      // if action succeeded, submit transaction
-      if (actionResult.status === "success") {
-        transaction = new Transaction(actionResult.tx);
-        submitPayment(transaction);
+    if (!approvalResponse.action_method || approvalResponse.action_method === "GET") {
+      let actionUrl = approvalResponse.action_url;
+      if (!actionFieldsValues.length) {
+        actionUrl = buildUrlWithQueryParams(approvalResponse.action_url, approvalResponse.action_fields, actionFieldValues);
       }
-    } else if (isServerEnv || isNativeEnv) {
-      const actionRedirect = getActionUrl({
-        response: approvalResponse,
-        request: approvalRequest,
-        callbackUrl,
+
+      // The actual implementation regarding how to trigger the sending of the GET request and handle the response is up to the client.
+      loadUrl(actionUrl);
+    } else if (approvalResponse.action_method === "POST") {
+      const resp = await approvalProvider.postActionUrl({
+        url: approvalResponse.action_url,
+        fields: approvalResponse.action_fields,
+        values: actionFieldsValues,
       });
-      /**
-       * On e.g. react native, the client will have to open a webview manually
-       * and pass a callback URL that the app has "claimed." This is very similar
-       * to e.g. OAuth flows.
-       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
-       * Include the original request so it can be provided as a querystring to
-       * the callback URL.
-       */
+
+      if (resp.result === "follow_next_url") {
+        // Load the URL in a browser for the user to complete any further action required.
+        loadUrl(resp.next_url);
+      }
     }
     break;
   case ApprovalResponseStatus.rejected:
