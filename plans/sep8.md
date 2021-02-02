@@ -55,10 +55,11 @@ interface GetApprovalServerUrlReqeust {
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: Transaction) => Promise<ApprovalResponse>;
-  fetchActionInBrowser: ({
-    response: ActionRequired,
-    window: Window,
-  }) => Promise<ActionPromptStatus>;
+  postActionUrl: ({
+    url: string;
+    fields: string[];
+    values: any[];
+  }) => Promise<PostActionUrlResponse>;
 }
 
 type callActionUrl = (params: CallActionUrlRequest) => string;
@@ -104,14 +105,14 @@ interface ActionRequired extends ApprovalResponse {
   action_fields?: string[];
 }
 
-interface ActionPromptStatus extends ApprovalResponse {
-  status: "success" | "rejected";
-  tx: string;
-}
-
 interface TransactionRejected extends ApprovalResponse {
   status: "rejected";
   error: string;
+}
+
+interface PostActionUrlResponse {
+  result: string;
+  next_url?: string;
 }
 ```
 
@@ -177,39 +178,34 @@ switch (approvalResponse.status) {
     showUser(approvalResponse);
     break;
   case ApprovalResponseStatus.action_required:
-    if (isBrowser) {
-      // To avoid popup blockers, the new window has to be opened directly in
-      // response to a user click event, so we need consumers to provide us a
-      // window instance that they created previously. This could also be done in
-      // an iframe or something.
-      const popup = window.open("", "name", "dimensions etc");
+    // Placeholder to show the message regarding why further actions are required.
+    showUser(approvalResponse.message);
 
-      const actionResult = await approvalProvider.fetchActionInBrowser({
-        response: approvalResponse,
-        window: popup,
-      });
+    // If the approval service requested specific fields, load the values of those fields without user intervention.
+    let actionFieldsValues = [];
+    if (!approvalResponse.action_fields || !approvalResponse.action_fields.length) {
+          actionFieldValues = approvalResponse.action_fields.map(field => loadValue(field););
+    }
 
-      showUser(actionResult);
-
-      // if action succeeded, submit transaction
-      if (actionResult.status === "success") {
-        transaction = new Transaction(actionResult.tx);
-        submitPayment(transaction);
+    if (!approvalResponse.action_method || approvalResponse.action_method === "GET") {
+      let actionUrl = approvalResponse.action_url;
+      if (!actionFieldsValues.length) {
+        actionUrl = buildUrlWithQueryParams(approvalResponse.action_url, approvalResponse.action_fields, actionFieldValues);
       }
-    } else if (isServerEnv || isNativeEnv) {
-      const actionRedirect = callActionUrl({
-        response: approvalResponse,
-        callbackId: approvalRequest,
-        callbackUrl: callbackUrl,
+
+      // The actual implementation about how do the send of the GET request and handle the response is up to the client.
+      sendGetRequestToActionUrl(actionUrl);
+    } else if (approvalResponse.action_method === "POST") {
+      const resp = await approvalProvider.postActionUrl({
+        url: approvalResponse.action_url,
+        fields: approvalResponse.action_fields,
+        values: actionFieldsValues,
       });
-      /**
-       * On e.g. react native, the client will have to open a webview manually
-       * and pass a callback URL that the app has "claimed." This is very similar
-       * to e.g. OAuth flows.
-       * https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uris-native-apps/
-       * Include the original request so it can be provided as a querystring to
-       * the callback URL.
-       */
+
+      if (resp.result === "follow_next_url") {
+        // Load the URL in a browser for the user to complete any further action required.
+        loadUrl(resp.next_url);
+      }
     }
     break;
   case ApprovalResponseStatus.rejected:
