@@ -62,19 +62,6 @@ class ApprovalProvider {
   }) => Promise<PostActionUrlResponse>;
 }
 
-type callActionUrl = (params: CallActionUrlRequest) => string;
-
-interface CallActionUrlRequest {
-  response: ActionRequired;
-  callbackId: ApprovalRequest;
-  callbackUrl: string;
-}
-
-// This is to be used as a query string for the callbackUrl.
-interface ApprovalRequest {
-  tx: string;
-}
-
 interface ApprovalResponse {
   status: "success" | "revised" | "pending" | "action_required" | "rejected";
 }
@@ -125,7 +112,6 @@ import {
   checkRegulatedAssetInTx,
   getHomeDomainByAsset,
   getApprovalServerUrl,
-  callActionUrl,
 } from "wallet-sdk";
 
 // Parse transaction to check if it involves regulated assets
