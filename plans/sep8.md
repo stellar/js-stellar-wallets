@@ -181,7 +181,7 @@ switch (approvalResponse.status) {
       }
 
       // The actual implementation regarding how to trigger the sending of the GET request and handle the response is up to the client.
-      sendGetRequestToActionUrl(actionUrl);
+      loadUrl(actionUrl);
     } else if (approvalResponse.action_method === "POST") {
       const resp = await approvalProvider.postActionUrl({
         url: approvalResponse.action_url,
