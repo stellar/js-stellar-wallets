@@ -179,7 +179,7 @@ switch (approvalResponse.status) {
         actionUrl = buildUrlWithQueryParams(approvalResponse.action_url, approvalResponse.action_fields, actionFieldValues);
       }
 
-      // The actual implementation about how do the send of the GET request and handle the response is up to the client.
+      // The actual implementation regarding how to trigger the sending of the GET request and handle the response is up to the client.
       sendGetRequestToActionUrl(actionUrl);
     } else if (approvalResponse.action_method === "POST") {
       const resp = await approvalProvider.postActionUrl({
