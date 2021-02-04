@@ -100,6 +100,7 @@ interface TransactionRejected extends ApprovalResponse {
 interface PostActionUrlResponse {
   result: string;
   next_url?: string;
+  message?: string;
 }
 ```
 
