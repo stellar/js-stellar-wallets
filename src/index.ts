@@ -11,6 +11,7 @@ export { Types };
 export { EffectType } from "./constants/data";
 export { KeyType } from "./constants/keys";
 export { TransferResponseType, TransactionStatus } from "./constants/transfers";
+export { ApprovalResponseStatus, ActionResult } from "./constants/sep8";
 
 /**
  * Data
