@@ -1,33 +1,28 @@
 import { ApprovalResponseStatus } from "../constants/sep8";
 
 export interface ApprovalResponse {
-  status:
-    | ApprovalResponseStatus.success
-    | ApprovalResponseStatus.revised
-    | ApprovalResponseStatus.pending
-    | ApprovalResponseStatus.actionRequired
-    | ApprovalResponseStatus.rejected;
+  status: ApprovalResponseStatus;
 }
 
-export interface TransactionApproved extends ApprovalResponse {
+export interface TransactionApproved {
   status: ApprovalResponseStatus.success;
   tx: string;
   message?: string;
 }
 
-export interface TransactionRevised extends ApprovalResponse {
+export interface TransactionRevised {
   status: ApprovalResponseStatus.revised;
   tx: string;
   message: string;
 }
 
-export interface PendingApproval extends ApprovalResponse {
+export interface PendingApproval {
   status: ApprovalResponseStatus.pending;
   timeout: number;
   message?: string;
 }
 
-export interface ActionRequired extends ApprovalResponse {
+export interface ActionRequired {
   status: ApprovalResponseStatus.actionRequired;
   message: string;
   action_url: string;
@@ -35,7 +30,7 @@ export interface ActionRequired extends ApprovalResponse {
   action_fields?: string[];
 }
 
-export interface TransactionRejected extends ApprovalResponse {
+export interface TransactionRejected {
   status: ApprovalResponseStatus.rejected;
   error: string;
 }
