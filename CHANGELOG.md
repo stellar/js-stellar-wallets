@@ -1,10 +1,12 @@
 ## In master
 
+- Added SEP-8 Approval Provider.
+
 ## [v0.3.0-rc.4](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.3...v0.3.0-rc.4)
 
 - Upgraded Ledger dependencies.
 
-## [v0.3.0-rc.3]
+## [v0.3.0-rc.3](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.2...v0.3.0-rc.3)
 
 - [KeyManager] Renamed Lyra to Freighter.
 
