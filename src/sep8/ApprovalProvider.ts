@@ -1,4 +1,5 @@
 import { Transaction } from "stellar-base";
+import { FeeBumpTransaction } from "stellar-sdk";
 import { ApprovalResponse } from "../types/sep8";
 
 export class ApprovalProvider {
@@ -13,11 +14,17 @@ export class ApprovalProvider {
   }
 
   public async approve(
-    transaction: Transaction,
+    transaction: Transaction | FeeBumpTransaction,
     contentType:
       | "application/json"
       | "application/x-www-form-urlencoded" = "application/json",
   ): Promise<ApprovalResponse> {
+    if (!transaction.signatures.length) {
+      throw new Error(
+        "At least one signature is required before submitting for approval.",
+      );
+    }
+
     const param = {
       tx: transaction
         .toEnvelope()
