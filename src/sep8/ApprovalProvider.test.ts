@@ -54,7 +54,7 @@ describe("approve", () => {
     }
   });
 
-  test("approval server returns an unknown status", async () => {
+  test("approval server returned an unknown status", async () => {
     const accountKey = StellarBase.Keypair.random();
     const account = new StellarBase.Account(accountKey.publicKey(), "0");
     const keyNetwork = StellarBase.Networks.TESTNET;
@@ -83,6 +83,40 @@ describe("approve", () => {
     } catch (e) {
       expect(e.toString()).toContain(
         `Error: Approval server returned unknown status`,
+      );
+    }
+  });
+
+  test("approval server could not be found", async () => {
+    const accountKey = StellarBase.Keypair.random();
+    const account = new StellarBase.Account(accountKey.publicKey(), "0");
+    const keyNetwork = StellarBase.Networks.TESTNET;
+
+    const txBuild = new StellarBase.TransactionBuilder(account, {
+      fee: "10000",
+      networkPassphrase: keyNetwork,
+    })
+      .setTimeout(1000)
+      .build();
+    txBuild.sign(accountKey);
+
+    // @ts-ignore
+    fetch.mockResponseOnce(
+      JSON.stringify({
+        error: "not found",
+      }),
+      { status: 404 },
+    );
+
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+    try {
+      // @ts-ignore
+      await approvalProvider.approve(txBuild);
+      expect("This test failed").toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain(
+        `Error: Error sending base64-encoded transaction`,
       );
     }
   });
