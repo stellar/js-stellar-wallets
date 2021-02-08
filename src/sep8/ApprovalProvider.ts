@@ -1,5 +1,6 @@
 import { Transaction } from "stellar-base";
 import { FeeBumpTransaction } from "stellar-sdk";
+import { ApprovalResponseStatus } from "../constants/sep8";
 import { ApprovalResponse } from "../types/sep8";
 
 export class ApprovalProvider {
@@ -7,7 +8,7 @@ export class ApprovalProvider {
 
   constructor(approvalServer: string) {
     if (!approvalServer) {
-      throw new Error("Required parameter `approvalServer` missing!");
+      throw new Error("Required parameter 'approvalServer' missing!");
     }
 
     this.approvalServer = approvalServer.replace(/\/$/, "");
@@ -72,13 +73,24 @@ export class ApprovalProvider {
     }
 
     const responseOKText = await response.text();
-
+    let res;
     try {
-      return JSON.parse(responseOKText) as ApprovalResponse;
+      res = JSON.parse(responseOKText) as ApprovalResponse;
     } catch (e) {
       throw new Error(
         `Error parsing the approval server response as JSON: ${responseOKText}`,
       );
     }
+
+    if (
+      res.status !== ApprovalResponseStatus.success &&
+      res.status !== ApprovalResponseStatus.revised &&
+      res.status !== ApprovalResponseStatus.pending &&
+      res.status !== ApprovalResponseStatus.actionRequired &&
+      res.status !== ApprovalResponseStatus.rejected
+    ) {
+      throw new Error(`Approval server returned unknown status: ${res.status}`);
+    }
+    return res;
   }
 }

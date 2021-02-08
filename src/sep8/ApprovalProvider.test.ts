@@ -16,7 +16,9 @@ describe("ApprovalProvider", () => {
       const approvalProvider = new ApprovalProvider("");
       expect("This test failed").toBe(null);
     } catch (e) {
-      expect(e).toBeTruthy();
+      expect(e.toString()).toMatch(
+        `Error: Required parameter 'approvalServer' missing!`,
+      );
     }
   });
 });
@@ -48,6 +50,68 @@ describe("approve", () => {
     } catch (e) {
       expect(e.toString()).toMatch(
         `At least one signature is required before submitting for approval.`,
+      );
+    }
+  });
+
+  test("approval server returns an unknown status", async () => {
+    const accountKey = StellarBase.Keypair.random();
+    const account = new StellarBase.Account(accountKey.publicKey(), "0");
+    const keyNetwork = StellarBase.Networks.TESTNET;
+
+    const txBuild = new StellarBase.TransactionBuilder(account, {
+      fee: "10000",
+      networkPassphrase: keyNetwork,
+    })
+      .setTimeout(1000)
+      .build();
+    txBuild.sign(accountKey);
+
+    // @ts-ignore
+    fetch.mockResponseOnce(
+      JSON.stringify({
+        error: "unable to process the transaction",
+      }),
+    );
+
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+    try {
+      // @ts-ignore
+      await approvalProvider.approve(txBuild);
+      expect("This test failed").toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain(
+        `Error: Approval server returned unknown status`,
+      );
+    }
+  });
+
+  test("approval server returns a JSON error", async () => {
+    const accountKey = StellarBase.Keypair.random();
+    const account = new StellarBase.Account(accountKey.publicKey(), "0");
+    const keyNetwork = StellarBase.Networks.TESTNET;
+
+    const txBuild = new StellarBase.TransactionBuilder(account, {
+      fee: "10000",
+      networkPassphrase: keyNetwork,
+    })
+      .setTimeout(1000)
+      .build();
+    txBuild.sign(accountKey);
+
+    // @ts-ignore
+    fetch.mockResponseOnce("unable to process the transaction");
+
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+    try {
+      // @ts-ignore
+      await approvalProvider.approve(txBuild);
+      expect("This test failed").toBe(null);
+    } catch (e) {
+      expect(e.toString()).toContain(
+        `Error: Error parsing the approval server response as JSON`,
       );
     }
   });
