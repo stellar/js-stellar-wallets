@@ -72,13 +72,14 @@ export class ApprovalProvider {
       );
     }
 
-    if (
-      res.status !== ApprovalResponseStatus.success &&
-      res.status !== ApprovalResponseStatus.revised &&
-      res.status !== ApprovalResponseStatus.pending &&
-      res.status !== ApprovalResponseStatus.actionRequired &&
-      res.status !== ApprovalResponseStatus.rejected
-    ) {
+    const acceptedStatuses = [
+      ApprovalResponseStatus.success,
+      ApprovalResponseStatus.revised,
+      ApprovalResponseStatus.pending,
+      ApprovalResponseStatus.actionRequired,
+      ApprovalResponseStatus.rejected,
+    ];
+    if (!acceptedStatuses.includes(res.status)) {
       throw new Error(`Approval server returned unknown status: ${res.status}`);
     }
     return res;
