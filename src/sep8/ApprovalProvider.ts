@@ -55,21 +55,11 @@ export class ApprovalProvider {
 
     if (!response.ok) {
       const responseText = await response.text();
-      try {
-        const { responseJson } = JSON.parse(responseText);
-        throw new Error(
-          `Error sending base64-encoded transaction to ${
-            this.approvalServer
-          }: error ${responseJson.error}`,
-        );
-      } catch (e) {
-        throw new Error(
-          `Error sending base64-encoded transaction to ${
-            this.approvalServer
-          }: error 
-          code ${response.status}, status text: "${responseText}"`,
-        );
-      }
+      throw new Error(
+        `Error sending base64-encoded transaction to ${
+          this.approvalServer
+        }: error code ${response.status}, status text: "${responseText}"`,
+      );
     }
 
     const responseOKText = await response.text();
