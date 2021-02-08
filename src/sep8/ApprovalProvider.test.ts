@@ -257,8 +257,8 @@ describe("approve", () => {
       expect(res).toEqual(actionRequired);
       expect(res.status).toBe(ApprovalResponseStatus.actionRequired);
       const resActionRequired = res as ActionRequired;
-      expect(resActionRequired.action_url).toBeDefined();
-      expect(resActionRequired.message).toBeDefined();
+      expect(resActionRequired.action_url).toBeTruthy();
+      expect(resActionRequired.message).toBeTruthy();
     } catch (e) {
       expect(e).toBe(null);
     }
@@ -293,7 +293,7 @@ describe("approve", () => {
       expect(res).toEqual(rejected);
       expect(res.status).toBe(ApprovalResponseStatus.rejected);
       const txRejected = res as TransactionRejected;
-      expect(txRejected.error).toBeDefined();
+      expect(txRejected.error).toBeTruthy();
     } catch (e) {
       expect(e).toBe(null);
     }
