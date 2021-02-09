@@ -1,7 +1,11 @@
 import { Transaction } from "stellar-base";
 import { FeeBumpTransaction } from "stellar-sdk";
 import { ApprovalResponseStatus } from "../constants/sep8";
-import { ApprovalResponse } from "../types/sep8";
+import {
+  ApprovalResponse,
+  PostActionUrlRequest,
+  PostActionUrlResponse,
+} from "../types/sep8";
 
 export class ApprovalProvider {
   public approvalServer: string;
@@ -83,5 +87,43 @@ export class ApprovalProvider {
       throw new Error(`Approval server returned unknown status: ${res.status}`);
     }
     return res;
+  }
+
+  public async postActionUrl(
+    params: PostActionUrlRequest,
+  ): Promise<PostActionUrlResponse> {
+    if (!params.action_url) {
+      throw new Error("Required field 'action_url' missing!");
+    }
+    if (
+      !Object.keys(params.field_value_map) ||
+      !Object.keys(params.field_value_map).length
+    ) {
+      throw new Error("Required field 'field_value_map' missing!");
+    }
+
+    const response = await fetch(params.action_url, {
+      method: "POST",
+      body: JSON.stringify(params.field_value_map),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      throw new Error(
+        `Error sending POST request to ${params.action_url}: error code ${
+          response.status
+        }, status text: "${responseText}"`,
+      );
+    }
+
+    const responseOKText = await response.text();
+    try {
+      return JSON.parse(responseOKText) as PostActionUrlResponse;
+    } catch (e) {
+      throw new Error(`Error parsing the response as JSON: ${responseOKText}`);
+    }
   }
 }
