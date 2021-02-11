@@ -1,5 +1,5 @@
 import StellarBase from "stellar-base";
-import { ApprovalResponseStatus } from "../constants/sep8";
+import { ActionResult, ApprovalResponseStatus } from "../constants/sep8";
 import {
   ActionRequired,
   PendingApproval,
@@ -328,6 +328,95 @@ describe("approve", () => {
       expect(res.status).toBe(ApprovalResponseStatus.rejected);
       const txRejected = res as TransactionRejected;
       expect(txRejected.error).toBeTruthy();
+    } catch (e) {
+      expect(e).toBe(null);
+    }
+  });
+});
+
+describe("postActionUrl", () => {
+  beforeEach(() => {
+    // @ts-ignore
+    fetch.resetMocks();
+  });
+
+  test("Throws errors for missing action_url", async () => {
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+
+    try {
+      // @ts-ignore
+      const res = await approvalProvider.postActionUrl({});
+      expect("This test failed").toBe(null);
+    } catch (e) {
+      expect(e.toString()).toMatch(
+        `Error: Required field 'action_url' missing!`,
+      );
+    }
+  });
+
+  test("Throws errors for missing field_value_map", async () => {
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+
+    try {
+      // @ts-ignore
+      const res = await approvalProvider.postActionUrl({
+        action_url: "https://action.url",
+        field_value_map: {},
+      });
+      expect("This test failed").toBe(null);
+    } catch (e) {
+      expect(e.toString()).toMatch(
+        `Error: Required field 'field_value_map' missing!`,
+      );
+    }
+  });
+
+  test("no further action required response", async () => {
+    const noFutherAction = {
+      result: ActionResult.noFurtherActionRequired,
+    };
+
+    // @ts-ignore
+    fetch.mockResponseOnce(JSON.stringify(noFutherAction));
+
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+
+    try {
+      const res = await approvalProvider.postActionUrl({
+        action_url: "https://action.url",
+        field_value_map: {
+          email: "hello@example.com",
+        },
+      });
+      expect(res).toEqual(noFutherAction);
+    } catch (e) {
+      expect(e).toBe(null);
+    }
+  });
+
+  test("follow next url response", async () => {
+    const followNextUrl = {
+      result: ActionResult.followNextUrl,
+      next_url: "https://next.url",
+    };
+
+    // @ts-ignore
+    fetch.mockResponseOnce(JSON.stringify(followNextUrl));
+
+    const approvalServer = "https://www.stellar.org/approve";
+    const approvalProvider = new ApprovalProvider(approvalServer);
+
+    try {
+      const res = await approvalProvider.postActionUrl({
+        action_url: "https://action.url",
+        field_value_map: {
+          email: "hello@example.com",
+        },
+      });
+      expect(res).toEqual(followNextUrl);
     } catch (e) {
       expect(e).toBe(null);
     }

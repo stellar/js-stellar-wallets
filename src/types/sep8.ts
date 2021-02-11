@@ -1,4 +1,4 @@
-import { ApprovalResponseStatus } from "../constants/sep8";
+import { ActionResult, ApprovalResponseStatus } from "../constants/sep8";
 
 export interface ApprovalResponse {
   status: ApprovalResponseStatus;
@@ -35,8 +35,13 @@ export interface TransactionRejected {
   error: string;
 }
 
+export interface PostActionUrlRequest {
+  action_url: string;
+  field_value_map: { [key: string]: any };
+}
+
 export interface PostActionUrlResponse {
-  result: string;
+  result: ActionResult;
   next_url?: string;
   message?: string;
 }
