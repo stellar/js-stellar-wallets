@@ -1,4 +1,4 @@
-import { ApprovalResponseStatus } from "../constants/sep8";
+import { ActionResult, ApprovalResponseStatus } from "../constants/sep8";
 
 export interface ApprovalResponse {
   status: ApprovalResponseStatus;
@@ -41,7 +41,7 @@ export interface PostActionUrlRequest {
 }
 
 export interface PostActionUrlResponse {
-  result: string;
+  result: ActionResult;
   next_url?: string;
   message?: string;
 }
