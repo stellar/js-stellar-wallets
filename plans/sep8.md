@@ -55,11 +55,9 @@ interface GetApprovalServerUrlReqeust {
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
   approve: (params: Transaction) => Promise<ApprovalResponse>;
-  postActionUrl: ({
-    url: string;
-    fields: string[];
-    values: any[];
-  }) => Promise<PostActionUrlResponse>;
+  postActionUrl: (
+    params: PostActionUrlRequest,
+  ) => Promise<PostActionUrlResponse>;
 }
 
 interface ApprovalResponse {
@@ -97,8 +95,13 @@ interface TransactionRejected extends ApprovalResponse {
   error: string;
 }
 
+interface PostActionUrlRequest {
+  action_url: string;
+  field_value_map: { [key: string]: any };
+}
+
 interface PostActionUrlResponse {
-  result: string;
+  result: ActionResult;
   next_url?: string;
   message?: string;
 }
@@ -144,50 +147,71 @@ const approvalProvider = new ApprovalProvider(approvalServerUrl);
 
 // Notify user asking for approval
 showUser(transaction);
+userSignTx(transaction);
 
 const approvalResponse = await approvalProvider.approve(transaction);
 
 switch (approvalResponse.status) {
   case ApprovalResponseStatus.success:
-  case ApprovalResponseStatus.revised:
-    // Placeholder to show the success/revised message if returned
-    showUser(approvalResponse);
+    const res = approvalResponse as TransactionApproved
+    // Placeholder to show the success message if returned
+    showUser(res.message);
 
     // Set the approved transaction
-    transaction = new Transaction(approvalResponse.tx);
+    transaction = new Transaction(res.tx);
+
+    // Submit approved transaction to the network
+    submitPayment(transaction);
+    break;
+  case ApprovalResponseStatus.revised:
+    const res = approvalResponse as TransactionRevised
+    // Placeholder to show the revised message and the difference between the original transaction and the revised transaction
+    showUser(res);
+
+    // Set the approved transaction
+    transaction = new Transaction(res.tx);
+
+    // User needs to sign the transaction because it was revised.
+    userSignTx(transaction)
 
     // Submit approved transaction to the network
     submitPayment(transaction);
     break;
   case ApprovalResponseStatus.pending:
+    const res = approvalResponse as PendingApproval
     // Placeholder that notifies user approval pending and time need
     // to wait before resubmitting tx for approval
-    showUser(approvalResponse);
+    showUser(res);
     break;
   case ApprovalResponseStatus.action_required:
+    const res = approvalResponse as ActionRequired
     // Placeholder to show the message regarding why further actions are required.
-    showUser(approvalResponse.message);
+    showUser(res.message);
 
     // If the approval service requested specific fields, load the values of those fields if we know them,
     // or if we'd like to collect them client side before taking the user to the action url.
     let actionFieldsValues = [];
-    if (!approvalResponse.action_fields || !approvalResponse.action_fields.length) {
-          actionFieldValues = approvalResponse.action_fields.map(field => loadValue(field););
+    if (!res.action_fields || !res.action_fields.length) {
+          actionFieldValues = res.action_fields.map(field => loadValue(field););
     }
 
-    if (!approvalResponse.action_method || approvalResponse.action_method === "GET") {
-      let actionUrl = approvalResponse.action_url;
+    const fieldValueMap = {}
+    for (let i in res.action_fields) {
+      fieldValueMap[res.action_fields[i]] = actionFieldValues[i]
+    }
+
+    if (!res.action_method || res.action_method === "GET") {
+      let actionUrl = res.action_url;
       if (!actionFieldsValues.length) {
-        actionUrl = buildUrlWithQueryParams(approvalResponse.action_url, approvalResponse.action_fields, actionFieldValues);
+        actionUrl = buildUrlWithQueryParams(res.action_url, fieldValueMap);
       }
 
       // The actual implementation regarding how to trigger the sending of the GET request and handle the response is up to the client.
       loadUrl(actionUrl);
-    } else if (approvalResponse.action_method === "POST") {
+    } else if (res.action_method === "POST") {
       const resp = await approvalProvider.postActionUrl({
-        url: approvalResponse.action_url,
-        fields: approvalResponse.action_fields,
-        values: actionFieldsValues,
+        action_url: res.action_url,
+        field_value_map: fieldValueMap,
       });
 
       if (resp.result === "follow_next_url") {
@@ -197,8 +221,9 @@ switch (approvalResponse.status) {
     }
     break;
   case ApprovalResponseStatus.rejected:
+    const res = approvalResponse as TransactionRejected
     // Notify user of the rejection
-    showUser(approvalResponse);
+    showUser(res.error);
     break;
   default:
   // There was an error
