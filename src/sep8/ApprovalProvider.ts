@@ -95,10 +95,7 @@ export class ApprovalProvider {
     if (!params.action_url) {
       throw new Error("Required field 'action_url' missing!");
     }
-    if (
-      !Object.keys(params.field_value_map) ||
-      !Object.keys(params.field_value_map).length
-    ) {
+    if (!Object.keys(params.field_value_map).length) {
       throw new Error("Required field 'field_value_map' missing!");
     }
 
