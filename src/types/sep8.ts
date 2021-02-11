@@ -45,3 +45,9 @@ export interface PostActionUrlResponse {
   next_url?: string;
   message?: string;
 }
+
+export interface RegulatedAssetInfo {
+  asset_code: string;
+  asset_issuer: string;
+  home_domain?: string;
+}

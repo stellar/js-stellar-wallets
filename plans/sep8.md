@@ -35,22 +35,10 @@ The high-level flow is:
 
 ```ts
 // This function returns the first regulated asset found in the transaction, if any.
-// The returned asset will be in the format of "Code:AssetIssuer".
-type checkRegulatedAssetInTx = (params: Transaction) => string;
-
-// This function returns the home_domain in the asset issuer's account, if any.
-// This function takes an asset in the format of "Code:AssetIssuer".
-type getHomeDomainByAsset = (params: string) => Promise<string>;
+type getRegulatedAssetInTx = (params: Transaction) => Promise<RegulatedAssetInfo>;
 
 // Get the approval server's URL by fetching the stellar.toml file at the home domain and look for the matched currency.
-type getApprovalServerUrl = (
-  params: GetApprovalServerUrlRequest,
-) => Promise<string>;
-
-interface GetApprovalServerUrlReqeust {
-  homeDomain: string;
-  regulatedAsset: string;
-}
+type getApprovalServerUrl = (params: RegulatedAssetInfo) => Promise<string>;
 
 class ApprovalProvider {
   constructor(approvalServerUrl) {}
@@ -110,13 +98,12 @@ interface PostActionUrlResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
-  checkRegulatedAssetInTx,
-  getHomeDomainByAsset,
+  getRegulatedAssetInTx,
   getApprovalServerUrl,
 } from "wallet-sdk";
 
 // Parse transaction to check if it involves regulated assets
-const regulatedAsset = checkRegulatedAssetInTx(transaction);
+const regulatedAsset = getRegulatedAssetInTx(transaction);
 if (!regulatedAsset) {
   // No approval needed so submit to the network
   submitPayment(transaction);
@@ -125,16 +112,12 @@ if (!regulatedAsset) {
 
 // TODO: check whether the user is already authorized to transact the asset.
 
-const homeDomain = await getHomeDomainByAsset(regulatedAsset);
-if (!homeDomain) {
+if (!regulatedAsset.home_domain) {
   // Report an error saying a certain information is missing in order to transact the asset.
   return;
 }
 
-const approvalServerUrl = await getApprovalServerUrl({
-  homeDomain: homeDomain,
-  regulatedAsset: regulatedAsset,
-});
+const approvalServerUrl = await getApprovalServerUrl(regulatedAsset);
 if (!approvalServerUrl) {
   // Report an error saying a certain information is missing in order to transact the asset.
   return;
