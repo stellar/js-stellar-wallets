@@ -930,7 +930,8 @@ describe("getRegulatedAssetsInTx with ops moving regulated assets", () => {
     const raIssuer = "GB2MIGFFC7IIEVAJ4OHTEH3GDLIEFE3K2RYLT3LPGZEKDDAH4FL3FPSJ";
     const homeDomain = "https://regulated-asset-issuer-home-domain.com";
     const balanceId =
-      "00000000929b20b72e5890ab51c24f1cc46fa01c4f318d8d33367d24dd614cfdf54910";
+      "00000000929b20b72e5890ab51c24f1cc46fa01c4f318d8d33367d24dd614cfdf54910" +
+      "72";
     const balanceResponse = {
       _links: {},
       id: balanceId,
@@ -1432,7 +1433,8 @@ describe("getRegulatedAssetsInTx with ops moving nonregulated assets", () => {
     const usdIssuer =
       "GB2MIGFFC7IIEVAJ4OHTEH3GDLIEFE3K2RYLT3LPGZEKDDAH4FL3FPSJ";
     const balanceId =
-      "00000000929b20b72e5890ab51c24f1cc46fa01c4f318d8d33367d24dd614cfdf54910";
+      "00000000929b20b72e5890ab51c24f1cc46fa01c4f318d8d33367d24dd614cfdf54910" +
+      "72";
     const balanceResponse = {
       _links: {},
       id: balanceId,
