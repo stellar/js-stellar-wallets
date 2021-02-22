@@ -34,8 +34,10 @@ The high-level flow is:
 ### Types
 
 ```ts
-// This function returns the first regulated asset found in the transaction, if any.
-type getRegulatedAssetInTx = (params: Transaction) => Promise<RegulatedAssetInfo>;
+// This function returns the regulated assets found in the transaction, if any.
+type getRegulatedAssetsInTx = (
+  params: Transaction,
+) => Promise<RegulatedAssetInfo[]>;
 
 // Get the approval server's URL by fetching the stellar.toml file at the home domain and look for the matched currency.
 type getApprovalServerUrl = (params: RegulatedAssetInfo) => Promise<string>;
@@ -101,20 +103,20 @@ interface PostActionUrlResponse {
 import {
   ApprovalProvider,
   ApprovalResponseType,
-  getRegulatedAssetInTx,
+  getRegulatedAssetsInTx,
   getApprovalServerUrl,
 } from "wallet-sdk";
 
 // Parse transaction to check if it involves regulated assets
-const regulatedAsset = getRegulatedAssetInTx(transaction);
-if (!regulatedAsset) {
+const regulatedAssets = getRegulatedAssetsInTx(transaction);
+if (!regulatedAssets.length) {
   // No approval needed so submit to the network
   submitPayment(transaction);
   return;
 }
 
 // TODO: check whether the user is already authorized to transact the asset.
-
+const regulatedAsset = regulatedAssets[0];
 if (!regulatedAsset.home_domain) {
   // Report an error saying a certain information is missing in order to transact the asset.
   return;

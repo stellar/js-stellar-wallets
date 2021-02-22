@@ -1,6 +1,8 @@
 ## In master
 
 - Added SEP-8 Approval Provider.
+- Added SEP-8 helper functions: `getRegulatedAssetsInTx()` and
+  `getApprovalServerUrl()`.
 
 ## [v0.3.0-rc.4](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.3...v0.3.0-rc.4)
 
