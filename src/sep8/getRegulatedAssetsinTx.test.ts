@@ -431,6 +431,37 @@ describe("getRegulatedAssetsInTx with no ops moving assets", () => {
     }
   });
 
+  test("Revoke Claimable Balance Sponsorship Op", async () => {
+    const account = new Account(
+      "GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD",
+      "2319149195853854",
+    );
+
+    const tx = new TransactionBuilder(account, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(
+        Operation.revokeClaimableBalanceSponsorship({
+          balanceId:
+            "00000000929b20b72e5890ab51c24f1cc46fa01c4f318d8d33367d24dd614cfd" +
+            "f5491072",
+        }),
+      )
+      .setTimeout(30)
+      .build();
+
+    try {
+      const res = await getRegulatedAssetsInTx(
+        tx,
+        "https://horizon-live.stellar.org:1337",
+      );
+      expect(res).toEqual([]);
+    } catch (e) {
+      expect(e).toBe(null);
+    }
+  });
+
   test("Revoke Signer Sponsorship Op returns an empty array", async () => {
     const account = new Account(
       "GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD",
