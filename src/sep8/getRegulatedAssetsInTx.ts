@@ -42,19 +42,16 @@ export async function getRegulatedAssetsInTx(
 }
 
 function isOpMovingAsset(op: Operation): boolean {
-  if (
-    op.type === "payment" ||
-    op.type === "pathPaymentStrictReceive" ||
-    op.type === "pathPaymentStrictSend" ||
-    op.type === "createPassiveSellOffer" ||
-    op.type === "manageSellOffer" ||
-    op.type === "manageBuyOffer" ||
-    op.type === "createClaimableBalance" ||
-    op.type === "claimClaimableBalance"
-  ) {
-    return true;
-  }
-  return false;
+  return [
+    "payment",
+    "pathPaymentStrictReceive",
+    "pathPaymentStrictSend",
+    "createPassiveSellOffer",
+    "manageSellOffer",
+    "manageBuyOffer",
+    "createClaimableBalance",
+    "claimClaimableBalance",
+  ].includes(op.type);
 }
 
 async function getAssetsFromOp(
