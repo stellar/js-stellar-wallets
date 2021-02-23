@@ -58,34 +58,6 @@ describe("getApprovalServerUrl", () => {
     }
   });
 
-  test("stellar.toml CURRENCIES missing", async () => {
-    const homeDomain = "example.com";
-    axiosMock
-      .expects("get")
-      .withArgs(sinon.match(`https://${homeDomain}/.well-known/stellar.toml`))
-      .returns(
-        Promise.resolve({
-          data: "",
-        }),
-      );
-
-    try {
-      // @ts-ignore
-      const res = await getApprovalServerUrl({
-        asset_code: "USD",
-        asset_issuer:
-          "GDBMMVJKWGT2N6HZ2BGMFHKODASVFYIHL2VS3RUTB3B3QES2R6YFXGQW",
-        home_domain: homeDomain,
-      });
-      expect("This test failed").toBe(null);
-    } catch (e) {
-      expect(e.toString()).toMatch(
-        `Error: stellar.toml at ${homeDomain} does not contain CURRENCIES` +
-          ` field`,
-      );
-    }
-  });
-
   test("stellar.toml approval_server missing", async () => {
     const homeDomain = "example.com";
     axiosMock
