@@ -2,9 +2,8 @@
 
 1. Bump up `version` on `package.json`
 2. Update CHANGELOG.md
-3. Run `yarn build`.
-4. Make a commit with the changes above.
-5. Open a pull request with the changes.
+3. Make a commit with the changes above.
+4. Open a pull request with the changes.
 
 Once the pull request is merged, you need to:
 
