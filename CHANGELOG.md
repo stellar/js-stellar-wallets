@@ -1,6 +1,7 @@
 ## In master
 
 - Added sponsoring address to `AccountDetails` and `AssetBalance`.
+- Added sponsoring/sponsored counts to `AccountDetails`.
 - Improved minimum balance calculation, taking sponsored/sponsoring accounts
   into consideration.
 

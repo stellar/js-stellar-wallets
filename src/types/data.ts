@@ -164,6 +164,8 @@ export interface BalanceMap {
 export interface AccountDetails {
   id: string;
   subentryCount: number;
+  sponsoringCount: number;
+  sponsoredCount: number;
   inflationDestination?: string;
   thresholds: Horizon.AccountThresholds;
   signers: ServerApi.AccountRecordSigners[];
