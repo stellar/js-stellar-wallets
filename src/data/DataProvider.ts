@@ -211,6 +211,8 @@ export class DataProvider {
       return {
         id: accountSummary.id,
         subentryCount: accountSummary.subentry_count,
+        sponsoredCount: accountSummary.num_sponsored,
+        sponsoringCount: accountSummary.num_sponsoring,
         inflationDestination: accountSummary.inflation_destination,
         thresholds: accountSummary.thresholds,
         signers: accountSummary.signers,

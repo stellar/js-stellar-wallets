@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 
 import { AccountResponse } from "../fixtures/AccountResponse";
+import { SponsoredAccountResponse } from "../fixtures/SponsoredAccountResponse";
 import { parseResponse } from "../testUtils";
 
 import { makeDisplayableBalances } from "./makeDisplayableBalances";
@@ -86,6 +87,92 @@ it("makes balances from a real-world example", async () => {
       buyingLiabilities: new BigNumber("0.0000000"),
       sellingLiabilities: new BigNumber("0.0000000"),
       minimumBalance: new BigNumber("3.5"),
+
+      token: {
+        type: "native",
+        code: "XLM",
+      },
+    },
+  });
+});
+
+it("makes balances for sponsored account", async () => {
+  const balances = makeDisplayableBalances(
+    // @ts-ignore
+    parseResponse(SponsoredAccountResponse),
+  );
+
+  expect(balances).toEqual({
+    "ARST:GB7TAYRUZGE6TVT7NHP5SMIZRNQA6PLM423EYISAOAP3MKYIQMVYP2JO": {
+      available: new BigNumber("10"),
+      total: new BigNumber("10"),
+      limit: new BigNumber("922337203685.4775807"),
+      buyingLiabilities: new BigNumber("0.0000000"),
+      sellingLiabilities: new BigNumber("0.0000000"),
+      sponsor: "GBG7VGZFH4TU2GS7WL5LMPYFNP64ZFR23XEGAV7GPEEXKWOR2DKCYPCK",
+      token: {
+        type: "credit_alphanum4",
+        code: "ARST",
+        issuer: {
+          key: "GB7TAYRUZGE6TVT7NHP5SMIZRNQA6PLM423EYISAOAP3MKYIQMVYP2JO",
+        },
+      },
+    },
+
+    "SRT:GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B": {
+      available: new BigNumber("0"),
+      total: new BigNumber("0"),
+      limit: new BigNumber("922337203685.4775807"),
+      buyingLiabilities: new BigNumber("0.0000000"),
+      sellingLiabilities: new BigNumber("0.0000000"),
+      sponsor: "GBG7VGZFH4TU2GS7WL5LMPYFNP64ZFR23XEGAV7GPEEXKWOR2DKCYPCK",
+      token: {
+        type: "credit_alphanum4",
+        code: "SRT",
+        issuer: {
+          key: "GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B",
+        },
+      },
+    },
+
+    "USD:GCKFBEIYV2U22IO2BJ4KVJOIP7XPWQGQFKKWXR6DOSJBV7STMAQSMTGG": {
+      available: new BigNumber("0"),
+      total: new BigNumber("0"),
+      limit: new BigNumber("922337203685.4775807"),
+      buyingLiabilities: new BigNumber("0.0000000"),
+      sellingLiabilities: new BigNumber("0.0000000"),
+      sponsor: "GBG7VGZFH4TU2GS7WL5LMPYFNP64ZFR23XEGAV7GPEEXKWOR2DKCYPCK",
+      token: {
+        type: "credit_alphanum4",
+        code: "USD",
+        issuer: {
+          key: "GCKFBEIYV2U22IO2BJ4KVJOIP7XPWQGQFKKWXR6DOSJBV7STMAQSMTGG",
+        },
+      },
+    },
+
+    "USDC:GC5W3BH2MQRQK2H4A6LP3SXDSAAY2W2W64OWKKVNQIAOVWSAHFDEUSDC": {
+      available: new BigNumber("5"),
+      total: new BigNumber("5"),
+      limit: new BigNumber("922337203685.4775807"),
+      buyingLiabilities: new BigNumber("0.0000000"),
+      sellingLiabilities: new BigNumber("0.0000000"),
+      sponsor: "GBG7VGZFH4TU2GS7WL5LMPYFNP64ZFR23XEGAV7GPEEXKWOR2DKCYPCK",
+      token: {
+        type: "credit_alphanum4",
+        code: "USDC",
+        issuer: {
+          key: "GC5W3BH2MQRQK2H4A6LP3SXDSAAY2W2W64OWKKVNQIAOVWSAHFDEUSDC",
+        },
+      },
+    },
+
+    "native": {
+      available: new BigNumber("0"),
+      total: new BigNumber("0"),
+      buyingLiabilities: new BigNumber("0.0000000"),
+      sellingLiabilities: new BigNumber("0.0000000"),
+      minimumBalance: new BigNumber("0"),
 
       token: {
         type: "native",

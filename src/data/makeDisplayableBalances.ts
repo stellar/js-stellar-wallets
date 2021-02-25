@@ -1,21 +1,23 @@
 import BigNumber from "bignumber.js";
 import { Horizon, ServerApi } from "stellar-sdk";
 
-import { BalanceMap } from "../types";
-
 import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "../constants/stellar";
-
+import { BalanceMap } from "../types";
 import { getBalanceIdentifier } from "./";
 
 export function makeDisplayableBalances(
   accountDetails: ServerApi.AccountRecord,
 ): BalanceMap {
-  const { balances, subentry_count } = accountDetails;
+  const {
+    balances,
+    subentry_count,
+    num_sponsored,
+    num_sponsoring,
+  } = accountDetails;
 
   const displayableBalances = Object.values(balances).reduce(
     (memo, balance) => {
       const identifier = getBalanceIdentifier(balance);
-
       const total = new BigNumber(balance.balance);
       const sellingLiabilities = new BigNumber(balance.selling_liabilities);
       const buyingLiabilities = new BigNumber(balance.buying_liabilities);
@@ -34,28 +36,41 @@ export function makeDisplayableBalances(
             available,
             sellingLiabilities,
             buyingLiabilities,
-            minimumBalance: new BigNumber(
-              subentry_count + BASE_RESERVE_MIN_COUNT,
-            ).times(BASE_RESERVE),
+
+            /* tslint:disable */
+            // https://developers.stellar.org/docs/glossary/sponsored-reserves/#sponsorship-effect-on-minimum-balance
+            /* tslint:enable */
+            minimumBalance: new BigNumber(BASE_RESERVE_MIN_COUNT)
+              .plus(subentry_count)
+              .plus(num_sponsoring)
+              .minus(num_sponsored)
+              .times(BASE_RESERVE)
+              .plus(sellingLiabilities),
           },
         };
       }
+
+      const assetBalance = balance as Horizon.BalanceLineAsset;
+      const assetSponsor = assetBalance.sponsor
+        ? { sponsor: assetBalance.sponsor }
+        : {};
 
       return {
         ...memo,
         [identifier]: {
           token: {
-            type: (balance as Horizon.BalanceLineAsset).asset_type,
-            code: (balance as Horizon.BalanceLineAsset).asset_code,
+            type: assetBalance.asset_type,
+            code: assetBalance.asset_code,
             issuer: {
-              key: (balance as Horizon.BalanceLineAsset).asset_issuer,
+              key: assetBalance.asset_issuer,
             },
           },
           sellingLiabilities,
           buyingLiabilities,
           total,
-          limit: new BigNumber((balance as Horizon.BalanceLineAsset).limit),
+          limit: new BigNumber(assetBalance.limit),
           available: total.minus(sellingLiabilities),
+          ...assetSponsor,
         },
       };
     },
