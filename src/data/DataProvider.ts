@@ -207,8 +207,12 @@ export class DataProvider {
         .call();
 
       const balances = makeDisplayableBalances(accountSummary);
+      const sponsor = accountSummary.sponsor
+        ? { sponsor: accountSummary.sponsor }
+        : {};
 
       return {
+        ...sponsor,
         id: accountSummary.id,
         subentryCount: accountSummary.subentry_count,
         sponsoredCount: accountSummary.num_sponsored,
