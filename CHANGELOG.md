@@ -1,5 +1,7 @@
 ## In master
 
+## [v0.3.0-rc.7](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.6...v0.3.0-rc.7)
+
 - [Fixed] Added sponsor address to `AccountDetails`.
 
 ## [v0.3.0-rc.6](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.5...v0.3.0-rc.6)
