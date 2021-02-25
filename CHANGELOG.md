@@ -1,5 +1,7 @@
 ## In master
 
+## [v0.3.0-rc.6](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.5...v0.3.0-rc.6)
+
 - Added sponsoring address to `AccountDetails` and `AssetBalance`.
 - Added sponsoring/sponsored counts to `AccountDetails`.
 - Improved minimum balance calculation, taking sponsored/sponsoring accounts
