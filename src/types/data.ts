@@ -166,6 +166,7 @@ export interface AccountDetails {
   subentryCount: number;
   sponsoringCount: number;
   sponsoredCount: number;
+  sponsor?: string;
   inflationDestination?: string;
   thresholds: Horizon.AccountThresholds;
   signers: ServerApi.AccountRecordSigners[];
