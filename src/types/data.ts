@@ -16,7 +16,7 @@ interface NotFundedError {
 export type FetchAccountError =
   | BadRequestError
   | NetworkError
-  | NotFoundError & NotFundedError;
+  | (NotFoundError & NotFundedError);
 
 export type TradeId = string;
 export type OfferId = string;
@@ -148,6 +148,7 @@ export interface Balance {
 
 export interface AssetBalance extends Balance {
   token: AssetToken;
+  sponsor?: string;
 }
 
 export interface NativeBalance extends Balance {

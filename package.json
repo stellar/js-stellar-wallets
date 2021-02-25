@@ -10,7 +10,7 @@
   "prettier": "@stellar/prettier-config",
   "peerDependencies": {
     "bignumber.js": "*",
-    "stellar-sdk": "^6.x.x"
+    "stellar-sdk": "^7.x.x"
   },
   "scripts": {
     "prepare": "yarn build ; yarn build:commonjs",

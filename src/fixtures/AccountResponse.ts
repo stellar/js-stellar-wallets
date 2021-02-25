@@ -45,6 +45,8 @@ export const AccountResponse = {
   account_id: "PHYREXIA",
   sequence: "74305992237514793",
   subentry_count: 5,
+  num_sponsored: 0,
+  num_sponsoring: 0,
   inflation_destination:
     "GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT",
   last_modified_ledger: 22997383,

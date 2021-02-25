@@ -1,5 +1,9 @@
 ## In master
 
+- Added sponsoring address to `AccountDetails` and `AssetBalance`.
+- Improved minimum balance calculation, taking sponsored/sponsoring accounts
+  into consideration.
+
 ## [v0.3.0-rc.5](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.4...v0.3.0-rc.5)
 
 - Added SEP-8 Approval Provider.
