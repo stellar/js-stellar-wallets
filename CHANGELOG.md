@@ -1,5 +1,9 @@
 ## In master
 
+## [v0.3.0-rc.8](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.7...v0.3.0-rc.8)
+
+- Also consider 0 (zero) as "simple" fee type when parsing asset info.
+
 ## [v0.3.0-rc.7](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.6...v0.3.0-rc.7)
 
 - [Fixed] Added sponsor address to `AccountDetails`.
