@@ -41,8 +41,8 @@ const parseFee = (
   feeEnabled: boolean,
 ): Fee => {
   if (
-    (fee_fixed && Number(fee_fixed) >= 0) ||
-    (fee_percent && Number(fee_percent) >= 0)
+    (fee_fixed !== undefined && Number(fee_fixed) >= 0) ||
+    (fee_percent !== undefined && Number(fee_percent) >= 0)
   ) {
     return {
       type: "simple",
