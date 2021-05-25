@@ -1,5 +1,10 @@
 ## In master
 
+## [v0.3.0-rc.9](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.8...v0.3.0-rc.9)
+
+- Fix issue where zero fees were still being considered as "complex"
+  instead of "simple".
+
 ## [v0.3.0-rc.8](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.7...v0.3.0-rc.8)
 
 - Also consider 0 (zero) as "simple" fee type when parsing asset info.
