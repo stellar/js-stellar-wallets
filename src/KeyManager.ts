@@ -291,7 +291,13 @@ export class KeyManager {
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
-    const { id, password, authServer, authServerKey } = params;
+    const {
+      id,
+      password,
+      authServer,
+      authServerKey,
+      authServerHomeDomains,
+    } = params;
     let { account } = params;
 
     // throw errors for missing params
@@ -306,6 +312,9 @@ export class KeyManager {
     }
     if (!authServerKey) {
       throw new Error("Required parameter `authServerKey` is missing!");
+    }
+    if (!authServerHomeDomains) {
+      throw new Error("Required parameter `authServerHomeDomains` is missing!");
     }
 
     let key = this._readFromCache(id);
@@ -375,8 +384,8 @@ export class KeyManager {
       json.transaction,
       authServerKey,
       keyNetwork,
-      params.authServerHomeDomains,
-      new URL(params.authServer).hostname,
+      authServerHomeDomains,
+      new URL(authServer).hostname,
     ).tx;
 
     const keyHandler = this.keyHandlerMap[key.type];
