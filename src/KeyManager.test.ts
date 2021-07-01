@@ -480,7 +480,10 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(`Invalid transaction`);
+        expect(e.toString()).toMatch(
+          `InvalidSep10ChallengeError: The transaction` +
+            ` sequence number should be zero`,
+        );
       }
     });
 
@@ -764,7 +767,10 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(`Bad auth domain`);
+        expect(e.toString()).toMatch(
+          `InvalidSep10ChallengeError: 'web_auth_domain' operation ` +
+            `value does not match www.stellar.org`,
+        );
       }
     });
 
@@ -860,7 +866,10 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(`Signing key doesn't match`);
+        expect(e.toString()).toMatch(
+          `InvalidSep10ChallengeError: The transaction source account` +
+            ` is not equal to the server's account`,
+        );
       }
     });
   });

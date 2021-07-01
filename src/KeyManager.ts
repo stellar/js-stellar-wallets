@@ -356,6 +356,21 @@ export class KeyManager {
       throw new Error(json.error);
     }
 
+    // Throw error when network_passphrase is returned, and doesn't match
+    if (
+      json.network_passphrase !== undefined &&
+      keyNetwork !== json.network_passphrase
+    ) {
+      throw new Error(
+        `
+            Network mismatch: the transfer server expects "${
+              json.network_passphrase
+            }",
+            but you're using "${keyNetwork}"
+            `,
+      );
+    }
+
     const firstTransaction = Utils.readChallengeTx(
       json.transaction,
       authServerKey,
@@ -366,36 +381,19 @@ export class KeyManager {
 
     const keyHandler = this.keyHandlerMap[key.type];
 
-    if (firstTransaction.sequence !== "0") {
+    if (
+      !firstTransaction.signatures.some((signature) =>
+        signature
+          .hint()
+          .equals(
+            StellarSdk.Keypair.fromPublicKey(authServerKey).signatureHint(),
+          ),
+      )
+    ) {
       throw new Error(
-        `Invalid transaction: Expected a sequence number 0, but got ${
-          firstTransaction.sequence
-        }`,
-      );
-    }
-
-    if (authServerKey) {
-      if (firstTransaction.source !== authServerKey) {
-        throw new Error(
-          `Signing key doesn't match: Expected ${authServerKey} but got
-          ${firstTransaction.source}`,
-        );
-      }
-
-      if (
-        !firstTransaction.signatures.some((signature) =>
-          signature
-            .hint()
-            .equals(
-              StellarSdk.Keypair.fromPublicKey(authServerKey).signatureHint(),
-            ),
-        )
-      ) {
-        throw new Error(
-          `Signing key doesn't match: Expected ${authServerKey} but got
+        `Signing key doesn't match: Expected ${authServerKey} but got
           something different`,
-        );
-      }
+      );
     }
 
     const signedTransaction = await keyHandler.signTransaction({
