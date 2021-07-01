@@ -1,4 +1,4 @@
-import StellarSdk, { Transaction } from "stellar-sdk";
+import StellarSdk, { Transaction, Utils } from "stellar-sdk";
 
 import { albedoHandler } from "./keyTypeHandlers/albedo";
 import { freighterHandler } from "./keyTypeHandlers/freighter";
@@ -281,7 +281,8 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
-   * @param {string} [params.authServerKey] Check the challenge transaction
+   * @param {array} params.authServerHomeDomains The home domain(s) of the authentication server
+   * @param {string} params.authServerKey Check the challenge transaction
    *                                for this key as source and signature.
    * @param {string} [params.account] The authenticating public key. If not
    *                                provided, then the signers's public key will
@@ -302,6 +303,9 @@ export class KeyManager {
     }
     if (!authServer) {
       throw new Error("Required parameter `authServer` is missing!");
+    }
+    if (!authServerKey) {
+      throw new Error("Required parameter `authServerKey` is missing!");
     }
 
     let key = this._readFromCache(id);
@@ -340,37 +344,27 @@ export class KeyManager {
 
     const text = await challengeRes.text();
 
-    let transaction;
-    let network_passphrase;
-    let error;
+    let json;
 
     try {
-      const json = JSON.parse(text);
-
-      transaction = json.transaction;
-      network_passphrase = json.network_passphrase;
-      error = json.error;
+      json = JSON.parse(text);
     } catch (e) {
       throw new Error(`Request for challenge returned invalid JSON: ${text}`);
     }
 
-    if (error) {
-      throw new Error(error);
+    if (json.error) {
+      throw new Error(json.error);
     }
 
-    // Throw error when network_passphrase is returned, and doesn't match
-    if (network_passphrase !== undefined && keyNetwork !== network_passphrase) {
-      throw new Error(
-        `
-        Network mismatch: the transfer server expects "${network_passphrase}",
-        but you're using "${keyNetwork}"
-        `,
-      );
-    }
+    const firstTransaction = Utils.readChallengeTx(
+      json.transaction,
+      authServerKey,
+      keyNetwork,
+      params.authServerHomeDomains,
+      new URL(params.authServer).hostname,
+    ).tx;
 
     const keyHandler = this.keyHandlerMap[key.type];
-
-    const firstTransaction = new Transaction(transaction, keyNetwork);
 
     if (firstTransaction.sequence !== "0") {
       throw new Error(

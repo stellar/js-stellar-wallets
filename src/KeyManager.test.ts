@@ -291,6 +291,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: "no key needed",
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect("This test failed").toBe(null);
@@ -378,18 +379,15 @@ describe("KeyManager", function() {
         encrypterName: "IdentityEncrypter",
       });
 
-      try {
-        const res = await testKeyManager.fetchAuthToken({
-          id: keyMetadata.id,
-          password,
-          authServer,
-          authServerKey: account.accountId(),
-        });
+      const res = await testKeyManager.fetchAuthToken({
+        id: keyMetadata.id,
+        password,
+        authServer,
+        authServerKey: account.accountId(),
+        authServerHomeDomains: ["stellar.org"],
+      });
 
-        expect(res).toBe(token);
-      } catch (e) {
-        expect(e).toBe(null);
-      }
+      expect(res).toBe(token);
     });
 
     test("Rejects TXs with non-zero seq numbers", async () => {
@@ -477,6 +475,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: account.accountId(),
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -570,6 +569,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: account.accountId(),
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect(res).toBe(null);
@@ -664,6 +664,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: accountKey.publicKey(),
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -758,6 +759,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: accountKey.publicKey(),
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
@@ -853,6 +855,7 @@ describe("KeyManager", function() {
           password,
           authServer,
           authServerKey: realKey,
+          authServerHomeDomains: ["stellar.org"],
         });
 
         expect("This test failed: transaction didn't cause error").toBe(null);
