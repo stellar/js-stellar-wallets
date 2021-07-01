@@ -281,7 +281,7 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
-   * @param {string} params.authServerKey Check the challenge transaction
+   * @param {string} [params.authServerKey] Check the challenge transaction
    *                                for this key as source and signature.
    * @param {string} [params.account] The authenticating public key. If not
    *                                provided, then the signers's public key will
