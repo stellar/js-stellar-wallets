@@ -333,7 +333,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
@@ -423,7 +423,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
@@ -517,7 +517,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
@@ -612,7 +612,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
@@ -707,7 +707,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
@@ -801,7 +801,7 @@ describe("KeyManager", function() {
       })
         .addOperation(
           Operation.manageData({
-            name: ` auth`,
+            name: `stellar.org auth`,
             value,
             source: keypair.publicKey(),
           }),
