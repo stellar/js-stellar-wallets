@@ -1,9 +1,20 @@
 ## In master
 
+## [v0.4.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.9...v0.4.0-rc.0)
+
+Validate fetchAuthTokens with stellar-sdk's utils
+
+- Upgrade the package's expected version of stellar-sdk to 8.x.x
+- KeyManager#fetchAuthToken now requires the previously-optional `authServerKey`
+  param
+- KeyManager#fetchAuthToken now requires a new param, `authServerHomeDomains`
+- KeyManager#fetchAuthToken now runs challenge token XDR through stellar-sdk's
+  Util.readChallengeTx, which performs additional tests
+
 ## [v0.3.0-rc.9](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.8...v0.3.0-rc.9)
 
-- Fix issue where zero fees were still being considered as "complex"
-  instead of "simple".
+- Fix issue where zero fees were still being considered as "complex" instead of
+  "simple".
 
 ## [v0.3.0-rc.8](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.7...v0.3.0-rc.8)
 
