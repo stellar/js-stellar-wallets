@@ -1,4 +1,4 @@
-import StellarSdk, { Transaction } from "stellar-sdk";
+import StellarSdk, { Transaction, Utils } from "stellar-sdk";
 
 import { albedoHandler } from "./keyTypeHandlers/albedo";
 import { freighterHandler } from "./keyTypeHandlers/freighter";
@@ -281,6 +281,7 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
+   * @param {array} params.authServerHomeDomains The home domain(s) of the authentication server
    * @param {string} params.authServerKey Check the challenge transaction
    *                                for this key as source and signature.
    * @param {string} [params.account] The authenticating public key. If not
@@ -290,7 +291,13 @@ export class KeyManager {
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
-    const { id, password, authServer, authServerKey } = params;
+    const {
+      id,
+      password,
+      authServer,
+      authServerKey,
+      authServerHomeDomains,
+    } = params;
     let { account } = params;
 
     // throw errors for missing params
@@ -302,6 +309,12 @@ export class KeyManager {
     }
     if (!authServer) {
       throw new Error("Required parameter `authServer` is missing!");
+    }
+    if (!authServerKey) {
+      throw new Error("Required parameter `authServerKey` is missing!");
+    }
+    if (!authServerHomeDomains) {
+      throw new Error("Required parameter `authServerHomeDomains` is missing!");
     }
 
     let key = this._readFromCache(id);
@@ -340,69 +353,42 @@ export class KeyManager {
 
     const text = await challengeRes.text();
 
-    let transaction;
-    let network_passphrase;
-    let error;
+    let json;
 
     try {
-      const json = JSON.parse(text);
-
-      transaction = json.transaction;
-      network_passphrase = json.network_passphrase;
-      error = json.error;
+      json = JSON.parse(text);
     } catch (e) {
       throw new Error(`Request for challenge returned invalid JSON: ${text}`);
     }
 
-    if (error) {
-      throw new Error(error);
+    if (json.error) {
+      throw new Error(json.error);
     }
 
     // Throw error when network_passphrase is returned, and doesn't match
-    if (network_passphrase !== undefined && keyNetwork !== network_passphrase) {
+    if (
+      json.network_passphrase !== undefined &&
+      keyNetwork !== json.network_passphrase
+    ) {
       throw new Error(
         `
-        Network mismatch: the transfer server expects "${network_passphrase}",
-        but you're using "${keyNetwork}"
-        `,
+            Network mismatch: the transfer server expects "${
+              json.network_passphrase
+            }",
+            but you're using "${keyNetwork}"
+            `,
       );
     }
+
+    const firstTransaction = Utils.readChallengeTx(
+      json.transaction,
+      authServerKey,
+      keyNetwork,
+      authServerHomeDomains,
+      new URL(authServer).hostname,
+    ).tx;
 
     const keyHandler = this.keyHandlerMap[key.type];
-
-    const firstTransaction = new Transaction(transaction, keyNetwork);
-
-    if (firstTransaction.sequence !== "0") {
-      throw new Error(
-        `Invalid transaction: Expected a sequence number 0, but got ${
-          firstTransaction.sequence
-        }`,
-      );
-    }
-
-    if (authServerKey) {
-      if (firstTransaction.source !== authServerKey) {
-        throw new Error(
-          `Signing key doesn't match: Expected ${authServerKey} but got
-          ${firstTransaction.source}`,
-        );
-      }
-
-      if (
-        !firstTransaction.signatures.some((signature) =>
-          signature
-            .hint()
-            .equals(
-              StellarSdk.Keypair.fromPublicKey(authServerKey).signatureHint(),
-            ),
-        )
-      ) {
-        throw new Error(
-          `Signing key doesn't match: Expected ${authServerKey} but got
-          something different`,
-        );
-      }
-    }
 
     const signedTransaction = await keyHandler.signTransaction({
       transaction: firstTransaction,
