@@ -390,21 +390,6 @@ export class KeyManager {
 
     const keyHandler = this.keyHandlerMap[key.type];
 
-    if (
-      !firstTransaction.signatures.some((signature) =>
-        signature
-          .hint()
-          .equals(
-            StellarSdk.Keypair.fromPublicKey(authServerKey).signatureHint(),
-          ),
-      )
-    ) {
-      throw new Error(
-        `Signing key doesn't match: Expected ${authServerKey} but got
-          something different`,
-      );
-    }
-
     const signedTransaction = await keyHandler.signTransaction({
       transaction: firstTransaction,
       key,

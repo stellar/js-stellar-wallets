@@ -672,7 +672,9 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(`Signing key doesn't match`);
+        expect(e.toString()).toMatch(
+          `InvalidSep10ChallengeError: Transaction not signed by server`,
+        );
       }
     });
 
