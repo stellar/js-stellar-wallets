@@ -5,7 +5,7 @@ import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 import { KeyType } from "../constants/keys";
 
 export const plaintextKeyHandler: KeyTypeHandler = {
-  keyType: KeyType.ledger,
+  keyType: KeyType.plaintextKey,
   signTransaction(params: HandlerSignTransactionParams) {
     const { transaction, key } = params;
     if (key.privateKey === "") {
