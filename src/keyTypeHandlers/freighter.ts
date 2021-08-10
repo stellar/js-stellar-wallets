@@ -8,7 +8,7 @@ import { KeyType } from "../constants/keys";
 export const freighterHandler: KeyTypeHandler = {
   keyType: KeyType.freighter,
   async signTransaction(params: HandlerSignTransactionParams) {
-    const { transaction, key } = params;
+    const { transaction, key, custom } = params;
 
     if (key.privateKey !== "") {
       throw new Error(
@@ -19,7 +19,10 @@ export const freighterHandler: KeyTypeHandler = {
     }
 
     try {
-      const response = await signTransaction(transaction.toXDR());
+      const response = await signTransaction(
+        transaction.toXDR(),
+        custom && custom.network,
+      );
 
       // fromXDR() returns type "Transaction | FeeBumpTransaction" and
       // signTransaction() doesn't like "| FeeBumpTransaction" type, so casting
