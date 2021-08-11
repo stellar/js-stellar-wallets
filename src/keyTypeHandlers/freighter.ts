@@ -1,4 +1,4 @@
-import { signTransaction } from "@stellar/freighter-api";
+import freighterApi from "@stellar/freighter-api";
 import { Networks, Transaction, TransactionBuilder } from "stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
@@ -19,9 +19,9 @@ export const freighterHandler: KeyTypeHandler = {
     }
 
     try {
-      const response = await signTransaction(
+      const response = await freighterApi.signTransaction(
         transaction.toXDR(),
-        custom && custom.network,
+        custom && custom.network ? custom.network : undefined,
       );
 
       // fromXDR() returns type "Transaction | FeeBumpTransaction" and
