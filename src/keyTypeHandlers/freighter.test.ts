@@ -8,8 +8,8 @@ describe("freighterHandler", () => {
   const NETWORK = "baz";
   const SIGNED_TRANSACTION = "xxx";
 
-  let freighterApiMock;
-  let TransactionBuilderMock;
+  let freighterApiMock: sinon.SinonMock;
+  let TransactionBuilderMock: sinon.SinonMock;
   beforeEach(() => {
     freighterApiMock = sinon.mock(freighterApi);
     TransactionBuilderMock = sinon.mock(TransactionBuilder);
