@@ -52,11 +52,11 @@ export function makeDisplayableTrades(
   return trades.map(
     (trade: ServerApi.TradeRecord): Trade => {
       const base = {
-        publicKey: trade.base_account,
+        publicKey: trade.base_account || "",
       };
 
       const counter = {
-        publicKey: trade.counter_account,
+        publicKey: trade.counter_account || "",
       };
 
       const isSubjectBase: boolean =
@@ -84,6 +84,19 @@ export function makeDisplayableTrades(
               },
       };
 
+      let paymentOfferId;
+      let incomingOfferId;
+
+      if ("base_offer_id" in trade) {
+        paymentOfferId = isSubjectBase
+          ? trade.base_offer_id
+          : trade.counter_offer_id;
+
+        incomingOfferId = isSubjectBase
+          ? trade.counter_offer_id
+          : trade.base_offer_id;
+      }
+
       return {
         id: trade.id,
         timestamp: Math.floor(
@@ -94,18 +107,14 @@ export function makeDisplayableTrades(
         paymentAmount: isSubjectBase
           ? new BigNumber(trade.base_amount)
           : new BigNumber(trade.counter_amount),
-        paymentOfferId: isSubjectBase
-          ? trade.base_offer_id
-          : trade.counter_offer_id,
+        paymentOfferId,
 
         incomingToken: isSubjectBase ? counterToken : baseToken,
         incomingAmount: isSubjectBase
           ? new BigNumber(trade.counter_amount)
           : new BigNumber(trade.base_amount),
         incomingAccount: isSubjectBase ? counter : base,
-        incomingOfferId: isSubjectBase
-          ? trade.counter_offer_id
-          : trade.base_offer_id,
+        incomingOfferId,
       };
     },
   );

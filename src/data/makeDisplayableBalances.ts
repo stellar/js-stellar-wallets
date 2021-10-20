@@ -19,9 +19,18 @@ export function makeDisplayableBalances(
     (memo, balance) => {
       const identifier = getBalanceIdentifier(balance);
       const total = new BigNumber(balance.balance);
-      const sellingLiabilities = new BigNumber(balance.selling_liabilities);
-      const buyingLiabilities = new BigNumber(balance.buying_liabilities);
-      const available = total.minus(sellingLiabilities);
+      let sellingLiabilities;
+      let buyingLiabilities;
+      let available;
+
+      if ("selling_liabilities" in balance) {
+        sellingLiabilities = new BigNumber(balance.selling_liabilities);
+        available = total.minus(sellingLiabilities);
+      }
+
+      if ("buying_liabilities" in balance) {
+        buyingLiabilities = new BigNumber(balance.buying_liabilities);
+      }
 
       if (identifier === "native") {
         // define the native balance line later
@@ -45,7 +54,7 @@ export function makeDisplayableBalances(
               .plus(num_sponsoring)
               .minus(num_sponsored)
               .times(BASE_RESERVE)
-              .plus(sellingLiabilities),
+              .plus(sellingLiabilities || 0),
           },
         };
       }
@@ -69,7 +78,7 @@ export function makeDisplayableBalances(
           buyingLiabilities,
           total,
           limit: new BigNumber(assetBalance.limit),
-          available: total.minus(sellingLiabilities),
+          available: total.minus(sellingLiabilities || 0),
           ...assetSponsor,
         },
       };
