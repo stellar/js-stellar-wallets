@@ -112,6 +112,16 @@ export const AccountResponse = {
       asset_issuer: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
     },
     {
+      balance: "1.0000000",
+      limit: "922337203685.4775807",
+      last_modified_ledger: 22721290,
+      liquidity_pool_id:
+        "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0",
+      asset_type: "liquidity_pool_shares",
+      asset_code: "USD",
+      asset_issuer: "GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
+    },
+    {
       balance: "999.5689234",
       buying_liabilities: "0.0000000",
       selling_liabilities: "0.0000000",

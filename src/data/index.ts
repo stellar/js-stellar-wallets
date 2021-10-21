@@ -22,18 +22,20 @@ export function getTokenIdentifier(token: Token): string {
  * @returns Returns `${tokenCode}:${issuerKey}`.
  */
 export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
-  const NATIVE_TYPE = "native";
-  if ("asset_issuer" in balance) {
-    if (!balance.asset_issuer) {
-      return NATIVE_TYPE;
-    }
-    return `${balance.asset_code}:${balance.asset_issuer}`;
-  }
-  if (balance.asset_type === NATIVE_TYPE) {
-    return NATIVE_TYPE;
-  }
+  switch (balance.asset_type) {
+    case "native":
+      return balance.asset_type;
 
-  return "";
+    case "credit_alphanum4":
+    case "credit_alphanum12":
+      return `${balance.asset_code}:${balance.asset_issuer}`;
+
+    case "liquidity_pool_shares":
+      return `${balance.asset_type}:${balance.liquidity_pool_id}`;
+
+    default:
+      return "native";
+  }
 }
 
 /**

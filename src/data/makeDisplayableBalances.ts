@@ -19,13 +19,13 @@ export function makeDisplayableBalances(
     (memo, balance) => {
       const identifier = getBalanceIdentifier(balance);
       const total = new BigNumber(balance.balance);
-      let sellingLiabilities;
-      let buyingLiabilities;
-      let available;
+
+      let sellingLiabilities = new BigNumber(0);
+      let buyingLiabilities = new BigNumber(0);
+      const available = total.minus(sellingLiabilities);
 
       if ("selling_liabilities" in balance) {
         sellingLiabilities = new BigNumber(balance.selling_liabilities);
-        available = total.minus(sellingLiabilities);
       }
 
       if ("buying_liabilities" in balance) {
@@ -54,7 +54,20 @@ export function makeDisplayableBalances(
               .plus(num_sponsoring)
               .minus(num_sponsored)
               .times(BASE_RESERVE)
-              .plus(sellingLiabilities || 0),
+              .plus(sellingLiabilities),
+          },
+        };
+      }
+
+      const liquidityPoolBalance = balance as Horizon.BalanceLineLiquidityPool;
+
+      if (identifier.includes("liquidity_pool_shares")) {
+        return {
+          ...memo,
+          [identifier]: {
+            liquidity_pool_id: liquidityPoolBalance.liquidity_pool_id,
+            total,
+            limit: new BigNumber(liquidityPoolBalance.limit),
           },
         };
       }
@@ -78,7 +91,7 @@ export function makeDisplayableBalances(
           buyingLiabilities,
           total,
           limit: new BigNumber(assetBalance.limit),
-          available: total.minus(sellingLiabilities || 0),
+          available: total.minus(sellingLiabilities),
           ...assetSponsor,
         },
       };
