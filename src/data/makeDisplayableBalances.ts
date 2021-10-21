@@ -22,10 +22,11 @@ export function makeDisplayableBalances(
 
       let sellingLiabilities = new BigNumber(0);
       let buyingLiabilities = new BigNumber(0);
-      const available = total.minus(sellingLiabilities);
+      let available;
 
       if ("selling_liabilities" in balance) {
         sellingLiabilities = new BigNumber(balance.selling_liabilities);
+        available = total.minus(sellingLiabilities);
       }
 
       if ("buying_liabilities" in balance) {

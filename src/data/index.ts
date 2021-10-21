@@ -22,10 +22,10 @@ export function getTokenIdentifier(token: Token): string {
  * @returns Returns `${tokenCode}:${issuerKey}`.
  */
 export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
+  if ("asset_issuer" in balance && !balance.asset_issuer) {
+    return "native";
+  }
   switch (balance.asset_type) {
-    case "native":
-      return balance.asset_type;
-
     case "credit_alphanum4":
     case "credit_alphanum12":
       return `${balance.asset_code}:${balance.asset_issuer}`;
