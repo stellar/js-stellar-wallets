@@ -67,8 +67,7 @@ describe("getBalanceIdentifier", () => {
           "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0",
       }),
     ).toEqual(
-      "liquidity_pool_shares:" +
-        "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0",
+      "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0::LP",
     );
   });
 });

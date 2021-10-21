@@ -82,7 +82,7 @@ it("makes balances from a real-world example", async () => {
       },
     },
     // tslint:disable-next-line
-    "liquidity_pool_shares:0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0": {
+    "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0::LP": {
       liquidity_pool_id:
         "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0",
       total: new BigNumber("1.0000000"),
