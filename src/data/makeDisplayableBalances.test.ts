@@ -81,6 +81,13 @@ it("makes balances from a real-world example", async () => {
         },
       },
     },
+    // tslint:disable-next-line
+    "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0:lp": {
+      liquidity_pool_id:
+        "0466a6bbafdc293b87f2ea7615919244057242b21ebf46b38d64536e8d2ac3c0",
+      total: new BigNumber("1.0000000"),
+      limit: new BigNumber("922337203685.4775807"),
+    },
     "native": {
       available: new BigNumber("999.5689234"),
       total: new BigNumber("999.5689234"),
