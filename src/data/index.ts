@@ -31,7 +31,7 @@ export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
       return `${balance.asset_code}:${balance.asset_issuer}`;
 
     case "liquidity_pool_shares":
-      return `${balance.liquidity_pool_id}::LP`;
+      return `${balance.liquidity_pool_id}:lp`;
 
     default:
       return "native";
