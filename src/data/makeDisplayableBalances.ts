@@ -62,7 +62,7 @@ export function makeDisplayableBalances(
 
       const liquidityPoolBalance = balance as Horizon.BalanceLineLiquidityPool;
 
-      if (identifier.includes("::LP")) {
+      if (identifier.includes(":lp")) {
         return {
           ...memo,
           [identifier]: {
