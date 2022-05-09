@@ -243,20 +243,24 @@ interface BaseTransaction {
     | TransactionStatus.too_large
     | TransactionStatus.error;
   status_eta?: number;
+  kyc_verified?: boolean;
   more_info_url?: string;
   amount_in?: string;
+  amount_in_asset?: string;
   amount_out?: string;
+  amount_out_asset?: string;
   amount_fee?: string;
-  from?: string;
-  to?: string;
-  external_extra?: string;
-  external_extra_text?: string;
+  amount_fee_asset?: string;
   started_at?: string;
   completed_at?: string;
   stellar_transaction_id?: string;
   external_transaction_id?: string;
   message?: string;
-  refunded?: boolean;
+  refunded?: boolean; // deprecated
+  from?: string;
+  to?: string;
+  external_extra?: string;
+  external_extra_text?: string;
 
   // these are off-spec props from certain anchors
   _id?: string;
@@ -267,6 +271,7 @@ export interface DepositTransaction extends BaseTransaction {
   kind: "deposit";
   deposit_memo?: string;
   deposit_memo_type?: string;
+  claimable_balance_id?: string;
 }
 
 export interface WithdrawTransaction extends BaseTransaction {
