@@ -7,14 +7,16 @@ export enum TransferResponseType {
 }
 
 export enum TransactionStatus {
-  completed = "completed",
+  incomplete = "incomplete",
+  pending_user_transfer_start = "pending_user_transfer_start",
+  pending_user_transfer_complete = "pending_user_transfer_complete",
   pending_external = "pending_external",
   pending_anchor = "pending_anchor",
   pending_stellar = "pending_stellar",
   pending_trust = "pending_trust",
   pending_user = "pending_user",
-  pending_user_transfer_start = "pending_user_transfer_start",
-  incomplete = "incomplete",
+  completed = "completed",
+  refunded = "refunded",
   no_market = "no_market",
   too_small = "too_small",
   too_large = "too_large",

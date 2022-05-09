@@ -228,14 +228,16 @@ export interface TransferError extends Error {
 interface BaseTransaction {
   id: string;
   status:
-    | TransactionStatus.completed
+    | TransactionStatus.incomplete  
+    | TransactionStatus.pending_user_transfer_start
+    | TransactionStatus.pending_user_transfer_complete
     | TransactionStatus.pending_external
     | TransactionStatus.pending_anchor
     | TransactionStatus.pending_stellar
     | TransactionStatus.pending_trust
     | TransactionStatus.pending_user
-    | TransactionStatus.pending_user_transfer_start
-    | TransactionStatus.incomplete
+    | TransactionStatus.completed
+    | TransactionStatus.refunded
     | TransactionStatus.no_market
     | TransactionStatus.too_small
     | TransactionStatus.too_large
