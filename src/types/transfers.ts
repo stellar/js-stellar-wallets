@@ -225,6 +225,19 @@ export interface TransferError extends Error {
   originalResponse?: any;
 }
 
+export interface RefundPayment {
+  id: string;
+  id_type: "stellar" | "external";
+  amount: string;
+  fee: string;
+}
+
+export interface Refunds {
+  amount_refunded: string;
+  amount_fee: string;
+  payments: RefundPayment[];
+}
+
 interface BaseTransaction {
   id: string;
   status:
@@ -257,6 +270,7 @@ interface BaseTransaction {
   external_transaction_id?: string;
   message?: string;
   refunded?: boolean; // deprecated
+  refunds?: Refunds;
   from?: string;
   to?: string;
   external_extra?: string;
