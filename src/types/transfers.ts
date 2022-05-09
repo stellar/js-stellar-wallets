@@ -269,7 +269,7 @@ interface BaseTransaction {
   stellar_transaction_id?: string;
   external_transaction_id?: string;
   message?: string;
-  refunded?: boolean; // deprecated
+  refunded?: boolean; // deprecated in favor of the refunds object below
   refunds?: Refunds;
   from?: string;
   to?: string;
