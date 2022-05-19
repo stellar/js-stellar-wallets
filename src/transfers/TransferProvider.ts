@@ -322,7 +322,7 @@ export abstract class TransferProvider {
       const { transaction }: { transaction: Transaction } = JSON.parse(text);
       return _normalizeTransaction(transaction);
     } catch (e) {
-      throw new Error(`Auth challenge response wasn't valid JSON: ${text}`);
+      throw new Error(`Fetch transaction response wasn't valid JSON: ${text}`);
     }
   }
 
