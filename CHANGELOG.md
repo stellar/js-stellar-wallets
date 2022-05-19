@@ -1,5 +1,17 @@
 ## In master
 
+## [v0.6.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.6.0-rc.0...v0.6.0-rc.1)
+
+- Fix ":lp" string
+
+## [v0.6.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.5.0-rc.0...v0.6.0-rc.0)
+
+- Upgrade stellar-sdk and add LP handling
+
+## [v0.5.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.4.0-rc.0...v0.5.0-rc.0)
+
+- Use @stellar/freighter-api@1.1.2 for testnet transactions
+
 ## [v0.4.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.3.0-rc.9...v0.4.0-rc.0)
 
 Validate fetchAuthTokens with stellar-sdk's utils
