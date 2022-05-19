@@ -288,7 +288,7 @@ export abstract class TransferProvider {
       qs = { external_transaction_id };
     }
 
-    if(lang) {
+    if (lang) {
       qs = { lang, ...qs };
     }
 
@@ -405,11 +405,14 @@ export abstract class TransferProvider {
               }
 
               // if it's NOT a registered transaction, and it's not the first
-              // roll, maybe it's a new trans that completed/errored immediately
-              // so register that!
+              // roll, maybe it's a new trans that completed/refunded/errored
+              // immediately so register that!
               if (
-                (transaction.status === TransactionStatus.completed ||
-                  transaction.status === TransactionStatus.error) &&
+                [
+                  TransactionStatus.completed,
+                  TransactionStatus.refunded,
+                  TransactionStatus.error,
+                ].includes(transaction.status) &&
                 isRetry &&
                 !this._transactionsIgnoredRegistry[asset_code][transaction.id]
               ) {
@@ -494,7 +497,7 @@ export abstract class TransferProvider {
   /**
    * Watch a transaction until it stops pending. Takes three callbacks:
    * * onMessage - When the transaction comes back as pending.
-   * * onSuccess - When the transaction comes back as completed.
+   * * onSuccess - When the transaction comes back as completed/refunded.
    * * onError - When there's a runtime error, or the transaction is incomplete
    * / no_market / too_small / too_large / error.
    */
@@ -580,7 +583,11 @@ export abstract class TransferProvider {
             });
           }, timeout);
           onMessage(transaction);
-        } else if (transaction.status === TransactionStatus.completed) {
+        } else if (
+          [TransactionStatus.completed, TransactionStatus.refunded].includes(
+            transaction.status,
+          )
+        ) {
           onSuccess(transaction);
         } else {
           onError(transaction);
