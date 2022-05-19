@@ -1,5 +1,24 @@
 ## In master
 
+## [v0.7.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.6.0-rc.1...v0.7.0-rc.0)
+
+This release updates the SDK to accommodate latest changes from [SEP-24 spec](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md#changelog):
+- [v2.4.0](https://github.com/stellar/stellar-protocol/pull/1195)
+- [v2.3.0](https://github.com/stellar/stellar-protocol/pull/1191)
+- [v2.2.1](https://github.com/stellar/stellar-protocol/pull/1185)
+- [v2.2.0](https://github.com/stellar/stellar-protocol/pull/1128)
+
+All changes:
+- Add support for optional `lang` parameter when fetching transactions
+- Add `pending_user_transfer_complete` and `refunded` transaction statuses
+- Add `refunds` object to transaction interface
+- Add some other missing transaction params:
+  - amount_in_asset
+  - amount_out_asset
+  - amount_fee_asset
+  - kyc_verified
+  - claimable_balance_id
+
 ## [v0.6.0-rc.1](https://github.com/stellar/js-stellar-wallets/compare/v0.6.0-rc.0...v0.6.0-rc.1)
 
 - Fix ":lp" string
