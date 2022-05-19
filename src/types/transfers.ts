@@ -308,6 +308,7 @@ export interface TransactionsParams {
   limit?: number;
   kind?: string;
   paging_id?: string;
+  lang?: string;
 }
 
 export interface TransactionParams {
@@ -315,6 +316,7 @@ export interface TransactionParams {
   id?: string;
   stellar_transaction_id?: string;
   external_transaction_id?: string;
+  lang?: string;
 }
 
 export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
@@ -323,6 +325,7 @@ export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
   watchlist?: string[];
   timeout?: number;
   isRetry?: boolean;
+  lang?: string;
 }
 
 export interface WatchOneTransactionParams
@@ -331,4 +334,5 @@ export interface WatchOneTransactionParams
   onSuccess: (payload: Transaction) => void;
   timeout?: number;
   isRetry?: boolean;
+  lang?: string;
 }

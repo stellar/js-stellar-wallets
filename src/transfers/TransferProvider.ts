@@ -68,7 +68,7 @@ export abstract class TransferProvider {
   public transferServer: string;
   public operation: "deposit" | "withdraw";
   public account: string;
-  public language: string;
+  public lang: string;
   public info?: Info;
   public authToken?: string;
 
@@ -86,7 +86,7 @@ export abstract class TransferProvider {
   constructor(
     transferServer: string,
     account: string,
-    language: string,
+    lang: string,
     operation: "deposit" | "withdraw",
   ) {
     if (!transferServer) {
@@ -105,7 +105,7 @@ export abstract class TransferProvider {
     this.transferServer = transferServer.replace(/\/$/, "");
     this.operation = operation;
     this.account = account;
-    this.language = language;
+    this.lang = lang;
 
     this._watchOneTransactionRegistry = {};
     this._watchAllTransactionsRegistry = {};
@@ -116,7 +116,7 @@ export abstract class TransferProvider {
 
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(
-      `${this.transferServer}/info?lang=${this.language}`,
+      `${this.transferServer}/info?lang=${this.lang}`,
     );
 
     if (!response.ok) {
@@ -258,6 +258,7 @@ export abstract class TransferProvider {
       id,
       stellar_transaction_id,
       external_transaction_id,
+      lang,
     } = params;
 
     // one of either id or stellar_transaction_id must be provided
@@ -285,6 +286,10 @@ export abstract class TransferProvider {
       qs = { stellar_transaction_id };
     } else if (external_transaction_id) {
       qs = { external_transaction_id };
+    }
+
+    if(lang) {
+      qs = { lang, ...qs };
     }
 
     const response = await fetch(
@@ -447,6 +452,7 @@ export abstract class TransferProvider {
             onError,
             timeout,
             isRetry: true,
+            ...(otherParams || {}),
           });
         }, timeout);
       })
@@ -471,6 +477,7 @@ export abstract class TransferProvider {
           onError,
           timeout,
           isRetry: true,
+          ...(otherParams || {}),
         });
       },
       stop: () => {
@@ -569,6 +576,7 @@ export abstract class TransferProvider {
               onError,
               timeout,
               isRetry: true,
+              ...(otherParams || {}),
             });
           }, timeout);
           onMessage(transaction);
@@ -608,6 +616,7 @@ export abstract class TransferProvider {
           onError,
           timeout,
           isRetry: true,
+          ...(otherParams || {}),
         });
       },
       stop: () => {
