@@ -225,36 +225,56 @@ export interface TransferError extends Error {
   originalResponse?: any;
 }
 
+export interface RefundPayment {
+  id: string;
+  id_type: "stellar" | "external";
+  amount: string;
+  fee: string;
+}
+
+export interface Refunds {
+  amount_refunded: string;
+  amount_fee: string;
+  payments: RefundPayment[];
+}
+
 interface BaseTransaction {
   id: string;
   status:
-    | TransactionStatus.completed
+    | TransactionStatus.incomplete  
+    | TransactionStatus.pending_user_transfer_start
+    | TransactionStatus.pending_user_transfer_complete
     | TransactionStatus.pending_external
     | TransactionStatus.pending_anchor
     | TransactionStatus.pending_stellar
     | TransactionStatus.pending_trust
     | TransactionStatus.pending_user
-    | TransactionStatus.pending_user_transfer_start
-    | TransactionStatus.incomplete
+    | TransactionStatus.completed
+    | TransactionStatus.refunded
     | TransactionStatus.no_market
     | TransactionStatus.too_small
     | TransactionStatus.too_large
     | TransactionStatus.error;
   status_eta?: number;
+  kyc_verified?: boolean;
   more_info_url?: string;
   amount_in?: string;
+  amount_in_asset?: string;
   amount_out?: string;
+  amount_out_asset?: string;
   amount_fee?: string;
-  from?: string;
-  to?: string;
-  external_extra?: string;
-  external_extra_text?: string;
+  amount_fee_asset?: string;
   started_at?: string;
   completed_at?: string;
   stellar_transaction_id?: string;
   external_transaction_id?: string;
   message?: string;
-  refunded?: boolean;
+  refunded?: boolean; // deprecated in favor of the refunds object below
+  refunds?: Refunds;
+  from?: string;
+  to?: string;
+  external_extra?: string;
+  external_extra_text?: string;
 
   // these are off-spec props from certain anchors
   _id?: string;
@@ -265,6 +285,7 @@ export interface DepositTransaction extends BaseTransaction {
   kind: "deposit";
   deposit_memo?: string;
   deposit_memo_type?: string;
+  claimable_balance_id?: string;
 }
 
 export interface WithdrawTransaction extends BaseTransaction {
@@ -287,6 +308,7 @@ export interface TransactionsParams {
   limit?: number;
   kind?: string;
   paging_id?: string;
+  lang?: string;
 }
 
 export interface TransactionParams {
@@ -294,6 +316,7 @@ export interface TransactionParams {
   id?: string;
   stellar_transaction_id?: string;
   external_transaction_id?: string;
+  lang?: string;
 }
 
 export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
@@ -302,6 +325,7 @@ export interface WatchAllTransactionsParams extends WatcherParams<Transaction> {
   watchlist?: string[];
   timeout?: number;
   isRetry?: boolean;
+  lang?: string;
 }
 
 export interface WatchOneTransactionParams
@@ -310,4 +334,5 @@ export interface WatchOneTransactionParams
   onSuccess: (payload: Transaction) => void;
   timeout?: number;
   isRetry?: boolean;
+  lang?: string;
 }

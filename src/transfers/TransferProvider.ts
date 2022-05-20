@@ -68,7 +68,7 @@ export abstract class TransferProvider {
   public transferServer: string;
   public operation: "deposit" | "withdraw";
   public account: string;
-  public language: string;
+  public lang: string;
   public info?: Info;
   public authToken?: string;
 
@@ -86,7 +86,7 @@ export abstract class TransferProvider {
   constructor(
     transferServer: string,
     account: string,
-    language: string,
+    lang: string,
     operation: "deposit" | "withdraw",
   ) {
     if (!transferServer) {
@@ -105,7 +105,7 @@ export abstract class TransferProvider {
     this.transferServer = transferServer.replace(/\/$/, "");
     this.operation = operation;
     this.account = account;
-    this.language = language;
+    this.lang = lang;
 
     this._watchOneTransactionRegistry = {};
     this._watchAllTransactionsRegistry = {};
@@ -116,7 +116,7 @@ export abstract class TransferProvider {
 
   protected async fetchInfo(): Promise<Info> {
     const response = await fetch(
-      `${this.transferServer}/info?lang=${this.language}`,
+      `${this.transferServer}/info?lang=${this.lang}`,
     );
 
     if (!response.ok) {
@@ -258,6 +258,7 @@ export abstract class TransferProvider {
       id,
       stellar_transaction_id,
       external_transaction_id,
+      lang,
     } = params;
 
     // one of either id or stellar_transaction_id must be provided
@@ -285,6 +286,10 @@ export abstract class TransferProvider {
       qs = { stellar_transaction_id };
     } else if (external_transaction_id) {
       qs = { external_transaction_id };
+    }
+
+    if (lang) {
+      qs = { lang, ...qs };
     }
 
     const response = await fetch(
@@ -317,7 +322,7 @@ export abstract class TransferProvider {
       const { transaction }: { transaction: Transaction } = JSON.parse(text);
       return _normalizeTransaction(transaction);
     } catch (e) {
-      throw new Error(`Auth challenge response wasn't valid JSON: ${text}`);
+      throw new Error(`Fetch transaction response wasn't valid JSON: ${text}`);
     }
   }
 
@@ -400,11 +405,14 @@ export abstract class TransferProvider {
               }
 
               // if it's NOT a registered transaction, and it's not the first
-              // roll, maybe it's a new trans that completed/errored immediately
-              // so register that!
+              // roll, maybe it's a new trans that completed/refunded/errored
+              // immediately so register that!
               if (
-                (transaction.status === TransactionStatus.completed ||
-                  transaction.status === TransactionStatus.error) &&
+                [
+                  TransactionStatus.completed,
+                  TransactionStatus.refunded,
+                  TransactionStatus.error,
+                ].includes(transaction.status) &&
                 isRetry &&
                 !this._transactionsIgnoredRegistry[asset_code][transaction.id]
               ) {
@@ -447,6 +455,7 @@ export abstract class TransferProvider {
             onError,
             timeout,
             isRetry: true,
+            ...(otherParams || {}),
           });
         }, timeout);
       })
@@ -471,6 +480,7 @@ export abstract class TransferProvider {
           onError,
           timeout,
           isRetry: true,
+          ...(otherParams || {}),
         });
       },
       stop: () => {
@@ -487,7 +497,7 @@ export abstract class TransferProvider {
   /**
    * Watch a transaction until it stops pending. Takes three callbacks:
    * * onMessage - When the transaction comes back as pending.
-   * * onSuccess - When the transaction comes back as completed.
+   * * onSuccess - When the transaction comes back as completed/refunded.
    * * onError - When there's a runtime error, or the transaction is incomplete
    * / no_market / too_small / too_large / error.
    */
@@ -569,10 +579,15 @@ export abstract class TransferProvider {
               onError,
               timeout,
               isRetry: true,
+              ...(otherParams || {}),
             });
           }, timeout);
           onMessage(transaction);
-        } else if (transaction.status === TransactionStatus.completed) {
+        } else if (
+          [TransactionStatus.completed, TransactionStatus.refunded].includes(
+            transaction.status,
+          )
+        ) {
           onSuccess(transaction);
         } else {
           onError(transaction);
@@ -608,6 +623,7 @@ export abstract class TransferProvider {
           onError,
           timeout,
           isRetry: true,
+          ...(otherParams || {}),
         });
       },
       stop: () => {

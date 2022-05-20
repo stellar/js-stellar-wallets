@@ -93,9 +93,9 @@ export class DepositProvider extends TransferProvider {
   constructor(
     transferServer: string,
     account: string,
-    language: string = "en",
+    lang: string = "en",
   ) {
-    super(transferServer, account, language, "deposit");
+    super(transferServer, account, lang, "deposit");
   }
 
   /**
@@ -112,7 +112,7 @@ export class DepositProvider extends TransferProvider {
     const request: DepositRequest & { account: string } = {
       ...params,
       account: this.account,
-      lang: this.language,
+      lang: this.lang,
     };
     const isAuthRequired = this.getAuthStatus("deposit", params.asset_code);
 

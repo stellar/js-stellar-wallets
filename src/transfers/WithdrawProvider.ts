@@ -86,9 +86,9 @@ export class WithdrawProvider extends TransferProvider {
   constructor(
     transferServer: string,
     account: string,
-    language: string = "en",
+    lang: string = "en",
   ) {
-    super(transferServer, account, language, "withdraw");
+    super(transferServer, account, lang, "withdraw");
   }
 
   /**
@@ -105,7 +105,7 @@ export class WithdrawProvider extends TransferProvider {
     const request: WithdrawRequest & { account: string } = {
       ...params,
       account: this.account,
-      lang: this.language,
+      lang: this.lang,
     };
     const isAuthRequired = this.getAuthStatus("withdraw", params.asset_code);
 
