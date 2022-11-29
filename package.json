@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.7.0-rc.0",
+  "version": "0.8.0",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -67,7 +67,7 @@
     "prettier": "^1.17.0",
     "regenerator-runtime": "^0.13.3",
     "sinon": "^7.3.1",
-    "stellar-sdk": "^9.0.1",
+    "stellar-sdk": "^10.1.0",
     "terser-webpack-plugin": "^2.3.0",
     "ts-loader": "^6.2.1",
     "tsc-watch": "^2.1.2",
