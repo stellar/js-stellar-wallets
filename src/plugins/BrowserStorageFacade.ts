@@ -5,6 +5,8 @@ export interface BrowserStorageConfigParams {
   storage: any;
 }
 
+const PREFIX = "stellarkeys";
+
 /**
  * Facade for `BrowserStorageKeyStore` encapsulating the access to the actual
  * browser storage
@@ -15,7 +17,7 @@ export class BrowserStorageFacade {
 
   constructor() {
     this.storage = null;
-    this.prefix = "stellarkeys";
+    this.prefix = PREFIX;
   }
 
   public configure(params: BrowserStorageConfigParams) {
@@ -55,7 +57,7 @@ export class BrowserStorageFacade {
 
   public async getAllKeys() {
     this.check();
-    const regexp = RegExp(`^stellarkeys\\:(.*)`);
+    const regexp = RegExp(`^${PREFIX}\\:(.*)`);
     const keys: EncryptedKey[] = [];
 
     if (this.storage !== null) {

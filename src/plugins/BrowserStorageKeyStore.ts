@@ -49,18 +49,18 @@ export class BrowserStorageKeyStore implements KeyStore {
 
   public async storeKeys(keys: EncryptedKey[]) {
     // We can't store keys if they're already there
-    const invalidKeys: EncryptedKey[] = [];
+    const usedKeys: EncryptedKey[] = [];
 
     for (const encryptedKey of keys) {
       const hasKey = await this.keyStore.hasKey(encryptedKey.id);
       if (hasKey) {
-        invalidKeys.push(encryptedKey);
+        usedKeys.push(encryptedKey);
       }
     }
 
-    if (invalidKeys.length) {
+    if (usedKeys.length) {
       return Promise.reject(
-        `Some keys were already stored in the keystore: ${invalidKeys
+        `Some keys were already stored in the keystore: ${usedKeys
           .map((k) => k.id)
           .join(", ")}`,
       );
