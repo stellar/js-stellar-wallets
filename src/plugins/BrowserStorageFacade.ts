@@ -2,7 +2,11 @@ import { EncryptedKey } from "../types";
 
 export interface BrowserStorageConfigParams {
   prefix?: string;
-  storage: any;
+  storage: {
+    get: (key?: string | string[] | {}) => Promise<{}>;
+    remove: (key: string | string[]) => Promise<void>;
+    set: (items: {}) => Promise<{}>;
+  };
 }
 
 const PREFIX = "stellarkeys";

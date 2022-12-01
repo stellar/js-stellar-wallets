@@ -19,9 +19,9 @@ describe("BrowserStorageKeyStore", function() {
   const chrome = {
     storage: {
       local: {
-        get: () => Promise.resolve({}),
-        set: () => Promise.resolve({}),
-        remove: () => Promise.resolve({}),
+        get: (_key?: string | string[] | {}) => Promise.resolve({}),
+        set: (_items: {}) => Promise.resolve({}),
+        remove: (_key: string | string[]) => Promise.resolve(),
       },
     },
   };
