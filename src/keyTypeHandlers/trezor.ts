@@ -1,9 +1,9 @@
-import TrezorConnect from "trezor-connect";
+import transformTransaction from "@trezor/connect-plugin-stellar";
+import TrezorConnect from "@trezor/connect-web";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
 import { KeyType } from "../constants/keys";
-import { transformTransaction } from "../helpers/trezorTransformTransaction";
 
 export const trezorHandler: KeyTypeHandler = {
   keyType: KeyType.trezor,
