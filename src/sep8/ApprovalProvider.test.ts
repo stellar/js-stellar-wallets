@@ -15,7 +15,7 @@ describe("ApprovalProvider", () => {
       // @ts-ignore
       const approvalProvider = new ApprovalProvider("");
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toMatch(
         `Error: Required parameter 'approvalServer' missing!`,
       );
@@ -47,7 +47,7 @@ describe("approve", () => {
       // @ts-ignore
       await approvalProvider.approve(txBuild);
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toMatch(
         `At least one signature is required before submitting for approval.`,
       );
@@ -80,7 +80,7 @@ describe("approve", () => {
       // @ts-ignore
       await approvalProvider.approve(txBuild);
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toContain(
         `Error: Approval server returned unknown status`,
       );
@@ -114,7 +114,7 @@ describe("approve", () => {
       // @ts-ignore
       await approvalProvider.approve(txBuild);
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toContain(
         `Error: Error sending base64-encoded transaction`,
       );
@@ -143,7 +143,7 @@ describe("approve", () => {
       // @ts-ignore
       await approvalProvider.approve(txBuild);
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toContain(
         `Error: Error parsing the approval server response as JSON`,
       );
@@ -348,7 +348,7 @@ describe("postActionUrl", () => {
       // @ts-ignore
       const res = await approvalProvider.postActionUrl({});
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toMatch(
         `Error: Required field 'action_url' missing!`,
       );
@@ -366,7 +366,7 @@ describe("postActionUrl", () => {
         field_value_map: {},
       });
       expect("This test failed").toBe(null);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.toString()).toMatch(
         `Error: Required field 'field_value_map' missing!`,
       );

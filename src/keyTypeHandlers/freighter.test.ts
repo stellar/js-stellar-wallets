@@ -45,9 +45,7 @@ describe("freighterHandler", () => {
       .once()
       .withArgs(XDR, undefined)
       .returns(Promise.resolve(SIGNED_TRANSACTION));
-    TransactionBuilderMock.expects("fromXDR")
-      .once()
-      .returns(true);
+    TransactionBuilderMock.expects("fromXDR").once().returns(true);
 
     freighterHandler.signTransaction({
       // @ts-ignore

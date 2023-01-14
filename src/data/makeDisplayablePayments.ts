@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
 import { ServerApi } from "stellar-sdk";
+import { AccountCredited } from "stellar-sdk/lib/types/effects";
 
 import { Account, Payment, Token } from "../types";
 
@@ -33,7 +34,7 @@ async function getAccountMergePaymentAmount(
   try {
     const effects = await payment.effects();
     const accountMergePayment = effects.records.find(
-      (record) =>
+      (record): record is AccountCredited =>
         record.type === "account_credited" && record.account === publicKey,
     );
 
