@@ -82,7 +82,7 @@
     "@ledgerhq/hw-app-str": "^5.28.0",
     "@ledgerhq/hw-transport-u2f": "^5.26.0",
     "@stellar/freighter-api": "^1.1.2",
-    "@trezor/connect-plugin-stellar": "^9.0.0",
+    "@trezor/connect-plugin-stellar": "^9.0.1",
     "@trezor/connect-web": "^9.0.5",
     "@types/jest": "^24.0.11",
     "change-case": "^3.1.0",
