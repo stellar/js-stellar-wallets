@@ -1,6 +1,7 @@
 {
   "extends": ["@stellar/tslint-config"],
   "rules": {
+    "no-any": false,
     "variable-name": {
       "options": [
         "ban-keywords",

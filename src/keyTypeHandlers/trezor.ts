@@ -48,7 +48,7 @@ export const trezorHandler: KeyTypeHandler = {
         response.payload.error ||
           "We couldn’t sign the transaction with Trezor.",
       );
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `We couldn’t sign the transaction with Trezor. ${error.toString()}.`,
       );

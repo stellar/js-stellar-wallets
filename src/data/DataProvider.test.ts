@@ -12,7 +12,7 @@ describe("Account validation", () => {
         networkPassphrase: Networks.PUBLIC,
       });
       expect(provider).not.toBeInstanceOf(DataProvider);
-    } catch (e) {
+    } catch (e: any) {
       expect(e).toBeTruthy();
       expect(e.toString()).toBe("Error: No account key provided.");
     }
