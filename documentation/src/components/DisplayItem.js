@@ -56,7 +56,7 @@ export const DisplayItem = ({ isRootElement, ...params }) => {
 
     case "Variable":
     case "Property":
-    case "Enumeration member":
+    case "Enumeration Member":
       item = <DisplayProperty {...params} />;
       break;
 
@@ -90,9 +90,7 @@ export const DisplayItem = ({ isRootElement, ...params }) => {
             <LineEl>
               {sources[0].fileName}
               <LineLinkEl
-                href={`https://github.com/stellar/js-stellar-wallets/tree/master/${
-                  sources[0].fileName
-                }#L${sources[0].line}`}
+                href={`https://github.com/stellar/js-stellar-wallets/tree/master/${sources[0].fileName}#L${sources[0].line}`}
                 target="_blank"
               >
                 ({sources[0].line}:{sources[0].character}) ↗️

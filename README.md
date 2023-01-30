@@ -32,16 +32,13 @@ cases (particularly around offer / trade history), properties were renamed for
 clarity.
 
 ```js
-import {
-  getTokenIdentifier,
-  getBalanceIdentifier,
-  DataProvider,
-} from "@stellar/wallet-sdk";
+import { DataProvider } from "@stellar/wallet-sdk";
 
 // You'll use your DataProvider instance to ask for data from Stellar.
 const dataProvider = new DataProvider({
   serverUrl: "https://horizon.stellar.org",
   accountOrKey: "<<Insert public key>>",
+  networkPassphrase: "Public Global Stellar Network ; September 2015",
 });
 
 // Some class functions will fetch data directly.

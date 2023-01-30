@@ -82,7 +82,10 @@ const LIBRARY_EXPORTS = {
 export const App = () => {
   const items = docs.children.reduce((memo, child) => {
     if (child.children) {
-      return [...memo, ...child.children];
+      if (child.kindString === "Namespace") {
+        return [...memo, ...child.children];
+      }
+      return [...memo, child, ...child.children];
     }
     return [...memo, child];
   }, []);
@@ -115,10 +118,8 @@ export const App = () => {
   );
 
   /*
-    We want the index to display:
-    - the kind names in KINDS_TO_DISPLAY 
-    - the exports defined in LIBRARY_EXPORTS
-    And we want to index them by KIND.
+    We want the index to display the exports defined in LIBRARY_EXPORTS,
+    indexed by kind.
   */
 
   const libraryExports = Object.keys(LIBRARY_EXPORTS).reduce((memo, name) => {
@@ -144,6 +145,7 @@ export const App = () => {
         item.kindString === "Interface" ||
         item.kindString === "Type alias" ||
         item.kindString === "Enumeration" ||
+        item.kindString === "Variable" ||
         item.kindString === "Object literal",
     )
     .reduce((memo, item) => {

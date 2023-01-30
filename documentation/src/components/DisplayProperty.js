@@ -23,8 +23,8 @@ export const DisplayProperty = ({
       {flags.isPrivate && <>private </>}
       <Semibold>{name}</Semibold>
       {isOptional && "?"}:{" "}
-      {kindString === "Enumeration member" ? (
-        <span>{defaultValue}</span>
+      {kindString === "Enumeration Member" ? (
+        <span>"{type.value}"</span>
       ) : (
         <TypePeeker
           {...type}
