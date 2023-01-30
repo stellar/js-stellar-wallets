@@ -23,13 +23,21 @@ export {
 } from "./data";
 
 export { DataProvider } from "./data/DataProvider";
+export type { DataProviderParams } from "./data/DataProvider";
 
 /**
  * Key Management
  */
 export { KeyManager } from "./KeyManager";
+export type {
+  KeyManagerParams,
+  StoreKeyParams,
+  SignTransactionParams,
+  ChangePasswordParams,
+} from "./KeyManager";
 
-export { KeyManagerPlugins } from "./KeyManagerPlugins";
+import * as KeyManagerPlugins from "./KeyManagerPlugins";
+export { KeyManagerPlugins };
 
 /**
  * Plugin Testing
@@ -40,7 +48,13 @@ export { testEncrypter, testKeyStore } from "./PluginTesting";
 /**
  * Transfers
  */
-export { DepositProvider, getKycUrl, WithdrawProvider } from "./transfers";
+export { DepositProvider, WithdrawProvider, getKycUrl } from "./transfers";
+export type {
+  KycUrlParams,
+  BaseParams,
+  PostMessageParams,
+  CallbackUrlParams,
+} from "./transfers";
 
 /**
  * Helpers
