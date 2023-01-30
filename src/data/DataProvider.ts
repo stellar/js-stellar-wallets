@@ -31,9 +31,14 @@ import { makeDisplayablePayments } from "./makeDisplayablePayments";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
 export interface DataProviderParams {
+  /** Stellar network server URL. */
   serverUrl: string;
+  /** Account or public key string. */
   accountOrKey: Account | string;
+  // tslint:disable:max-line-length
+  /** Stellar [network passphrase](https://developers.stellar.org/docs/encyclopedia/network-passphrases). */
   networkPassphrase: string;
+  // tslint:enable:max-line-length
 
   // these are passed to `new Server`
   metadata?: {

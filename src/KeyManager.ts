@@ -26,14 +26,32 @@ export interface KeyManagerParams {
   shouldCache?: boolean;
 }
 
+/**
+ * Key storing parameters interface.
+ */
 export interface StoreKeyParams {
+  /**
+   * Object to store. an `id` field is optional; if you don't
+   * provide one, we'll generate a random number. The id will be used to read,
+   * change, update, and delete keys.
+   */
   key: Key | UnstoredKey;
+  /** Encryption algorithm to use (must have been registered). */
   encrypterName: string;
+  /** Encrypt key with this as the secret. */
   password: string;
 }
 
+/**
+ * Transaction signing parameters interface.
+ */
 export interface SignTransactionParams {
+  /** Transaction object to sign. */
   transaction: Transaction;
+  /**
+   * Key to sign with.
+   * The id is computed as `sha1(private key + public key)`.
+   */
   id: string;
   password: string;
   custom?: {
@@ -41,8 +59,13 @@ export interface SignTransactionParams {
   };
 }
 
+/**
+ * Password changing parameters interface.
+ */
 export interface ChangePasswordParams {
+  /** The user's old password. */
   oldPassword: string;
+  /** The user's new password. */
   newPassword: string;
 }
 
@@ -116,15 +139,15 @@ export class KeyManager {
 
   /**
    * Register a new encrypter.
-   * @param {Encrypter} encrypter
+   * @param {Encrypter} encrypter encrypter to register.
    */
   public registerEncrypter(encrypter: Encrypter) {
     this.encrypterMap[encrypter.name] = encrypter;
   }
 
   /**
-   * Set the default network passphrase
-   * @param {string} defaultNetworkPassphrase
+   * Set the default network passphrase.
+   * @param {string} passphrase default network passphrase to set.
    */
   public setDefaultNetworkPassphrase(passphrase: string) {
     this.defaultNetworkPassphrase = passphrase;
@@ -134,13 +157,7 @@ export class KeyManager {
    * Stores a key in the keyStore after encrypting it with the encrypterName.
    *
    * @async
-   * @param key Key object to store. an `id` field is optional; if you don't
-   * provide one, we'll generate a random number. The id will be used to read,
-   * change, update, and delete keys.
-   * @param password encrypt key with this as the secret
-   * @param encrypterName encryption algorithm to use (must have been
-   * registered)
-   *
+   * @param params - store key parameters
    * @returns The metadata of the key
    */
   public async storeKey(params: StoreKeyParams): Promise<KeyMetadata> {
@@ -216,7 +233,7 @@ export class KeyManager {
    *  Remove the key specified by this key id.
    *
    * @async
-   * @param id Specifies which key to remove.
+   * @param id - Specifies which key to remove.
    *                     The id is computed as `sha1(private key + public key)`.
    * @returns Metadata of the removed key
    */
@@ -228,12 +245,10 @@ export class KeyManager {
 
   /**
    * Sign a transaction using the specified key id. Supports both using a
-   * cached key and going out to the keystore to read and decrypt
+   * cached key and going out to the keystore to read and decrypt.
    *
    * @async
-   * @param {Transaction} transaction Transaction object to sign
-   * @param {string} id Key to sign with. The id is computed as
-   *                    `sha1(private key + public key)`.
+   * @param params - sign transaction parameters
    * @returns Signed transaction
    */
   public async signTransaction(
@@ -276,28 +291,23 @@ export class KeyManager {
    * https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md
    *
    * @async
-   * @param {object} params Params object
-   * @param {string} params.id The user's key to authenticate. The id is
+   * @param params - Params object
+   * @param params.id - The user's key to authenticate. The id is
    *                           computed as `sha1(private key + public key)`.
-   * @param {string} params.password The password that will decrypt that secret
-   * @param {string} params.authServer The URL of the authentication server
-   * @param {array} params.authServerHomeDomains The home domain(s) of the authentication server
-   * @param {string} params.authServerKey Check the challenge transaction
+   * @param params.password - The password that will decrypt that secret
+   * @param params.authServer - The URL of the authentication server
+   * @param params.authServerHomeDomains - The home domain(s) of the authentication server
+   * @param params.authServerKey - Check the challenge transaction
    *                                for this key as source and signature.
-   * @param {string} [params.account] The authenticating public key. If not
+   * @param params.account - The authenticating public key. If not
    *                                provided, then the signers's public key will
    *                                be used instead.
-   * @returns {Promise<string>} authToken JWT
+   * @returns authToken JWT
    */
   // tslint:enable max-line-length
   public async fetchAuthToken(params: GetAuthTokenParams): Promise<AuthToken> {
-    const {
-      id,
-      password,
-      authServer,
-      authServerKey,
-      authServerHomeDomains,
-    } = params;
+    const { id, password, authServer, authServerKey, authServerHomeDomains } =
+      params;
     let { account } = params;
 
     // throw errors for missing params
@@ -372,9 +382,7 @@ export class KeyManager {
     ) {
       throw new Error(
         `
-            Network mismatch: the transfer server expects "${
-              json.network_passphrase
-            }",
+            Network mismatch: the transfer server expects "${json.network_passphrase}",
             but you're using "${keyNetwork}"
             `,
       );
@@ -449,9 +457,8 @@ export class KeyManager {
    * Update the stored keys to be encrypted with the new password.
    *
    * @async
-   * @param oldPassword the user's old password
-   * @param newPassword the user's new password
-   * @returns {Promise<KeyMetadata[]>}
+   * @param params - change password parameters
+   * @returns key metadata
    */
   public async changePassword(
     params: ChangePasswordParams,

@@ -36,12 +36,13 @@ export const DisplayInterface = (params) => {
           ))}
       </div>
 
-      {indexSignature.map(({ parameters, type }) => (
-        <Block key={parameters[0].id}>
-          [{parameters[0].name}: <TypePeeker {...parameters[0].type} />
-          ]: <TypePeeker {...type} />;
-        </Block>
-      ))}
+      {!!indexSignature.length &&
+        indexSignature.map(({ parameters, type }) => (
+          <Block key={parameters[0].id}>
+            [{parameters[0].name}: <TypePeeker {...parameters[0].type} />
+            ]: <TypePeeker {...type} />;
+          </Block>
+        ))}
 
       {children
         .sort((a, b) => a.sources[0].line - b.sources[0].line)

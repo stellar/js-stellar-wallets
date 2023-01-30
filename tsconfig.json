@@ -22,10 +22,8 @@
   ],
   "typedocOptions": {
     "out": "docs",
-    "mode": "modules",
     "exclude": ["**/*.test.ts", "**/node_modules/**"],
     "excludePrivate": true,
-    "includeDeclarations": true,
     "json": "dist/docs.json"
   }
 }
