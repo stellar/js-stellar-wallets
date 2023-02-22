@@ -204,7 +204,7 @@ export abstract class TransferProvider {
 
     if (!params.show_all_transactions) {
       kind =
-        params.kind || this.operation === "deposit" ? "deposit" : "withdrawal";
+        params.kind || (this.operation === "deposit" ? "deposit" : "withdrawal");
     }
 
     const response = await fetch(
