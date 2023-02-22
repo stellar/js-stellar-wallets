@@ -1,5 +1,13 @@
 ## In master
 
+## [v0.9.0](https://github.com/stellar/js-stellar-wallets/compare/v0.8.0...v0.9.0)
+
+- Make sure "kind" param works on fetchTransactions
+
+## [v0.8.0](https://github.com/stellar/js-stellar-wallets/compare/v0.7.0-rc.0...v0.8.0)
+
+- Update stellar-sdk and add keystore support for browser storage
+
 ## [v0.7.0-rc.0](https://github.com/stellar/js-stellar-wallets/compare/v0.6.0-rc.1...v0.7.0-rc.0)
 
 This release updates the SDK to accommodate latest changes from [SEP-24 spec](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md#changelog):
