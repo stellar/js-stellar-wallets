@@ -6,14 +6,14 @@ import {
   WithdrawRequest,
 } from "../types";
 
-interface BaseParams {
+export interface BaseParams {
   response: InteractiveKycNeededResponse;
 }
 
-interface PostMessageParams extends BaseParams {
+export interface PostMessageParams extends BaseParams {
   callback_url: "postMessage";
 }
-interface CallbackUrlParams extends BaseParams {
+export interface CallbackUrlParams extends BaseParams {
   callback_url: string;
   request: DepositRequest | WithdrawRequest;
 }

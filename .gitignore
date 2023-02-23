@@ -5,3 +5,4 @@ compiled
 .DS_Store
 docs
 .vscode/
+documentation/src/docs.json

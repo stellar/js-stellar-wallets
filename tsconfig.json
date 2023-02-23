@@ -6,10 +6,9 @@
     "lib": ["es2015", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "outDir": "dist",
+    "importHelpers": false,
     "target": "es5",
-    "skipLibCheck": true,
     "sourceMap": true
   },
   "include": ["src"],
@@ -23,10 +22,8 @@
   ],
   "typedocOptions": {
     "out": "docs",
-    "mode": "modules",
     "exclude": ["**/*.test.ts", "**/node_modules/**"],
     "excludePrivate": true,
-    "includeDeclarations": true,
     "json": "dist/docs.json"
   }
 }

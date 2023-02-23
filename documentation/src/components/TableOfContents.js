@@ -37,7 +37,7 @@ const SHORT_NAME = {
   Constructor: "func",
   Variable: "var",
   Property: "prop",
-  "Enumeration member": "enum",
+  "Enumeration Member": "enum",
   Class: "class",
   Interface: "interf",
   Enumeration: "enum",

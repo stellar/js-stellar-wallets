@@ -9,7 +9,7 @@ import {
 } from "stellar-sdk";
 import { EffectType } from "../constants/data";
 
-interface NotFundedError {
+export interface NotFundedError {
   isUnfunded: boolean;
 }
 

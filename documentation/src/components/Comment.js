@@ -12,9 +12,10 @@ const El = styled.div`
   word-break: break-word;
 `;
 
-export const Comment = ({ shortText, text }) => (
+export const Comment = ({ summary }) => (
   <El>
-    <Markdown>{shortText}</Markdown>
-    <Markdown>{text}</Markdown>
+    <Markdown>
+      {summary.reduce((accumulator, { text }) => accumulator + text, "")}
+    </Markdown>
   </El>
 );

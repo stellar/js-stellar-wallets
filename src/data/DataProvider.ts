@@ -31,9 +31,14 @@ import { makeDisplayablePayments } from "./makeDisplayablePayments";
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
 export interface DataProviderParams {
+  /** Stellar network server URL. */
   serverUrl: string;
+  /** Account or public key string. */
   accountOrKey: Account | string;
+  // tslint:disable:max-line-length
+  /** Stellar [network passphrase](https://developers.stellar.org/docs/encyclopedia/network-passphrases). */
   networkPassphrase: string;
+  // tslint:enable:max-line-length
 
   // these are passed to `new Server`
   metadata?: {
@@ -138,7 +143,10 @@ export class DataProvider {
     try {
       await this.fetchAccountDetails();
       return true;
-    } catch (e) {
+    } catch (e: any) {
+      if (e.isUnfunded === undefined) {
+        return false;
+      }
       return !e.isUnfunded;
     }
   }
@@ -224,7 +232,7 @@ export class DataProvider {
         sequenceNumber: accountSummary.sequence,
         balances,
       };
-    } catch (err) {
+    } catch (err: any) {
       err.isUnfunded = err.response && err.response.status === 404;
       throw err as FetchAccountError;
     }
@@ -246,9 +254,7 @@ export class DataProvider {
       .then((res) => {
         onMessage(res);
         this.callbacks.accountDetails = debounce(() => {
-          this.fetchAccountDetails()
-            .then(onMessage)
-            .catch(onError);
+          this.fetchAccountDetails().then(onMessage).catch(onError);
         }, 2000);
         this.errorHandlers.accountDetails = onError;
 
@@ -258,7 +264,7 @@ export class DataProvider {
       })
 
       // otherwise, if it's a 404, try again in a bit.
-      .catch((err) => {
+      .catch((err: any) => {
         if (err.isUnfunded) {
           this._watcherTimeouts.watchAccountDetails = setTimeout(() => {
             this.watchAccountDetails(params);
@@ -319,7 +325,7 @@ export class DataProvider {
       })
 
       // otherwise, if it's a 404, try again in a bit.
-      .catch((err) => {
+      .catch((err: any) => {
         if (err.isUnfunded) {
           this._watcherTimeouts.watchPayments = setTimeout(() => {
             this.watchPayments(params);
@@ -361,7 +367,7 @@ export class DataProvider {
       });
 
       destinationProvider.fetchAccountDetails();
-    } catch (e) {
+    } catch (e: any) {
       if (e.isUnfunded) {
         throw new Error("The destination account is not funded yet.");
       }
@@ -376,7 +382,7 @@ export class DataProvider {
     // fetch the current account
     try {
       account = await this.fetchAccountDetails();
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Couldn't fetch account details, error: ${e.toString()}`);
     }
 
@@ -417,8 +423,11 @@ export class DataProvider {
         next = res.next;
         offers = [...offers, ...additionalOffers];
       }
-    } catch (e) {
-      throw new Error(`Couldn't fetch open offers, error: ${e.stack}`);
+    } catch (e: any) {
+      if (e instanceof Error) {
+        throw new Error(`Couldn't fetch open offers, error: ${e.stack}`);
+      }
+      throw new Error(`Couldn't fetch open offers, error: ${e.toString()}`);
     }
 
     const accountObject = new StellarAccount(
@@ -552,10 +561,7 @@ export class DataProvider {
     const tradeRequests: Array<
       Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
     > = offers.records.map(({ id }: { id: number | string }) =>
-      this.server
-        .trades()
-        .forOffer(`${id}`)
-        .call(),
+      this.server.trades().forOffer(`${id}`).call(),
     );
 
     const tradeResponses = await Promise.all(tradeRequests);

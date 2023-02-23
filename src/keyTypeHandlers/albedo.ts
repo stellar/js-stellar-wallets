@@ -33,7 +33,7 @@ export const albedoHandler: KeyTypeHandler = {
         response.signed_envelope_xdr,
         Networks.PUBLIC,
       ) as Transaction;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `We couldn’t sign the transaction with Albedo. ${error.toString()}.`,
       );
