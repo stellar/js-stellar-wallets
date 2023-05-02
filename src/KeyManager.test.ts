@@ -1,7 +1,7 @@
 import { mockRandomForEach } from "jest-mock-random";
 import randomBytes from "randombytes";
 import sinon from "sinon";
-import StellarBase, { Operation } from "stellar-base";
+import StellarBase, { Operation, Transaction } from "stellar-base";
 
 import { KeyType } from "./constants/keys";
 import { KeyManager } from "./KeyManager";
@@ -387,6 +387,214 @@ describe("KeyManager", function() {
         authServerHomeDomains: ["stellar.org"],
       });
 
+      // @ts-ignore accessing mock property
+      const xdr: string = JSON.parse(fetch.mock.calls[1][1].body).transaction;
+      const submittedTx = new Transaction(xdr, keyNetwork);
+
+      expect(submittedTx.signatures.length).toEqual(2);
+      expect(res).toBe(token);
+    });
+
+    test("Sets client domain when fetching challenges", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const password = "very secure password";
+
+      const keyNetwork = StellarBase.Networks.TESTNET;
+
+      const token = "👍";
+      const accountKey = StellarBase.Keypair.random();
+      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(keyNetwork);
+
+      // A Base64 digit represents 6 bits, to generate a random 64 bytes
+      // base64 string, we need 48 random bytes = (64 * 6)/8
+      //
+      // Each Base64 digit is in ASCII and each ASCII characters when
+      // turned into binary represents 8 bits = 1 bytes.
+      const value = randomBytes(48).toString("base64");
+
+      const tx = new StellarBase.TransactionBuilder(account, {
+        fee: StellarBase.BASE_FEE,
+        networkPassphrase: keyNetwork,
+      })
+        .addOperation(
+          Operation.manageData({
+            name: `stellar.org auth`,
+            value,
+            source: keypair.publicKey(),
+          }),
+        )
+        .addOperation(
+          Operation.manageData({
+            name: "web_auth_domain",
+            value: new URL(authServer).hostname,
+            source: account.accountId(),
+          }),
+        )
+        .setTimeout(300)
+        .build();
+
+      tx.sign(accountKey);
+
+      fetch
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            transaction: tx.toXDR(),
+            network_passphrase: keyNetwork,
+          }),
+        )
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            token,
+            status: 1,
+            message: "Good job friend",
+          }),
+        );
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network: keyNetwork,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      await testKeyManager.fetchAuthToken({
+        id: keyMetadata.id,
+        password,
+        authServer,
+        authServerKey: account.accountId(),
+        authServerHomeDomains: ["stellar.org"],
+        clientDomain: "example.com",
+      });
+
+      expect(fetch).toHaveBeenNthCalledWith(
+        1,
+        "https://www.stellar.org/auth?account=" +
+          "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H" +
+          "&client_domain=example.com",
+      );
+    });
+
+    test("Sets additional signature", async () => {
+      const authServer = "https://www.stellar.org/auth";
+      const password = "very secure password";
+
+      const keyNetwork = StellarBase.Networks.TESTNET;
+
+      const token = "👍";
+      const accountKey = StellarBase.Keypair.random();
+      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+
+      // set up the manager
+      const testStore = new MemoryKeyStore();
+      const testKeyManager = new KeyManager({
+        keyStore: testStore,
+      });
+
+      testKeyManager.registerEncrypter(IdentityEncrypter);
+
+      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const otherKeypair = StellarBase.Keypair.master(keyNetwork);
+
+      // A Base64 digit represents 6 bits, to generate a random 64 bytes
+      // base64 string, we need 48 random bytes = (64 * 6)/8
+      //
+      // Each Base64 digit is in ASCII and each ASCII characters when
+      // turned into binary represents 8 bits = 1 bytes.
+      const value = randomBytes(48).toString("base64");
+
+      const tx = new StellarBase.TransactionBuilder(account, {
+        fee: StellarBase.BASE_FEE,
+        networkPassphrase: keyNetwork,
+      })
+        .addOperation(
+          Operation.manageData({
+            name: `stellar.org auth`,
+            value,
+            source: keypair.publicKey(),
+          }),
+        )
+        .addOperation(
+          Operation.manageData({
+            name: "web_auth_domain",
+            value: new URL(authServer).hostname,
+            source: account.accountId(),
+          }),
+        )
+        .setTimeout(300)
+        .build();
+
+      tx.sign(accountKey);
+
+      fetch
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            transaction: tx.toXDR(),
+            network_passphrase: keyNetwork,
+          }),
+        )
+        // @ts-ignore
+        .mockResponseOnce(
+          JSON.stringify({
+            token,
+            status: 1,
+            message: "Good job friend",
+          }),
+        );
+
+      // save this key
+      const keyMetadata = await testKeyManager.storeKey({
+        key: {
+          type: KeyType.plaintextKey,
+          publicKey: keypair.publicKey(),
+          privateKey: keypair.secret(),
+          network: keyNetwork,
+        },
+        password,
+        encrypterName: "IdentityEncrypter",
+      });
+
+      const res = await testKeyManager.fetchAuthToken({
+        id: keyMetadata.id,
+        password,
+        authServer,
+        authServerKey: account.accountId(),
+        authServerHomeDomains: ["stellar.org"],
+        onChallengeTransactionSignature: (txx) => {
+          txx.sign(otherKeypair);
+
+          return Promise.resolve(txx);
+        },
+      });
+
+      // @ts-ignore accessing mock property
+      const xdr: string = JSON.parse(fetch.mock.calls[1][1].body).transaction;
+      const submittedTx = new Transaction(xdr, keyNetwork);
+
+      expect(submittedTx.signatures.length).toEqual(3);
+
+      const verified = submittedTx.signatures.some((sig) =>
+        otherKeypair.verify(tx.hash(), sig.signature()),
+      );
+
+      expect(verified).toBeTruthy();
       expect(res).toBe(token);
     });
 

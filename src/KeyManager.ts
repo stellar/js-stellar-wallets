@@ -281,12 +281,18 @@ export class KeyManager {
    *                           computed as `sha1(private key + public key)`.
    * @param {string} params.password The password that will decrypt that secret
    * @param {string} params.authServer The URL of the authentication server
-   * @param {array} params.authServerHomeDomains The home domain(s) of the authentication server
+   * @param {array} params.authServerHomeDomains The home domain(s) of the
+   *                                             authentication server
    * @param {string} params.authServerKey Check the challenge transaction
-   *                                for this key as source and signature.
+   *                                      for this key as source and signature.
+   * @param {string} params.clientDomain a domain hosting a SEP-1 stellar.toml
+   * containing a SIGNING_KEY used for verifying the client domain.
+   * @param {function} params.onChallengeTransactionSignature When
+   * `params.clientDomain` is set, you need to provide a function that will add
+   * the signature identified by the SIGNING_KEY present on your client domain's
+   * toml file.
    * @param {string} [params.account] The authenticating public key. If not
-   *                                provided, then the signers's public key will
-   *                                be used instead.
+   * provided, then the signers's public key will be used instead.
    * @returns {Promise<string>} authToken JWT
    */
   // tslint:enable max-line-length
@@ -297,7 +303,11 @@ export class KeyManager {
       authServer,
       authServerKey,
       authServerHomeDomains,
+      clientDomain,
+      onChallengeTransactionSignature = (tx: Transaction) =>
+        Promise.resolve(tx),
     } = params;
+
     let { account } = params;
 
     // throw errors for missing params
@@ -337,9 +347,13 @@ export class KeyManager {
     // account.
     account = account || key.publicKey;
 
-    const challengeRes = await fetch(
-      `${authServer}?account=${encodeURIComponent(account)}`,
-    );
+    let challengeUrl = `${authServer}?account=${encodeURIComponent(account)}`;
+
+    if (clientDomain) {
+      challengeUrl += `&client_domain=${encodeURIComponent(clientDomain)}`;
+    }
+
+    const challengeRes = await fetch(challengeUrl);
 
     if (challengeRes.status !== 200) {
       const challengeText = await challengeRes.text();
@@ -371,16 +385,13 @@ export class KeyManager {
       keyNetwork !== json.network_passphrase
     ) {
       throw new Error(
-        `
-            Network mismatch: the transfer server expects "${
-              json.network_passphrase
-            }",
-            but you're using "${keyNetwork}"
-            `,
+        `Network mismatch: the transfer server expects "${
+          json.network_passphrase
+        }", but you're using "${keyNetwork}"`,
       );
     }
 
-    const firstTransaction = Utils.readChallengeTx(
+    let transaction = Utils.readChallengeTx(
       json.transaction,
       authServerKey,
       keyNetwork,
@@ -388,10 +399,14 @@ export class KeyManager {
       new URL(authServer).hostname,
     ).tx;
 
+    // Add extra signatures.
+    // By default, the input transaction is returned as it is.
+    transaction = await onChallengeTransactionSignature(transaction);
+
     const keyHandler = this.keyHandlerMap[key.type];
 
     const signedTransaction = await keyHandler.signTransaction({
-      transaction: firstTransaction,
+      transaction,
       key,
     });
 
