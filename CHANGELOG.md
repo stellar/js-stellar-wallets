@@ -1,5 +1,7 @@
 ## In master
 
+## [v0.9.1](https://github.com/stellar/js-stellar-wallets/compare/v0.9.0...v0.9.1)
+
 - Add support for client domain when fetching an auth token.
 - Add support for adding additional signatures when fetching an auth token.
 
