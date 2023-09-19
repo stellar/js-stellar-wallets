@@ -129,7 +129,7 @@ export abstract class TransferProvider {
         );
       } catch (e) {
         throw new Error(
-          `Error fetching info from ${this.transferServer}: error 
+          `Error fetching info from ${this.transferServer}: error
           code ${response.status}, response text: "${badResponse}"`,
         );
       }
@@ -204,7 +204,8 @@ export abstract class TransferProvider {
 
     if (!params.show_all_transactions) {
       kind =
-        params.kind || (this.operation === "deposit" ? "deposit" : "withdrawal");
+        params.kind ||
+        (this.operation === "deposit" ? "deposit" : "withdrawal");
     }
 
     const response = await fetch(
@@ -228,7 +229,7 @@ export abstract class TransferProvider {
         );
       } catch (e) {
         throw new Error(
-          `Error fetching transactions from ${this.transferServer}: error 
+          `Error fetching transactions from ${this.transferServer}: error
           code ${response.status}, response text: "${badResponse}"`,
         );
       }
@@ -311,7 +312,7 @@ export abstract class TransferProvider {
         );
       } catch (e) {
         throw new Error(
-          `Error fetching transaction ${qs} from ${this.transferServer}: error 
+          `Error fetching transaction ${qs} from ${this.transferServer}: error
           code ${response.status}, response text: "${badResponse}"`,
         );
       }
@@ -678,7 +679,7 @@ export abstract class TransferProvider {
             );
           } catch (e) {
             throw new Error(
-              `Error fetching fees from ${this.transferServer}: error 
+              `Error fetching fees from ${this.transferServer}: error
               code ${response.status}, response text: "${badResponse}"`,
             );
           }
@@ -730,7 +731,7 @@ export abstract class TransferProvider {
     if (!this.authToken) {
       throw new Error(
         `
-        Asset ${asset_code} requires authentication. Run KeyManager's 
+        Asset ${asset_code} requires authentication. Run KeyManager's
         fetchAuthToken function, then run setAuthToken to set it.
         `,
       );

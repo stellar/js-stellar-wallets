@@ -26,7 +26,9 @@ describe("getApprovalServerUrl", () => {
       });
       expect("This test failed").toBe(null);
     } catch (e) {
-      expect(e.toString()).toMatch(`Error: Issuer's home domain is missing`);
+      expect((e as any).toString()).toMatch(
+        `Error: Issuer's home domain is missing`,
+      );
     }
   });
 
@@ -51,7 +53,7 @@ describe("getApprovalServerUrl", () => {
       });
       expect("This test failed").toBe(null);
     } catch (e) {
-      expect(e.toString()).toMatch(
+      expect((e as any).toString()).toMatch(
         `Error: stellar.toml at ${homeDomain} does not contain CURRENCIES` +
           ` field`,
       );
@@ -83,7 +85,7 @@ issuer = "GDBMMVJKWGT2N6HZ2BGMFHKODASVFYIHL2VS3RUTB3B3QES2R6YFXGQW"
       });
       expect("This test failed").toBe(null);
     } catch (e) {
-      expect(e.toString()).toMatch(
+      expect((e as any).toString()).toMatch(
         `Error: stellar.toml at ${homeDomain} does not contain` +
           ` approval_server information for this asset`,
       );
@@ -115,7 +117,7 @@ issuer = "GDBMMVJKWGT2N6HZ2BGMFHKODASVFYIHL2VS3RUTB3B3QES2R6YFXGQW"
       });
       expect("This test failed").toBe(null);
     } catch (e) {
-      expect(e.toString()).toMatch(
+      expect((e as any).toString()).toMatch(
         `Error: CURRENCY EUR:` +
           `GDBMMVJKWGT2N6HZ2BGMFHKODASVFYIHL2VS3RUTB3B3QES2R6YFXGQW` +
           ` not found on stellar.toml at ${homeDomain}`,

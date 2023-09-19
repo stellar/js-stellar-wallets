@@ -14,7 +14,7 @@ describe("Account validation", () => {
       expect(provider).not.toBeInstanceOf(DataProvider);
     } catch (e) {
       expect(e).toBeTruthy();
-      expect(e.toString()).toBe("Error: No account key provided.");
+      expect((e as any).toString()).toBe("Error: No account key provided.");
     }
   });
 

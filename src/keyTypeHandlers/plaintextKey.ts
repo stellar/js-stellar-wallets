@@ -1,4 +1,4 @@
-import StellarSdk from "stellar-sdk";
+import * as StellarSdk from "stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 

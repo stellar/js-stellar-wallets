@@ -101,7 +101,7 @@ describe("KeyManager", function() {
         "The function should have thrown but didn't, the test failed!",
       ).toBe(null);
     } catch (e) {
-      expect(e.toString()).toContain("Key not found");
+      expect((e as any).toString()).toContain("Key not found");
     }
   });
 
@@ -174,7 +174,7 @@ describe("KeyManager", function() {
         "The function should have thrown but didn't, the test failed!",
       ).toBe(null);
     } catch (e) {
-      expect(e.toString()).toContain("Key not found");
+      expect((e as any).toString()).toContain("Key not found");
     }
   });
 
@@ -296,7 +296,7 @@ describe("KeyManager", function() {
 
         expect("This test failed").toBe(null);
       } catch (e) {
-        expect(e.toString()).toBe(`Error: ${error}`);
+        expect((e as any).toString()).toBe(`Error: ${error}`);
       }
     });
 
@@ -688,7 +688,7 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(
+        expect((e as any).toString()).toMatch(
           `InvalidSep10ChallengeError: The transaction` +
             ` sequence number should be zero`,
         );
@@ -785,7 +785,7 @@ describe("KeyManager", function() {
 
         expect(res).toBe(null);
       } catch (e) {
-        expect(e.toString()).toContain("Network mismatch");
+        expect((e as any).toString()).toContain("Network mismatch");
       }
     });
 
@@ -880,7 +880,7 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(
+        expect((e as any).toString()).toMatch(
           `InvalidSep10ChallengeError: Transaction not signed by server`,
         );
       }
@@ -1069,7 +1069,7 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(
+        expect((e as any).toString()).toMatch(
           `InvalidSep10ChallengeError: 'web_auth_domain' operation ` +
             `value does not match www.stellar.org`,
         );
@@ -1168,7 +1168,7 @@ describe("KeyManager", function() {
 
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
-        expect(e.toString()).toMatch(
+        expect((e as any).toString()).toMatch(
           `InvalidSep10ChallengeError: The transaction source account` +
             ` is not equal to the server's account`,
         );
@@ -1228,7 +1228,7 @@ describe("KeyManager Scrypt", () => {
         "The function should have thrown but didn't, the test failed!",
       ).toBe(null);
     } catch (e) {
-      expect(e.toString()).toContain("Couldn’t decrypt key");
+      expect((e as any).toString()).toContain("Couldn’t decrypt key");
     }
 
     await testKeyManager.removeKey(metadata.id);
@@ -1239,7 +1239,7 @@ describe("KeyManager Scrypt", () => {
         "The function should have thrown but didn't, the test failed!",
       ).toBe(null);
     } catch (e) {
-      expect(e.toString()).toContain("Key not found");
+      expect((e as any).toString()).toContain("Key not found");
     }
   });
 });

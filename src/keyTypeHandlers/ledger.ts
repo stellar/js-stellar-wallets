@@ -1,6 +1,6 @@
 import LedgerStr from "@ledgerhq/hw-app-str";
 import LedgerTransport from "@ledgerhq/hw-transport-u2f";
-import StellarSdk from "stellar-sdk";
+import * as StellarSdk from "stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
@@ -19,8 +19,8 @@ export const ledgerHandler: KeyTypeHandler = {
       );
     }
 
-    /* 
-      There's a naive way to do this (to keep all functions stateless and 
+    /*
+      There's a naive way to do this (to keep all functions stateless and
       make the connection anew each time), and there's some way of weaving state
       into this.
 

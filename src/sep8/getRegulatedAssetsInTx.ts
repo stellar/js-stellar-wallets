@@ -32,7 +32,9 @@ export async function getRegulatedAssetsInTx(
       } catch (e) {
         throw new Error(
           `Couldn't get asset issuer information ${ast.getIssuer()}` +
-            ` in operation ${op.type} from ${horizonUrl}: ${e.toString()}`,
+            ` in operation ${
+              op.type
+            } from ${horizonUrl}: ${(e as any).toString()}`,
         );
       }
     }

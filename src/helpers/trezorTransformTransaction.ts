@@ -1,6 +1,15 @@
 // github.com/trezor/connect/blob/develop/src/js/plugins/stellar/plugin.js
 import BigNumber from "bignumber.js";
-import StellarSdk, { Asset, MemoType, MemoValue } from "stellar-sdk";
+import {
+  Asset,
+  Keypair,
+  MemoHash,
+  MemoID,
+  MemoReturn,
+  MemoText,
+  MemoType,
+  MemoValue,
+} from "stellar-sdk";
 
 const transformSigner = (signer: {
   ed25519PublicKey?: string;
@@ -13,7 +22,7 @@ const transformSigner = (signer: {
   const weight = signer.weight;
 
   if (typeof signer.ed25519PublicKey === "string") {
-    const keyPair = StellarSdk.Keypair.fromPublicKey(signer.ed25519PublicKey);
+    const keyPair = Keypair.fromPublicKey(signer.ed25519PublicKey);
     key = keyPair.rawPublicKey().toString("hex");
   }
 
@@ -67,14 +76,14 @@ const transformType = (type: any) => {
 
 const transformMemo = (memo: { type: MemoType; value: MemoValue }) => {
   switch (memo.type) {
-    case StellarSdk.MemoText:
+    case MemoText:
       return { type: 1, text: memo.value };
-    case StellarSdk.MemoID:
+    case MemoID:
       return { type: 2, id: memo.value };
-    case StellarSdk.MemoHash:
+    case MemoHash:
       // stringify is not necessary, Buffer is also accepted
       return { type: 3, hash: memo.value ? memo.value.toString("hex") : "" };
-    case StellarSdk.MemoReturn:
+    case MemoReturn:
       // stringify is not necessary, Buffer is also accepted
       return { type: 4, hash: memo.value ? memo.value.toString("hex") : "" };
     default:
@@ -163,10 +172,7 @@ export const transformTransaction = (path: string, transaction: any) => {
 
     // add missing field
     if (operation.type === "allowTrust") {
-      const allowTrustAsset = new StellarSdk.Asset(
-        operation.assetCode,
-        operation.trustor,
-      );
+      const allowTrustAsset = new Asset(operation.assetCode, operation.trustor);
       operation.assetType = transformAsset(allowTrustAsset).type;
     }
 
