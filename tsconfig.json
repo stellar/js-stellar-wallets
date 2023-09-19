@@ -10,11 +10,13 @@
     "outDir": "dist",
     "target": "es5",
     "skipLibCheck": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "exclude": [
     "node_modules",
+    "node_modules/axios",
     "dist",
     "src/browser.ts",
     "playground/src/@stellar",

@@ -32,7 +32,7 @@ async function getAccountMergePaymentAmount(
 ): Promise<string | undefined> {
   try {
     const effects = await payment.effects();
-    const accountMergePayment = effects.records.find(
+    const accountMergePayment: any = effects.records.find(
       (record) =>
         record.type === "account_credited" && record.account === publicKey,
     );
@@ -109,7 +109,7 @@ export async function makeDisplayablePayments(
           mergedAccount = getMergedAccount(payment);
         }
 
-        let transaction: ServerApi.TransactionRecord | undefined;
+        let transaction: any | undefined;
         try {
           transaction = await payment.transaction();
         } catch (e) {

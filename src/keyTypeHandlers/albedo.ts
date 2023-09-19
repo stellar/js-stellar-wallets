@@ -34,8 +34,9 @@ export const albedoHandler: KeyTypeHandler = {
         Networks.PUBLIC,
       ) as Transaction;
     } catch (error) {
+      const errorMsg = (error as any).toString();
       throw new Error(
-        `We couldn’t sign the transaction with Albedo. ${error.toString()}.`,
+        `We couldn’t sign the transaction with Albedo. ${errorMsg}.`,
       );
     }
   },

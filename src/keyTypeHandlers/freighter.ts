@@ -32,8 +32,9 @@ export const freighterHandler: KeyTypeHandler = {
         Networks.PUBLIC,
       ) as Transaction;
     } catch (error) {
+      const errorMsg = (error as any).toString();
       throw new Error(
-        `We couldn’t sign the transaction with Freighter. ${error.toString()}.`,
+        `We couldn’t sign the transaction with Freighter. ${errorMsg}.`,
       );
     }
   },

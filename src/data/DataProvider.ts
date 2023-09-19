@@ -139,7 +139,7 @@ export class DataProvider {
       await this.fetchAccountDetails();
       return true;
     } catch (e) {
-      return !e.isUnfunded;
+      return !(e as any).isUnfunded;
     }
   }
 
@@ -225,7 +225,8 @@ export class DataProvider {
         balances,
       };
     } catch (err) {
-      err.isUnfunded = err.response && err.response.status === 404;
+      (err as any).isUnfunded =
+        (err as any).response && (err as any).response.status === 404;
       throw err as FetchAccountError;
     }
   }
@@ -362,12 +363,13 @@ export class DataProvider {
 
       destinationProvider.fetchAccountDetails();
     } catch (e) {
-      if (e.isUnfunded) {
+      const error: any = e;
+      if (error.isUnfunded) {
         throw new Error("The destination account is not funded yet.");
       }
 
       throw new Error(
-        `Couldn't fetch the destination account, error: ${e.toString()}`,
+        `Couldn't fetch the destination account, error: ${error.toString()}`,
       );
     }
 
@@ -377,7 +379,9 @@ export class DataProvider {
     try {
       account = await this.fetchAccountDetails();
     } catch (e) {
-      throw new Error(`Couldn't fetch account details, error: ${e.toString()}`);
+      throw new Error(
+        `Couldn't fetch account details, error: ${(e as any).toString()}`,
+      );
     }
 
     // make sure all non-native balances are zero
@@ -418,7 +422,7 @@ export class DataProvider {
         offers = [...offers, ...additionalOffers];
       }
     } catch (e) {
-      throw new Error(`Couldn't fetch open offers, error: ${e.stack}`);
+      throw new Error(`Couldn't fetch open offers, error: ${(e as any).stack}`);
     }
 
     const accountObject = new StellarAccount(

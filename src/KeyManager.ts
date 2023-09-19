@@ -1,4 +1,4 @@
-import StellarSdk, { Transaction, Utils } from "stellar-sdk";
+import { Networks, Transaction, Utils } from "stellar-sdk";
 
 import { albedoHandler } from "./keyTypeHandlers/albedo";
 import { freighterHandler } from "./keyTypeHandlers/freighter";
@@ -103,7 +103,7 @@ export class KeyManager {
     this.shouldCache = params.shouldCache || false;
 
     this.defaultNetworkPassphrase =
-      params.defaultNetworkPassphrase || StellarSdk.Networks.PUBLIC;
+      params.defaultNetworkPassphrase || Networks.PUBLIC;
   }
 
   /**
