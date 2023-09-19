@@ -1,5 +1,9 @@
 ## In master
 
+## [v0.10.0](https://github.com/stellar/js-stellar-wallets/compare/v0.9.1...v0.10.0)
+
+- Add support for Protocol 20 (Experimental - use at your own risk)
+
 ## [v0.9.1](https://github.com/stellar/js-stellar-wallets/compare/v0.9.0...v0.9.1)
 
 - Add support for client domain when fetching an auth token.
