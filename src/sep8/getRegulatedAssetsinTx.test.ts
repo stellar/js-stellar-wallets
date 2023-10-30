@@ -5,7 +5,7 @@ import {
   BASE_FEE,
   Claimant,
   Config,
-  HorizonAxiosClient,
+  Horizon,
   Networks,
   Operation,
   TransactionBuilder,
@@ -543,7 +543,7 @@ describe("getRegulatedAssetsInTx with ops moving regulated assets", () => {
   let axiosMock: sinon.SinonMock;
 
   beforeEach(() => {
-    axiosMock = sinon.mock(HorizonAxiosClient);
+    axiosMock = sinon.mock(Horizon.AxiosClient);
     Config.setDefault();
   });
 
@@ -1035,7 +1035,7 @@ describe("getRegulatedAssetsInTx with ops moving nonregulated assets", () => {
   let axiosMock: sinon.SinonMock;
 
   beforeEach(() => {
-    axiosMock = sinon.mock(HorizonAxiosClient);
+    axiosMock = sinon.mock(Horizon.AxiosClient);
     Config.setDefault();
   });
 

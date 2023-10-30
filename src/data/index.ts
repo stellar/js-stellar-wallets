@@ -21,7 +21,9 @@ export function getTokenIdentifier(token: Token): string {
  * through `getTokenIdentifier`
  * @returns Returns `${tokenCode}:${issuerKey}`.
  */
-export function getBalanceIdentifier(balance: Horizon.BalanceLine): string {
+export function getBalanceIdentifier(
+  balance: Horizon.HorizonApi.BalanceLine,
+): string {
   if ("asset_issuer" in balance && !balance.asset_issuer) {
     return "native";
   }

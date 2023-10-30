@@ -1,6 +1,6 @@
 {
   "name": "@stellar/wallet-sdk",
-  "version": "0.11.0-beta.0",
+  "version": "0.11.0-beta.1",
   "description": "Libraries to help you write Stellar-enabled wallets in Javascript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,8 @@
   "license": "Apache-2.0",
   "prettier": "@stellar/prettier-config",
   "peerDependencies": {
-    "bignumber.js": "*"
+    "bignumber.js": "*",
+    "stellar-sdk": "^11.0.0-beta.5"
   },
   "scripts": {
     "prepare": "yarn build ; yarn build:commonjs",
@@ -86,7 +87,6 @@
     "lodash": "^4.17.14",
     "query-string": "^6.4.2",
     "scrypt-async": "^2.0.1",
-    "stellar-sdk": "^11.0.0-beta.3",
     "trezor-connect": "^8.1.16",
     "tslib": "^2.6.2",
     "tweetnacl": "^1.0.1",

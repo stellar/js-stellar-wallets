@@ -1,22 +1,24 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { ServerApi } from "stellar-sdk";
+import { Horizon } from "stellar-sdk";
 
 import { Account, Payment, Token } from "../types";
 
 function isCreateAccount(
   obj: any,
-): obj is ServerApi.CreateAccountOperationRecord {
+): obj is Horizon.ServerApi.CreateAccountOperationRecord {
   return obj.type === "create_account";
 }
 
 function isAccountMerge(
   obj: any,
-): obj is ServerApi.AccountMergeOperationRecord {
+): obj is Horizon.ServerApi.AccountMergeOperationRecord {
   return obj.type === "account_merge";
 }
 
-function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
+function isPathPayment(
+  obj: any,
+): obj is Horizon.ServerApi.PathPaymentOperationRecord {
   return (
     // old, soon-to-be-deprecated name
     obj.type === "path_payment" ||
@@ -27,7 +29,7 @@ function isPathPayment(obj: any): obj is ServerApi.PathPaymentOperationRecord {
 }
 
 async function getAccountMergePaymentAmount(
-  payment: ServerApi.AccountMergeOperationRecord,
+  payment: Horizon.ServerApi.AccountMergeOperationRecord,
   publicKey: string,
 ): Promise<string | undefined> {
   try {
@@ -47,7 +49,9 @@ async function getAccountMergePaymentAmount(
   }
 }
 
-function getMergedAccount(payment: ServerApi.AccountMergeOperationRecord) {
+function getMergedAccount(
+  payment: Horizon.ServerApi.AccountMergeOperationRecord,
+) {
   return {
     publicKey: payment.source_account,
   };
@@ -56,18 +60,18 @@ function getMergedAccount(payment: ServerApi.AccountMergeOperationRecord) {
 export async function makeDisplayablePayments(
   subjectAccount: Account,
   payments: Array<
-    | ServerApi.CreateAccountOperationRecord
-    | ServerApi.PaymentOperationRecord
-    | ServerApi.PathPaymentOperationRecord
+    | Horizon.ServerApi.CreateAccountOperationRecord
+    | Horizon.ServerApi.PaymentOperationRecord
+    | Horizon.ServerApi.PathPaymentOperationRecord
   >,
 ): Promise<Payment[]> {
   return Promise.all(
     payments.map(
       async (
         payment:
-          | ServerApi.CreateAccountOperationRecord
-          | ServerApi.PaymentOperationRecord
-          | ServerApi.PathPaymentOperationRecord,
+          | Horizon.ServerApi.CreateAccountOperationRecord
+          | Horizon.ServerApi.PaymentOperationRecord
+          | Horizon.ServerApi.PathPaymentOperationRecord,
       ): Promise<Payment> => {
         const isRecipient = payment.source_account !== subjectAccount.publicKey;
 

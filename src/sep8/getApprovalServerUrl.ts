@@ -1,15 +1,18 @@
-import { StellarTomlResolver } from "stellar-sdk";
+import { StellarToml } from "stellar-sdk";
 import { RegulatedAssetInfo } from "../types/sep8";
 
 export async function getApprovalServerUrl(
   param: RegulatedAssetInfo,
-  opts: StellarTomlResolver.StellarTomlResolveOptions = {},
+  opts: StellarToml.Api.StellarTomlResolveOptions = {},
 ): Promise<string> {
   if (!param.home_domain) {
     throw new Error(`Issuer's home domain is missing`);
   }
 
-  const tomlObject = await StellarTomlResolver.resolve(param.home_domain, opts);
+  const tomlObject = await StellarToml.Resolver.resolve(
+    param.home_domain,
+    opts,
+  );
   if (!tomlObject.CURRENCIES) {
     throw new Error(
       `stellar.toml at ${param.home_domain} does not contain CURRENCIES field`,

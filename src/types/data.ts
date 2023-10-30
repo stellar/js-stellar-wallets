@@ -5,7 +5,6 @@ import {
   Horizon,
   NetworkError,
   NotFoundError,
-  ServerApi,
 } from "stellar-sdk";
 import { EffectType } from "../constants/data";
 
@@ -127,7 +126,7 @@ export interface Payment {
   sourceAmount?: BigNumber;
 
   transactionId: string;
-  type: Horizon.OperationResponseType;
+  type: Horizon.HorizonApi.OperationResponseType;
 
   memo?: Memo | string;
   memoType?: MemoType;
@@ -168,9 +167,9 @@ export interface AccountDetails {
   sponsoredCount: number;
   sponsor?: string;
   inflationDestination?: string;
-  thresholds: Horizon.AccountThresholds;
-  signers: ServerApi.AccountRecordSigners[];
-  flags: Horizon.Flags;
+  thresholds: Horizon.HorizonApi.AccountThresholds;
+  signers: Horizon.ServerApi.AccountRecordSigners[];
+  flags: Horizon.HorizonApi.Flags;
   balances: BalanceMap;
   sequenceNumber: string;
 }

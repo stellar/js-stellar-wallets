@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { AssetType } from "stellar-base";
-import { ServerApi } from "stellar-sdk";
+import { Horizon } from "stellar-sdk";
 
 import { Account, Token, Trade } from "../types";
 
@@ -46,11 +46,11 @@ import { Account, Token, Trade } from "../types";
 
 export function makeDisplayableTrades(
   subjectAccount: Account,
-  trades: ServerApi.TradeRecord[],
+  trades: Horizon.ServerApi.TradeRecord[],
 ): Trade[] {
   // make a map of trades to their original offerids
   return trades.map(
-    (trade: ServerApi.TradeRecord): Trade => {
+    (trade: Horizon.ServerApi.TradeRecord): Trade => {
       const base = {
         publicKey: trade.base_account || "",
       };

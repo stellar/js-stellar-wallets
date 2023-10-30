@@ -22,6 +22,10 @@ module.exports = {
     "dist",
   ],
 
+  moduleNameMapper: {
+    axios: "axios/dist/node/axios.cjs",
+  },
+
   modulePathIgnorePatterns: ["documentation", "playground", "build", "dist"],
 
   testPathIgnorePatterns: [

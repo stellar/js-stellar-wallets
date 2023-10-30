@@ -2,10 +2,9 @@ import debounce from "lodash/debounce";
 import {
   Account as StellarAccount,
   Asset,
+  Horizon,
   Keypair,
   Operation,
-  Server,
-  ServerApi,
   StrKey,
   TransactionBuilder,
 } from "stellar-sdk";
@@ -64,7 +63,7 @@ interface WatcherTimeoutsObject {
 export class DataProvider {
   private accountKey: string;
   private serverUrl: string;
-  private server: Server;
+  private server: Horizon.Server;
   private networkPassphrase: string;
   private _watcherTimeouts: WatcherTimeoutsObject;
 
@@ -103,7 +102,7 @@ export class DataProvider {
     this.effectStreamEnder = undefined;
     this.networkPassphrase = params.networkPassphrase;
     this.serverUrl = params.serverUrl;
-    this.server = new Server(this.serverUrl, metadata);
+    this.server = new Horizon.Server(this.serverUrl, metadata);
     this.accountKey = accountKey;
     this._watcherTimeouts = {};
   }
@@ -127,7 +126,7 @@ export class DataProvider {
    * Return the server object, in case the consumer wants to call an
    * unsupported function.
    */
-  public getServer(): Server {
+  public getServer(): Horizon.Server {
     return this.server;
   }
 
@@ -404,10 +403,10 @@ export class DataProvider {
 
     // get ALL offers for the account
     // (we don't need trade details, so skip those)
-    let offers: ServerApi.OfferRecord[] = [];
+    let offers: Horizon.ServerApi.OfferRecord[] = [];
     try {
-      let additionalOffers: ServerApi.OfferRecord[] | undefined;
-      let next: () => Promise<Collection<ServerApi.OfferRecord>> = () =>
+      let additionalOffers: Horizon.ServerApi.OfferRecord[] | undefined;
+      let next: () => Promise<Collection<Horizon.ServerApi.OfferRecord>> = () =>
         this.server
           .offers()
           .forAccount(this.accountKey)
@@ -550,11 +549,11 @@ export class DataProvider {
   }
 
   private async _processOpenOffers(
-    offers: ServerApi.CollectionPage<ServerApi.OfferRecord>,
+    offers: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OfferRecord>,
   ): Promise<Collection<Offer>> {
     // find all offerids and check for trades of each
     const tradeRequests: Array<
-      Promise<ServerApi.CollectionPage<ServerApi.TradeRecord>>
+      Promise<Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TradeRecord>>
     > = offers.records.map(({ id }: { id: number | string }) =>
       this.server
         .trades()
@@ -565,15 +564,20 @@ export class DataProvider {
     const tradeResponses = await Promise.all(tradeRequests);
 
     return {
-      next: () => offers.next().then((res) => this._processOpenOffers(res)),
-      prev: () => offers.prev().then((res) => this._processOpenOffers(res)),
+      next: () =>
+        offers.next().then((res: any) => this._processOpenOffers(res)),
+      prev: () =>
+        offers.prev().then((res: any) => this._processOpenOffers(res)),
       records: makeDisplayableOffers(
         { publicKey: this.accountKey },
         {
           offers: offers.records,
           tradeResponses: tradeResponses.map(
-            (res: ServerApi.CollectionPage<ServerApi.TradeRecord>) =>
-              res.records,
+            (
+              res: Horizon.ServerApi.CollectionPage<
+                Horizon.ServerApi.TradeRecord
+              >,
+            ) => res.records,
           ),
         },
       ),
@@ -581,7 +585,7 @@ export class DataProvider {
   }
 
   private async _processTrades(
-    trades: ServerApi.CollectionPage<ServerApi.TradeRecord>,
+    trades: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TradeRecord>,
   ): Promise<Collection<Trade>> {
     return {
       next: () => trades.next().then((res) => this._processTrades(res)),
@@ -594,10 +598,10 @@ export class DataProvider {
   }
 
   private async _processPayments(
-    payments: ServerApi.CollectionPage<
-      | ServerApi.PaymentOperationRecord
-      | ServerApi.CreateAccountOperationRecord
-      | ServerApi.PathPaymentOperationRecord
+    payments: Horizon.ServerApi.CollectionPage<
+      | Horizon.ServerApi.PaymentOperationRecord
+      | Horizon.ServerApi.CreateAccountOperationRecord
+      | Horizon.ServerApi.PathPaymentOperationRecord
     >,
   ): Promise<Collection<Payment>> {
     return {
