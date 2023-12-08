@@ -1,5 +1,4 @@
 // github.com/trezor/connect/blob/develop/src/js/plugins/stellar/plugin.js
-import BigNumber from "bignumber.js";
 import {
   Asset,
   Keypair,
@@ -9,7 +8,8 @@ import {
   MemoText,
   MemoType,
   MemoValue,
-} from "stellar-sdk";
+} from "@stellar/stellar-sdk";
+import BigNumber from "bignumber.js";
 
 const transformSigner = (signer: {
   ed25519PublicKey?: string;

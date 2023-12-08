@@ -1,6 +1,6 @@
+import { Config } from "@stellar/stellar-sdk";
 import axios from "axios";
 import sinon from "sinon";
-import { Config } from "stellar-sdk";
 import { getApprovalServerUrl } from "./getApprovalServerUrl";
 
 describe("getApprovalServerUrl", () => {

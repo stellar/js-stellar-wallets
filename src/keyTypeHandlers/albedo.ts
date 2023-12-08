@@ -1,5 +1,9 @@
 import albedo from "@albedo-link/intent";
-import { Networks, Transaction, TransactionBuilder } from "stellar-sdk";
+import {
+  Networks,
+  Transaction,
+  TransactionBuilder,
+} from "@stellar/stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 

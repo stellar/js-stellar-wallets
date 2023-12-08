@@ -1,5 +1,5 @@
+import * as StellarSdk from "@stellar/stellar-sdk";
 import sinon from "sinon";
-import * as StellarSdk from "stellar-sdk";
 import { DepositProvider } from "./DepositProvider";
 
 import { TransactionsResponse } from "../fixtures/TransactionsResponse";

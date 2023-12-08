@@ -1,7 +1,7 @@
+import StellarBase, { Operation, Transaction } from "@stellar/stellar-base";
 import { mockRandomForEach } from "jest-mock-random";
 import randomBytes from "randombytes";
 import sinon from "sinon";
-import StellarBase, { Operation, Transaction } from "stellar-base";
 
 import { KeyType } from "./constants/keys";
 import { KeyManager } from "./KeyManager";

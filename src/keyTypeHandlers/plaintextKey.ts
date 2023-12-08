@@ -1,4 +1,4 @@
-import * as StellarSdk from "stellar-sdk";
+import { Keypair } from "@stellar/stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
@@ -16,7 +16,7 @@ export const plaintextKeyHandler: KeyTypeHandler = {
       );
     }
 
-    const keyPair = StellarSdk.Keypair.fromSecret(key.privateKey);
+    const keyPair = Keypair.fromSecret(key.privateKey);
 
     transaction.sign(keyPair);
 

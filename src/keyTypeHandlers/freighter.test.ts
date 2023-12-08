@@ -1,6 +1,6 @@
 import freighterApi from "@stellar/freighter-api";
+import { TransactionBuilder } from "@stellar/stellar-sdk";
 import sinon from "sinon";
-import { TransactionBuilder } from "stellar-sdk";
 import { freighterHandler } from "./freighter";
 
 describe("freighterHandler", () => {

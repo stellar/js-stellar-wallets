@@ -1,4 +1,4 @@
-import StellarBase from "stellar-base";
+import StellarBase from "@stellar/stellar-base";
 import { ActionResult, ApprovalResponseStatus } from "../constants/sep8";
 import {
   ActionRequired,

@@ -1,4 +1,4 @@
-import { Asset } from "stellar-sdk";
+import { Asset } from "@stellar/stellar-sdk";
 import {
   getBalanceIdentifier,
   getStellarSdkAsset,

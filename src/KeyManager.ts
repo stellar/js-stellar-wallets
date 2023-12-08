@@ -1,4 +1,4 @@
-import { Networks, Transaction, Utils } from "stellar-sdk";
+import { Networks, Transaction, WebAuth } from "@stellar/stellar-sdk";
 
 import { albedoHandler } from "./keyTypeHandlers/albedo";
 import { freighterHandler } from "./keyTypeHandlers/freighter";
@@ -391,7 +391,7 @@ export class KeyManager {
       );
     }
 
-    let transaction = Utils.readChallengeTx(
+    let transaction = WebAuth.readChallengeTx(
       json.transaction,
       authServerKey,
       keyNetwork,

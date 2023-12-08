@@ -1,4 +1,4 @@
-import { Asset, Operation, Server, Transaction } from "stellar-sdk";
+import { Asset, Horizon, Operation, Transaction } from "@stellar/stellar-sdk";
 import { RegulatedAssetInfo } from "../types/sep8";
 
 export async function getRegulatedAssetsInTx(
@@ -6,7 +6,7 @@ export async function getRegulatedAssetsInTx(
   horizonUrl: string,
 ): Promise<RegulatedAssetInfo[]> {
   const res: RegulatedAssetInfo[] = [];
-  const server = new Server(horizonUrl);
+  const server = new Horizon.Server(horizonUrl);
   for (const op of tx.operations) {
     if (!isOpMovingAsset(op)) {
       continue;
@@ -58,7 +58,7 @@ function isOpMovingAsset(op: Operation): boolean {
 
 async function getAssetsFromOp(
   op: Operation,
-  server: Server,
+  server: Horizon.Server,
 ): Promise<Asset[]> {
   switch (op.type) {
     case "payment":
