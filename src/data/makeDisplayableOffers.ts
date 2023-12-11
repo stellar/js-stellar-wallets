@@ -1,16 +1,16 @@
+import { AssetType } from "@stellar/stellar-base";
+import { Horizon } from "@stellar/stellar-sdk";
 import BigNumber from "bignumber.js";
 import flatten from "lodash/flatten";
-import { AssetType } from "stellar-base";
-import { ServerApi } from "stellar-sdk";
 
 import { makeDisplayableTrades } from "./makeDisplayableTrades";
 
 import { Account, Offer, Token, Trade } from "../types";
 
-export type TradeCollection = ServerApi.TradeRecord[];
+export type TradeCollection = Horizon.ServerApi.TradeRecord[];
 
 export interface DisplayableOffersParams {
-  offers: ServerApi.OfferRecord[];
+  offers: Horizon.ServerApi.OfferRecord[];
   tradeResponses: TradeCollection[];
 }
 
@@ -42,7 +42,7 @@ export function makeDisplayableOffers(
   }, {});
 
   return offers.map(
-    (offer: ServerApi.OfferRecord): Offer => {
+    (offer: Horizon.ServerApi.OfferRecord): Offer => {
       const {
         id,
         selling,

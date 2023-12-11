@@ -1,5 +1,11 @@
 ## In master
 
+## [v0.11.0](https://github.com/stellar/js-stellar-wallets/compare/v0.10.0...v0.11.0)
+
+- Add support for Protocol 20 using stable `@stellar/stellar-sdk` `v11.0.1`
+- Use Node v18
+- Might still be unstable, use at your own risk
+
 ## [v0.10.0](https://github.com/stellar/js-stellar-wallets/compare/v0.9.1...v0.10.0)
 
 - Add support for Protocol 20 (Experimental - use at your own risk)

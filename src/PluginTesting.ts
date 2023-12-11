@@ -1,4 +1,4 @@
-import * as StellarSdk from "stellar-sdk";
+import * as StellarSdk from "@stellar/stellar-sdk";
 
 import { KeyType } from "./constants/keys";
 import { generateEncryptedKey } from "./fixtures/keys";

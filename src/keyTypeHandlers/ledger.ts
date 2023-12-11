@@ -1,6 +1,6 @@
 import LedgerStr from "@ledgerhq/hw-app-str";
 import LedgerTransport from "@ledgerhq/hw-transport-u2f";
-import * as StellarSdk from "stellar-sdk";
+import * as StellarSdk from "@stellar/stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 

@@ -1,5 +1,5 @@
-import { Transaction } from "stellar-base";
-import { FeeBumpTransaction } from "stellar-sdk";
+import { Transaction } from "@stellar/stellar-base";
+import { FeeBumpTransaction } from "@stellar/stellar-sdk";
 import { ApprovalResponseStatus } from "../constants/sep8";
 import {
   ApprovalResponse,

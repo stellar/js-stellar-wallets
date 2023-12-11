@@ -1,12 +1,12 @@
+import { Horizon } from "@stellar/stellar-sdk";
 import BigNumber from "bignumber.js";
-import { Horizon, ServerApi } from "stellar-sdk";
 
 import { BASE_RESERVE, BASE_RESERVE_MIN_COUNT } from "../constants/stellar";
 import { BalanceMap } from "../types";
 import { getBalanceIdentifier } from "./";
 
 export function makeDisplayableBalances(
-  accountDetails: ServerApi.AccountRecord,
+  accountDetails: Horizon.ServerApi.AccountRecord,
 ): BalanceMap {
   const {
     balances,
@@ -60,7 +60,9 @@ export function makeDisplayableBalances(
         };
       }
 
-      const liquidityPoolBalance = balance as Horizon.BalanceLineLiquidityPool;
+      /* tslint:disable */
+      const liquidityPoolBalance = balance as Horizon.HorizonApi.BalanceLineLiquidityPool;
+      /* tslint:enable */
 
       if (identifier.includes(":lp")) {
         return {
@@ -73,7 +75,7 @@ export function makeDisplayableBalances(
         };
       }
 
-      const assetBalance = balance as Horizon.BalanceLineAsset;
+      const assetBalance = balance as Horizon.HorizonApi.BalanceLineAsset;
       const assetSponsor = assetBalance.sponsor
         ? { sponsor: assetBalance.sponsor }
         : {};
