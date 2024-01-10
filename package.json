@@ -10,7 +10,7 @@
   "prettier": "@stellar/prettier-config",
   "peerDependencies": {
     "bignumber.js": "*",
-    "@stellar/stellar-sdk": "^11.0.1"
+    "@stellar/stellar-sdk": "^11.1.0"
   },
   "scripts": {
     "prepare": "yarn build ; yarn build:commonjs",
@@ -81,7 +81,7 @@
     "@ledgerhq/hw-app-str": "^5.28.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@stellar/freighter-api": "^1.7.1",
-    "@stellar/stellar-sdk": "^11.0.1",
+    "@stellar/stellar-sdk": "^11.1.0",
     "@types/jest": "^24.0.11",
     "change-case": "^3.1.0",
     "lodash": "^4.17.21",
