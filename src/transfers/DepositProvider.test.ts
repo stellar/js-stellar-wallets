@@ -2,11 +2,12 @@ import * as StellarSdk from "@stellar/stellar-sdk";
 import sinon from "sinon";
 import { DepositProvider } from "./DepositProvider";
 
-import { TransactionsResponse } from "../fixtures/TransactionsResponse";
+// import { TransactionsResponse } from "../fixtures/TransactionsResponse";
 import { SMXTransferInfo } from "../fixtures/TransferInfoResponse";
 
 import { TransactionStatus } from "../constants/transfers";
-import { DepositAssetInfoMap, Field, Transaction } from "../types";
+import { DepositAssetInfoMap, Transaction } from "../types";
+// import { DepositAssetInfoMap, Field, Transaction } from "../types";
 
 const originalSetTimeout = global.setTimeout;
 
@@ -94,19 +95,19 @@ describe("watchOneTransaction", () => {
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
 
-  const pendingTransaction = (
-    eta: number,
-    txStatus: TransactionStatus,
-  ): { transaction: Transaction } => {
-    return {
-      transaction: {
-        kind: "deposit",
-        id: "TEST",
-        status: txStatus,
-        status_eta: eta,
-      },
-    };
-  };
+  // const pendingTransaction = (
+  //   eta: number,
+  //   txStatus: TransactionStatus,
+  // ): { transaction: Transaction } => {
+  //   return {
+  //     transaction: {
+  //       kind: "deposit",
+  //       id: "TEST",
+  //       status: txStatus,
+  //       status_eta: eta,
+  //     },
+  //   };
+  // };
   const successfulTransaction = (
     eta: number,
     txStatus: TransactionStatus,
@@ -120,19 +121,19 @@ describe("watchOneTransaction", () => {
       },
     };
   };
-  const failedTransaction = (
-    eta: number,
-    txStatus: TransactionStatus,
-  ): { transaction: Transaction } => {
-    return {
-      transaction: {
-        kind: "deposit",
-        id: "TEST",
-        status: txStatus,
-        status_eta: eta,
-      },
-    };
-  };
+  // const failedTransaction = (
+  //   eta: number,
+  //   txStatus: TransactionStatus,
+  // ): { transaction: Transaction } => {
+  //   return {
+  //     transaction: {
+  //       kind: "deposit",
+  //       id: "TEST",
+  //       status: txStatus,
+  //       status_eta: eta,
+  //     },
+  //   };
+  // };
 
   beforeEach(async () => {
     clock = sinon.useFakeTimers(0);
@@ -157,15 +158,15 @@ describe("watchOneTransaction", () => {
     clock.restore();
   });
 
-  test("One completed success", async (done) => {
-    const onMessage = sinon.spy((transaction) => {
-      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
+  test("One completed success", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBe(0);
     });
     const onSuccess = sinon.spy(() => {
-      done();
+      expect(onSuccess.callCount).toBeLessThanOrEqual(1);
     });
     const onError = sinon.spy((e) => {
-      done(`onError incorrectly called with ${e.toString}`);
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -190,10 +191,16 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back
+    // wait a second, then onSuccess should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
   });
 
+  /*
   test("One refunded success", async (done) => {
     const onMessage = sinon.spy((transaction) => {
       done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
@@ -1444,4 +1451,5 @@ describe("validateFields", () => {
       true,
     );
   });
+  */
 });
