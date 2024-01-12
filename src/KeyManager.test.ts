@@ -4,6 +4,7 @@ import {
   Keypair,
   Networks,
   Operation,
+  TimeoutInfinite,
   Transaction,
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
@@ -210,17 +211,17 @@ describe("KeyManager", function() {
       encrypterName: "IdentityEncrypter",
     });
 
-    const source = new StellarBase.Account(
+    const source = new Account(
       "GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB",
       "0",
     );
 
-    const transaction = new StellarBase.TransactionBuilder(source, {
+    const transaction = new TransactionBuilder(source, {
       fee: "100",
       networkPassphrase: network,
     })
-      .addOperation(StellarBase.Operation.inflation({}))
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .addOperation(Operation.inflation({}))
+      .setTimeout(TimeoutInfinite)
       .build();
 
     const signedTransaction = await testKeyManager.signTransaction({
