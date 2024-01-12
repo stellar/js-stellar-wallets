@@ -40,12 +40,7 @@ export { testEncrypter, testKeyStore } from "./PluginTesting";
 /**
  * Transfers
  */
-export {
-  DepositProvider,
-  getKycUrl,
-  getTest,
-  WithdrawProvider,
-} from "./transfers";
+export { DepositProvider, getKycUrl, WithdrawProvider } from "./transfers";
 
 /**
  * Helpers
