@@ -22,9 +22,10 @@ import { ScryptEncrypter } from "./plugins/ScryptEncrypter";
 describe("KeyManager", function() {
   let clock: sinon.SinonFakeTimers;
 
+  mockRandomForEach([0.5]);
+
   beforeEach(() => {
     clock = sinon.useFakeTimers(666);
-    mockRandomForEach(0.5);
   });
 
   afterEach(() => {
@@ -698,7 +699,7 @@ describe("KeyManager", function() {
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
         expect((e as any).toString()).toMatch(
-          `InvalidSep10ChallengeError: The transaction` +
+          `InvalidChallengeError: The transaction` +
             ` sequence number should be zero`,
         );
       }
@@ -890,7 +891,7 @@ describe("KeyManager", function() {
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
         expect((e as any).toString()).toMatch(
-          `InvalidSep10ChallengeError: Transaction not signed by server`,
+          `InvalidChallengeError: Transaction not signed by server`,
         );
       }
     });
@@ -1079,7 +1080,7 @@ describe("KeyManager", function() {
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
         expect((e as any).toString()).toMatch(
-          `InvalidSep10ChallengeError: 'web_auth_domain' operation ` +
+          `InvalidChallengeError: 'web_auth_domain' operation ` +
             `value does not match www.stellar.org`,
         );
       }
@@ -1178,7 +1179,7 @@ describe("KeyManager", function() {
         expect("This test failed: transaction didn't cause error").toBe(null);
       } catch (e) {
         expect((e as any).toString()).toMatch(
-          `InvalidSep10ChallengeError: The transaction source account` +
+          `InvalidChallengeError: The transaction source account` +
             ` is not equal to the server's account`,
         );
       }
@@ -1189,9 +1190,10 @@ describe("KeyManager", function() {
 describe("KeyManager Scrypt", () => {
   let clock: sinon.SinonFakeTimers;
 
+  mockRandomForEach([0.5]);
+
   beforeEach(() => {
     clock = sinon.useFakeTimers(666);
-    mockRandomForEach(0.5);
   });
 
   afterEach(() => {
