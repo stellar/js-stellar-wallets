@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@stellar/elements": "^0.0.0",
+    "@stellar/stellar-sdk": "^11.1.0",
     "big.js": "^5.2.2",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",
@@ -11,8 +12,7 @@
     "react-dom": "^16.8.5",
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.1.1",
-    "stellar-sdk": "^5.0.0"
+    "react-scripts": "^3.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

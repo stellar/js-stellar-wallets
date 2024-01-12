@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StrKey } from "stellar-sdk";
+import { StrKey } from "@stellar/stellar-sdk";
 
 import TransactionViewer from "components/TransactionViewer";
 
