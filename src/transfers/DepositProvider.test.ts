@@ -2,12 +2,11 @@ import * as StellarSdk from "@stellar/stellar-sdk";
 import sinon from "sinon";
 import { DepositProvider } from "./DepositProvider";
 
-// import { TransactionsResponse } from "../fixtures/TransactionsResponse";
+import { TransactionsResponse } from "../fixtures/TransactionsResponse";
 import { SMXTransferInfo } from "../fixtures/TransferInfoResponse";
 
 import { TransactionStatus } from "../constants/transfers";
-import { DepositAssetInfoMap, Transaction } from "../types";
-// import { DepositAssetInfoMap, Field, Transaction } from "../types";
+import { DepositAssetInfoMap, Field, Transaction } from "../types";
 
 const originalSetTimeout = global.setTimeout;
 
@@ -95,19 +94,19 @@ describe("watchOneTransaction", () => {
   // suite-wide consts
   const transferServer = "https://www.stellar.org/transfers";
 
-  // const pendingTransaction = (
-  //   eta: number,
-  //   txStatus: TransactionStatus,
-  // ): { transaction: Transaction } => {
-  //   return {
-  //     transaction: {
-  //       kind: "deposit",
-  //       id: "TEST",
-  //       status: txStatus,
-  //       status_eta: eta,
-  //     },
-  //   };
-  // };
+  const pendingTransaction = (
+    eta: number,
+    txStatus: TransactionStatus,
+  ): { transaction: Transaction } => {
+    return {
+      transaction: {
+        kind: "deposit",
+        id: "TEST",
+        status: txStatus,
+        status_eta: eta,
+      },
+    };
+  };
   const successfulTransaction = (
     eta: number,
     txStatus: TransactionStatus,
@@ -121,19 +120,19 @@ describe("watchOneTransaction", () => {
       },
     };
   };
-  // const failedTransaction = (
-  //   eta: number,
-  //   txStatus: TransactionStatus,
-  // ): { transaction: Transaction } => {
-  //   return {
-  //     transaction: {
-  //       kind: "deposit",
-  //       id: "TEST",
-  //       status: txStatus,
-  //       status_eta: eta,
-  //     },
-  //   };
-  // };
+  const failedTransaction = (
+    eta: number,
+    txStatus: TransactionStatus,
+  ): { transaction: Transaction } => {
+    return {
+      transaction: {
+        kind: "deposit",
+        id: "TEST",
+        status: txStatus,
+        status_eta: eta,
+      },
+    };
+  };
 
   beforeEach(async () => {
     clock = sinon.useFakeTimers(0);
@@ -163,7 +162,7 @@ describe("watchOneTransaction", () => {
       expect(onMessage.callCount).toBe(0);
     });
     const onSuccess = sinon.spy(() => {
-      expect(onSuccess.callCount).toBeLessThanOrEqual(1);
+      expect(onSuccess.callCount).toBe(1);
     });
     const onError = sinon.spy((e) => {
       expect(e).toBeUndefined();
@@ -200,16 +199,15 @@ describe("watchOneTransaction", () => {
     expect(onError.callCount).toBe(0);
   });
 
-  /*
-  test("One refunded success", async (done) => {
-    const onMessage = sinon.spy((transaction) => {
-      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
+  test("One refunded success", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBe(0);
     });
     const onSuccess = sinon.spy(() => {
-      done();
+      expect(onSuccess.callCount).toBe(1);
     });
     const onError = sinon.spy((e) => {
-      done(`onError incorrectly called with ${e.toString}`);
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -234,19 +232,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onSuccess
+    // wait a second, then onSuccess should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(1);
+    expect(onError.callCount).toBe(0);
   });
 
-  test("One pending_user_transfer_start message", async (done) => {
+  test("One pending_user_transfer_start message", async () => {
     const onMessage = sinon.spy(() => {
-      done();
+      expect(onMessage.callCount).toBe(1);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
     const onError = sinon.spy((e) => {
-      done(`onError incorrectly called with ${JSON.stringify(e)}`);
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -276,19 +279,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onMessage
+    // wait a second, then onMessage should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
   });
 
-  test("One pending_user_transfer_complete message", async (done) => {
+  test("One pending_user_transfer_complete message", async () => {
     const onMessage = sinon.spy(() => {
-      done();
+      expect(onMessage.callCount).toBe(1);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
     const onError = sinon.spy((e) => {
-      done(`onError incorrectly called with ${JSON.stringify(e)}`);
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -318,19 +326,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onMessage
+    // wait a second, then onMessage should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
   });
 
-  test("One pending_anchor message", async (done) => {
+  test("One pending_anchor message", async () => {
     const onMessage = sinon.spy(() => {
-      done();
+      expect(onMessage.callCount).toBe(1);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
     const onError = sinon.spy((e) => {
-      done(`onError incorrectly called with ${JSON.stringify(e)}`);
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -356,19 +369,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onMessage
+    // wait a second, then onMessage should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(1);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
   });
 
-  test("One error", async (done) => {
-    const onMessage = sinon.spy((transaction) => {
-      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
+  test("One error", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBe(0);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
     const onError = sinon.spy(() => {
-      done();
+      expect(onError.callCount).toBe(1);
     });
 
     // then, queue up a success
@@ -393,19 +411,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onError
+    // wait a second, then onError should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
   });
 
-  test("One no_market", async (done) => {
-    const onMessage = sinon.spy((transaction) => {
-      done(`onMessage incorrectly called with ${JSON.stringify(transaction)}`);
+  test("One no_market", async () => {
+    const onMessage = sinon.spy(() => {
+      expect(onMessage.callCount).toBe(0);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
     const onError = sinon.spy(() => {
-      done();
+      expect(onError.callCount).toBe(1);
     });
 
     // then, queue up a success
@@ -430,19 +453,24 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onError
+    // wait a second, then onError should call back
     clock.next();
+    await sleep(1);
+
+    expect(onMessage.callCount).toBe(0);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(1);
   });
 
-  test("Several pending transactions", async (done) => {
+  test("Several pending transactions", async () => {
     const onMessage = sinon.spy(() => {
-      expect(onMessage.callCount).toBeLessThan(8);
+      expect(onMessage.callCount).toBeLessThanOrEqual(7);
     });
-    const onSuccess = sinon.spy((transaction) => {
-      done(`onSuccess incorrectly called with ${JSON.stringify(transaction)}`);
+    const onSuccess = sinon.spy(() => {
+      expect(onSuccess.callCount).toBe(0);
     });
-    const onError = sinon.spy((transaction) => {
-      done(`onError incorrectly called with ${JSON.stringify(transaction)}`);
+    const onError = sinon.spy((e) => {
+      expect(e).toBeUndefined();
     });
 
     // queue up a success
@@ -506,8 +534,7 @@ describe("watchOneTransaction", () => {
     expect(onSuccess.callCount).toBe(0);
     expect(onError.callCount).toBe(0);
 
-    // wait a second, then done will call back onMessage
-
+    // loop through all pending statuses updates
     clock.next();
     await sleep(10);
 
@@ -529,7 +556,10 @@ describe("watchOneTransaction", () => {
     clock.next();
     await sleep(10);
 
-    done();
+    // 7 pending transactions
+    expect(onMessage.callCount).toBe(7);
+    expect(onSuccess.callCount).toBe(0);
+    expect(onError.callCount).toBe(0);
   });
 
   test("One pending, one completed, no more after that", async () => {
@@ -1451,5 +1481,4 @@ describe("validateFields", () => {
       true,
     );
   });
-  */
 });
