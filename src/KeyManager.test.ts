@@ -1,4 +1,12 @@
-import StellarBase, { Operation, Transaction } from "@stellar/stellar-base";
+import {
+  Account,
+  BASE_FEE,
+  Keypair,
+  Networks,
+  Operation,
+  Transaction,
+  TransactionBuilder,
+} from "@stellar/stellar-sdk";
 import { mockRandomForEach } from "jest-mock-random";
 import randomBytes from "randombytes";
 import sinon from "sinon";
@@ -184,11 +192,11 @@ describe("KeyManager", function() {
     const testKeyManager = new KeyManager({
       keyStore: testStore,
     });
-    const network = StellarBase.Networks.TESTNET;
+    const network = Networks.TESTNET;
 
     testKeyManager.registerEncrypter(IdentityEncrypter);
 
-    const keypair = StellarBase.Keypair.master(network);
+    const keypair = Keypair.master(network);
 
     // save this key
     const keyMetadata = await testKeyManager.storeKey({
@@ -267,11 +275,11 @@ describe("KeyManager", function() {
       const testKeyManager = new KeyManager({
         keyStore: testStore,
       });
-      const network = StellarBase.Networks.TESTNET;
+      const network = Networks.TESTNET;
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(network);
+      const keypair = Keypair.master(network);
 
       // save this key
       const keyMetadata = await testKeyManager.storeKey({
@@ -304,11 +312,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -318,7 +326,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -327,8 +335,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -399,11 +407,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -413,7 +421,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -422,8 +430,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -495,11 +503,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -509,8 +517,8 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
-      const otherKeypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
+      const otherKeypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -519,8 +527,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -602,11 +610,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -616,7 +624,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -625,8 +633,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -699,11 +707,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -713,7 +721,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -722,8 +730,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -768,7 +776,7 @@ describe("KeyManager", function() {
           type: KeyType.plaintextKey,
           publicKey: keypair.publicKey(),
           privateKey: keypair.secret(),
-          network: StellarBase.Networks.PUBLIC,
+          network: Networks.PUBLIC,
         },
         password,
         encrypterName: "IdentityEncrypter",
@@ -793,12 +801,12 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const badKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const badKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -808,7 +816,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -817,8 +825,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -890,12 +898,12 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const badKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const badKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -905,7 +913,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -914,8 +922,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -982,12 +990,12 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const badKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const badKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -997,7 +1005,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -1006,8 +1014,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -1080,11 +1088,11 @@ describe("KeyManager", function() {
       const authServer = "https://www.stellar.org/auth";
       const password = "very secure password";
 
-      const keyNetwork = StellarBase.Networks.TESTNET;
+      const keyNetwork = Networks.TESTNET;
 
       const token = "👍";
-      const accountKey = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(accountKey.publicKey(), "-1");
+      const accountKey = Keypair.random();
+      const account = new Account(accountKey.publicKey(), "-1");
 
       // set up the manager
       const testStore = new MemoryKeyStore();
@@ -1094,7 +1102,7 @@ describe("KeyManager", function() {
 
       testKeyManager.registerEncrypter(IdentityEncrypter);
 
-      const keypair = StellarBase.Keypair.master(keyNetwork);
+      const keypair = Keypair.master(keyNetwork);
 
       // A Base64 digit represents 6 bits, to generate a random 64 bytes
       // base64 string, we need 48 random bytes = (64 * 6)/8
@@ -1103,8 +1111,8 @@ describe("KeyManager", function() {
       // turned into binary represents 8 bits = 1 bytes.
       const value = randomBytes(48).toString("base64");
 
-      const tx = new StellarBase.TransactionBuilder(account, {
-        fee: StellarBase.BASE_FEE,
+      const tx = new TransactionBuilder(account, {
+        fee: BASE_FEE,
         networkPassphrase: keyNetwork,
       })
         .addOperation(
@@ -1155,7 +1163,7 @@ describe("KeyManager", function() {
         encrypterName: "IdentityEncrypter",
       });
 
-      const realKey = StellarBase.Keypair.random().publicKey();
+      const realKey = Keypair.random().publicKey();
 
       try {
         await testKeyManager.fetchAuthToken({

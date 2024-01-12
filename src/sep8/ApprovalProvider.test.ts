@@ -1,4 +1,9 @@
-import StellarBase from "@stellar/stellar-base";
+import {
+  Account,
+  Keypair,
+  Networks,
+  TransactionBuilder,
+} from "@stellar/stellar-sdk";
 import { ActionResult, ApprovalResponseStatus } from "../constants/sep8";
 import {
   ActionRequired,
@@ -30,11 +35,11 @@ describe("approve", () => {
   });
 
   test("transaction has no signature", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -55,11 +60,11 @@ describe("approve", () => {
   });
 
   test("approval server returned an unknown status", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -88,11 +93,11 @@ describe("approve", () => {
   });
 
   test("approval server could not be found", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -122,11 +127,11 @@ describe("approve", () => {
   });
 
   test("approval server returns a JSON error", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -151,11 +156,11 @@ describe("approve", () => {
   });
 
   test("success response", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -188,11 +193,11 @@ describe("approve", () => {
   });
 
   test("revised response", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -227,11 +232,11 @@ describe("approve", () => {
   });
 
   test("pending response", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -262,11 +267,11 @@ describe("approve", () => {
   });
 
   test("action required response", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })
@@ -299,11 +304,11 @@ describe("approve", () => {
   });
 
   test("rejected response", async () => {
-    const accountKey = StellarBase.Keypair.random();
-    const account = new StellarBase.Account(accountKey.publicKey(), "0");
-    const keyNetwork = StellarBase.Networks.TESTNET;
+    const accountKey = Keypair.random();
+    const account = new Account(accountKey.publicKey(), "0");
+    const keyNetwork = Networks.TESTNET;
 
-    const txBuild = new StellarBase.TransactionBuilder(account, {
+    const txBuild = new TransactionBuilder(account, {
       fee: "10000",
       networkPassphrase: keyNetwork,
     })

@@ -5,6 +5,7 @@ import {
   Keypair,
   Operation,
   StrKey,
+  Transaction,
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
 import debounce from "lodash/debounce";
@@ -347,7 +348,9 @@ export class DataProvider {
    * @throws Throws if the account has balances.
    * @throws Throws if the destination account is invalid.
    */
-  public async getStripAndMergeAccountTransaction(destinationKey: string) {
+  public async getStripAndMergeAccountTransaction(
+    destinationKey: string,
+  ): Promise<Transaction> {
     // make sure the destination is a funded account
     if (!StrKey.isValidEd25519PublicKey(destinationKey)) {
       throw new Error("The destination is not a valid Stellar address.");
