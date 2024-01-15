@@ -1,5 +1,4 @@
-import { AssetType } from "@stellar/stellar-base";
-import { Horizon } from "@stellar/stellar-sdk";
+import { AssetType, Horizon } from "@stellar/stellar-sdk";
 import BigNumber from "bignumber.js";
 
 import { Account, Token, Trade } from "../types";

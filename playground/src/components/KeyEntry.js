@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import StellarSdk from "stellar-sdk";
+import { Keypair, Networks } from "@stellar/stellar-sdk";
 import { Input, Checkbox } from "@stellar/elements";
 
 import { KeyManager, KeyManagerPlugins, KeyType } from "@stellar/wallet-sdk";
@@ -42,14 +42,12 @@ export default class KeyEntry extends Component {
     let key;
 
     try {
-      const account = StellarSdk.Keypair.fromSecret(privateKey);
+      const account = Keypair.fromSecret(privateKey);
       key = {
         publicKey: account.publicKey(),
         privateKey: account.secret(),
         type: KeyType.plaintextKey,
-        network: this.state.isTestnet
-          ? StellarSdk.Networks.TESTNET
-          : StellarSdk.Networks.PUBLIC,
+        network: this.state.isTestnet ? Networks.TESTNET : Networks.PUBLIC,
       };
       localStorage.setItem("key", key.privateKey);
     } catch (e) {
@@ -59,9 +57,7 @@ export default class KeyEntry extends Component {
 
     try {
       this.state.keyManager.setDefaultNetworkPassphrase(
-        this.state.isTestnet
-          ? StellarSdk.Networks.TESTNET
-          : StellarSdk.Networks.PUBLIC,
+        this.state.isTestnet ? Networks.TESTNET : Networks.PUBLIC,
       );
       const keyMetadata = await this.state.keyManager.storeKey({
         key,

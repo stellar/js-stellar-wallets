@@ -1,6 +1,6 @@
 import LedgerStr from "@ledgerhq/hw-app-str";
 import LedgerTransport from "@ledgerhq/hw-transport-u2f";
-import * as StellarSdk from "@stellar/stellar-sdk";
+import { Keypair, xdr } from "@stellar/stellar-sdk";
 
 import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 
@@ -33,8 +33,8 @@ export const ledgerHandler: KeyTypeHandler = {
       transaction.signatureBase(),
     );
 
-    const keyPair = StellarSdk.Keypair.fromPublicKey(key.publicKey);
-    const decoratedSignature = new StellarSdk.xdr.DecoratedSignature({
+    const keyPair = Keypair.fromPublicKey(key.publicKey);
+    const decoratedSignature = new xdr.DecoratedSignature({
       hint: keyPair.signatureHint(),
       signature: result.signature,
     });

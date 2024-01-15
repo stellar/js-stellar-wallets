@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { GlobalStyle } from "@stellar/elements";
 import * as WalletSdk from "@stellar/wallet-sdk";
-import StellarSdk, { Networks } from "stellar-sdk";
+import StellarSdk, { Networks } from "@stellar/stellar-sdk";
 
 import AccountDetails from "components/AccountDetails";
 import KeyEntry from "components/KeyEntry";

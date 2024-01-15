@@ -1,7 +1,9 @@
-import { AssetType, Memo, MemoType } from "@stellar/stellar-base";
 import {
+  AssetType,
   BadRequestError,
   Horizon,
+  Memo,
+  MemoType,
   NetworkError,
   NotFoundError,
 } from "@stellar/stellar-sdk";

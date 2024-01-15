@@ -1,4 +1,4 @@
-import { Transaction } from "@stellar/stellar-base";
+import { Transaction } from "@stellar/stellar-sdk";
 import { KeyType } from "../constants/keys";
 
 export interface BaseKey {

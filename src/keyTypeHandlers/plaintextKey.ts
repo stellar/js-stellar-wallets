@@ -5,7 +5,7 @@ import { HandlerSignTransactionParams, KeyTypeHandler } from "../types";
 import { KeyType } from "../constants/keys";
 
 export const plaintextKeyHandler: KeyTypeHandler = {
-  keyType: KeyType.ledger,
+  keyType: KeyType.plaintextKey,
   signTransaction(params: HandlerSignTransactionParams) {
     const { transaction, key } = params;
     if (key.privateKey === "") {
@@ -18,7 +18,16 @@ export const plaintextKeyHandler: KeyTypeHandler = {
 
     const keyPair = Keypair.fromSecret(key.privateKey);
 
-    transaction.sign(keyPair);
+    /*
+     * NOTE: we need to use the combo of getKeypairSignature() + addSignature()
+     * here in place of the shorter sign() call because sign() results in a
+     * "XDR Write Error: [object Object] is not a DecoratedSignature" error
+     * on React Native whenever we try to call transaction.toXDR() on the signed
+     * transaction.
+     */
+
+    const signature = transaction.getKeypairSignature(keyPair);
+    transaction.addSignature(keyPair.publicKey(), signature);
 
     return Promise.resolve(transaction);
   },

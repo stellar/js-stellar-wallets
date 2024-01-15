@@ -2,6 +2,12 @@
 // https://jestjs.io/docs/en/configuration.html
 
 module.exports = {
+  preset: "ts-jest",
+  transform: {
+    "^.+\\.(ts|tsx)?$": "ts-jest",
+    "^.+\\.(js|jsx)$": "babel-jest",
+  },
+
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
   automock: false,
